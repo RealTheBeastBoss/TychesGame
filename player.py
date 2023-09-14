@@ -1,10 +1,8 @@
 class Player:
-    playerPiece = None
-    blueDeck = None
-    redDeck = None
-
     def __init__(self, player_number, given_name):
         self.playerName = given_name
+        self.blueDeck = None
+        self.redDeck = None
         if player_number == 1:
             self.playerPiece = 1
         elif player_number == 2:

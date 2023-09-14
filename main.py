@@ -2,14 +2,20 @@ import os
 import pygame
 import random
 from card import *
+from enum import Enum
+
+class ScreenState(Enum):
+    START = 1
+    NEW_MENU = 2
+
 
 pygame.font.init()
 WIDTH, HEIGHT = 1280, 720
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Tyche's Game")
 FPS = 60
-PLAYER_COUNT = 2  # 2 while testing
 BIG_FONT = pygame.font.Font(os.path.join("Fonts", "beastboss_font.ttf"), 90)
+SMALL_FONT = pygame.font.Font(os.path.join("Fonts", "beastboss_font.ttf"), 30)
 
 # Game Colours
 BLUE = (0, 0, 255)
@@ -149,10 +155,64 @@ DISCARD_PILE = None
 # endregion
 
 
-def draw_window():
-    WINDOW.fill(BLUE)
-    draw_text("Tyche's Game", BIG_FONT, ORANGE, (WIDTH/2, 69))
-    pygame.display.update()
+class Button:
+    def __init__(self, text, x_pos, y_pos, width, height, enabled = True):
+        self.text = text
+        self.xPos = x_pos
+        self.yPos = y_pos
+        self.width = width
+        self.height = height
+        self.enabled = enabled
+        self.draw()
+
+    def draw(self):
+        button_rect = pygame.rect.Rect((self.xPos, self.yPos), (self.width, self.height))
+        if not self.check_hover():
+            button_text = SMALL_FONT.render(self.text, True, ORANGE)
+            pygame.draw.rect(WINDOW, BLUE, button_rect, 0, 5)
+            pygame.draw.rect(WINDOW, ORANGE, button_rect, 3, 5)
+        else:
+            button_text = SMALL_FONT.render(self.text, True, BLUE)
+            pygame.draw.rect(WINDOW, ORANGE, button_rect, 0, 5)
+            pygame.draw.rect(WINDOW, BLUE, button_rect, 3, 5)
+        text_width_offset = button_text.get_width() / 2
+        text_height_offset = button_text.get_height() / 2
+        WINDOW.blit(button_text, ((self.xPos + (self.width/2) - text_width_offset), (self.yPos + (self.height/2)) - text_height_offset))
+
+    def check_hover(self):
+        mouse_pos = pygame.mouse.get_pos()
+        button_rect = pygame.rect.Rect((self.xPos, self.yPos), (self.width, self.height))
+        if button_rect.collidepoint(mouse_pos):
+            return True
+        else:
+            return False
+
+    def check_click(self):
+        mouse_pos = pygame.mouse.get_pos()
+        left_click = pygame.mouse.get_pressed()[0]
+        button_rect = pygame.rect.Rect((self.xPos, self.yPos), (self.width, self.height))
+        return left_click and button_rect.collidepoint(mouse_pos)
+
+
+def draw_window(state):
+    if state == ScreenState.START:
+        WINDOW.fill(BLUE)
+        draw_text("Tyche's Game", BIG_FONT, ORANGE, (WIDTH/2, 69))
+        quit_button = Button("Quit", (WIDTH/2) - 40, 300, 80, 60)
+        if quit_button.check_click():
+            pygame.quit()
+        new_game_button = Button("New Game", (WIDTH/2) - 90, 200, 180, 60)
+        pygame.display.update()
+        if new_game_button.check_click():
+            return ScreenState.NEW_MENU
+        return ScreenState.START
+    elif state == ScreenState.NEW_MENU:
+        WINDOW.fill(ORANGE)
+        quit_button = Button("Quit", (WIDTH/2) - 40, 300, 80, 60)
+        if quit_button.check_click():
+            pygame.quit()
+        pygame.display.update()
+        return ScreenState.NEW_MENU
 
 
 def draw_text(text, font, colour, location):  # Draws text centered on a location
@@ -164,13 +224,15 @@ def draw_text(text, font, colour, location):  # Draws text centered on a locatio
 
 def main():  # Game Loop
     clock = pygame.time.Clock()
+    player_count = 2  # 2 while testing
+    current_state = ScreenState.START
     while True:
         clock.tick(FPS)
         # Game Events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-        draw_window()
+        current_state = draw_window(current_state)
 
 
 if __name__ == "__main__":
