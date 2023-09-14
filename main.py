@@ -7,10 +7,11 @@ from enum import Enum
 class ScreenState(Enum):
     START = 1
     NEW_MENU = 2
+    PLAYER_NAMING = 3
 
 
 pygame.font.init()
-WIDTH, HEIGHT = 1280, 720
+WIDTH, HEIGHT = 1920, 1080
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Tyche's Game")
 FPS = 60
@@ -156,13 +157,12 @@ DISCARD_PILE = None
 
 
 class Button:
-    def __init__(self, text, x_pos, y_pos, width, height, enabled = True):
+    def __init__(self, text, x_pos, y_pos, width, height):
         self.text = text
         self.xPos = x_pos
         self.yPos = y_pos
         self.width = width
         self.height = height
-        self.enabled = enabled
         self.draw()
 
     def draw(self):
@@ -187,32 +187,39 @@ class Button:
         else:
             return False
 
-    def check_click(self):
-        mouse_pos = pygame.mouse.get_pos()
-        left_click = pygame.mouse.get_pressed()[0]
+    def check_click(self, left_mouse_released):
         button_rect = pygame.rect.Rect((self.xPos, self.yPos), (self.width, self.height))
-        return left_click and button_rect.collidepoint(mouse_pos)
+        mouse_pos = pygame.mouse.get_pos()
+        if left_mouse_released and button_rect.collidepoint(mouse_pos):
+            return True
+        return False
 
 
-def draw_window(state):
-    if state == ScreenState.START:
+def draw_window(state, left_mouse_released):
+    if state == ScreenState.START:  # Start Menu
         WINDOW.fill(BLUE)
         draw_text("Tyche's Game", BIG_FONT, ORANGE, (WIDTH/2, 69))
         quit_button = Button("Quit", (WIDTH/2) - 40, 300, 80, 60)
-        if quit_button.check_click():
+        if quit_button.check_click(left_mouse_released):
             pygame.quit()
         new_game_button = Button("New Game", (WIDTH/2) - 90, 200, 180, 60)
         pygame.display.update()
-        if new_game_button.check_click():
+        if new_game_button.check_click(left_mouse_released):
             return ScreenState.NEW_MENU
         return ScreenState.START
-    elif state == ScreenState.NEW_MENU:
-        WINDOW.fill(ORANGE)
-        quit_button = Button("Quit", (WIDTH/2) - 40, 300, 80, 60)
-        if quit_button.check_click():
+    elif state == ScreenState.NEW_MENU:  # New Game Menu
+        WINDOW.fill((100, 100, 100))
+        quit_button = Button("Quit", (WIDTH/2) - 40, 600, 80, 60)
+        if quit_button.check_click(left_mouse_released):
+            pygame.quit()
+        return ScreenState.NEW_MENU
+    elif state == ScreenState.PLAYER_NAMING:
+        WINDOW.fill((0, 0, 0))
+        quit_button = Button("Quit", (WIDTH/2) - 40, 600, 80, 60)
+        if quit_button.check_click(left_mouse_released):
             pygame.quit()
         pygame.display.update()
-        return ScreenState.NEW_MENU
+        return ScreenState.PLAYER_NAMING
 
 
 def draw_text(text, font, colour, location):  # Draws text centered on a location
@@ -224,15 +231,34 @@ def draw_text(text, font, colour, location):  # Draws text centered on a locatio
 
 def main():  # Game Loop
     clock = pygame.time.Clock()
-    player_count = 2  # 2 while testing
+    player_count = None
     current_state = ScreenState.START
     while True:
         clock.tick(FPS)
         # Game Events
+        left_mouse_released = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-        current_state = draw_window(current_state)
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                left_mouse_released = True
+        current_state = draw_window(current_state, left_mouse_released)
+        if current_state == ScreenState.NEW_MENU:  # Player Count Buttons
+            two_player_button = Button("Two Players", 300, 200, 220, 60)
+            three_player_button = Button("Three Players", 700, 200, 220, 60)
+            four_player_button = Button("Four Players", 300, 300, 220, 60)
+            five_player_button = Button("Five Players", 700, 300, 220, 60)
+            if two_player_button.check_click(left_mouse_released):
+                player_count = 2
+            elif three_player_button.check_click(left_mouse_released):
+                player_count = 3
+            elif four_player_button.check_click(left_mouse_released):
+                player_count = 4
+            elif five_player_button.check_click(left_mouse_released):
+                player_count = 5
+            if player_count is not None:
+                current_state = ScreenState.PLAYER_NAMING
+            pygame.display.update()
 
 
 if __name__ == "__main__":
