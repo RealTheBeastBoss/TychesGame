@@ -1,26 +1,12 @@
-import os
-import pygame
 import random
 from card import *
-from enum import Enum
-
-class ScreenState(Enum):
-    START = 1
-    NEW_MENU = 2
-    PLAYER_NAMING = 3
+from meta import *
+from button import Button
 
 
 pygame.font.init()
-WIDTH, HEIGHT = 1920, 1080
-WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Tyche's Game")
 FPS = 60
-BIG_FONT = pygame.font.Font(os.path.join("Fonts", "beastboss_font.ttf"), 90)
-SMALL_FONT = pygame.font.Font(os.path.join("Fonts", "beastboss_font.ttf"), 30)
-
-# Game Colours
-BLUE = (0, 0, 255)
-ORANGE = (255, 102, 0)
 
 # Game Cards
 # region
@@ -156,47 +142,8 @@ DISCARD_PILE = None
 # endregion
 
 
-class Button:
-    def __init__(self, text, x_pos, y_pos, width, height):
-        self.text = text
-        self.xPos = x_pos
-        self.yPos = y_pos
-        self.width = width
-        self.height = height
-        self.draw()
-
-    def draw(self):
-        button_rect = pygame.rect.Rect((self.xPos, self.yPos), (self.width, self.height))
-        if not self.check_hover():
-            button_text = SMALL_FONT.render(self.text, True, ORANGE)
-            pygame.draw.rect(WINDOW, BLUE, button_rect, 0, 5)
-            pygame.draw.rect(WINDOW, ORANGE, button_rect, 3, 5)
-        else:
-            button_text = SMALL_FONT.render(self.text, True, BLUE)
-            pygame.draw.rect(WINDOW, ORANGE, button_rect, 0, 5)
-            pygame.draw.rect(WINDOW, BLUE, button_rect, 3, 5)
-        text_width_offset = button_text.get_width() / 2
-        text_height_offset = button_text.get_height() / 2
-        WINDOW.blit(button_text, ((self.xPos + (self.width/2) - text_width_offset), (self.yPos + (self.height/2)) - text_height_offset))
-
-    def check_hover(self):
-        mouse_pos = pygame.mouse.get_pos()
-        button_rect = pygame.rect.Rect((self.xPos, self.yPos), (self.width, self.height))
-        if button_rect.collidepoint(mouse_pos):
-            return True
-        else:
-            return False
-
-    def check_click(self, left_mouse_released):
-        button_rect = pygame.rect.Rect((self.xPos, self.yPos), (self.width, self.height))
-        mouse_pos = pygame.mouse.get_pos()
-        if left_mouse_released and button_rect.collidepoint(mouse_pos):
-            return True
-        return False
-
-
-def draw_window(state, left_mouse_released):
-    if state == ScreenState.START:  # Start Menu
+def draw_window(left_mouse_released):
+    if Meta.CURRENT_STATE == ScreenState.START:  # Start Menu
         WINDOW.fill(BLUE)
         draw_text("Tyche's Game", BIG_FONT, ORANGE, (WIDTH/2, 69))
         quit_button = Button("Quit", (WIDTH/2) - 40, 300, 80, 60)
@@ -207,13 +154,17 @@ def draw_window(state, left_mouse_released):
         if new_game_button.check_click(left_mouse_released):
             return ScreenState.NEW_MENU
         return ScreenState.START
-    elif state == ScreenState.NEW_MENU:  # New Game Menu
+    elif Meta.CURRENT_STATE == ScreenState.NEW_MENU:  # New Game Menu
         WINDOW.fill((100, 100, 100))
+        draw_text("How many players?", MEDIUM_FONT, ORANGE, (WIDTH/2, 69))
         quit_button = Button("Quit", (WIDTH/2) - 40, 600, 80, 60)
         if quit_button.check_click(left_mouse_released):
             pygame.quit()
+        back_button = Button("Back", 800, 600, 80, 60)
+        if back_button.check_click(left_mouse_released):
+            return ScreenState.START
         return ScreenState.NEW_MENU
-    elif state == ScreenState.PLAYER_NAMING:
+    elif Meta.CURRENT_STATE == ScreenState.PLAYER_NAMING:  # Player Naming Menu
         WINDOW.fill((0, 0, 0))
         quit_button = Button("Quit", (WIDTH/2) - 40, 600, 80, 60)
         if quit_button.check_click(left_mouse_released):
@@ -231,33 +182,33 @@ def draw_text(text, font, colour, location):  # Draws text centered on a locatio
 
 def main():  # Game Loop
     clock = pygame.time.Clock()
-    player_count = None
-    current_state = ScreenState.START
     while True:
         clock.tick(FPS)
         # Game Events
         left_mouse_released = False
-        for event in pygame.event.get():
+        for event in pygame.event.get():  # Event Handler
             if event.type == pygame.QUIT:
                 pygame.quit()
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 left_mouse_released = True
-        current_state = draw_window(current_state, left_mouse_released)
-        if current_state == ScreenState.NEW_MENU:  # Player Count Buttons
+            elif event.type == BUTTON_COOLDOWN_EVENT:
+                Meta.BUTTONS_ENABLED = True
+        Meta.CURRENT_STATE = draw_window(left_mouse_released)
+        if Meta.CURRENT_STATE == ScreenState.NEW_MENU:  # Player Count Buttons
             two_player_button = Button("Two Players", 300, 200, 220, 60)
             three_player_button = Button("Three Players", 700, 200, 220, 60)
             four_player_button = Button("Four Players", 300, 300, 220, 60)
             five_player_button = Button("Five Players", 700, 300, 220, 60)
             if two_player_button.check_click(left_mouse_released):
-                player_count = 2
+                Meta.PLAYER_COUNT = 2
             elif three_player_button.check_click(left_mouse_released):
-                player_count = 3
+                Meta.PLAYER_COUNT = 3
             elif four_player_button.check_click(left_mouse_released):
-                player_count = 4
+                Meta.PLAYER_COUNT = 4
             elif five_player_button.check_click(left_mouse_released):
-                player_count = 5
-            if player_count is not None:
-                current_state = ScreenState.PLAYER_NAMING
+                Meta.PLAYER_COUNT = 5
+            if Meta.PLAYER_COUNT is not None:
+                Meta.CURRENT_STATE = ScreenState.PLAYER_NAMING
             pygame.display.update()
 
 
