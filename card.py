@@ -1,4 +1,5 @@
 from enum import Enum
+import os
 
 
 class CardType(Enum):
@@ -12,7 +13,7 @@ class CardSuit(Enum):
     CLUBS = 3
     DIAMONDS = 4
     RED = 5
-    BLUE = 6
+    BLACK = 6
 
 
 class CardValue(Enum):
@@ -33,7 +34,11 @@ class CardValue(Enum):
 
 
 class Card:
-    def __init__(self, colour, suit, value):
+    def __init__(self, display_name, colour, suit, value, image_ref, desc_rect_size = (100, 80), *desc_lines):
+        self.displayName = display_name
         self.cardType = colour
         self.cardSuit = suit
         self.cardValue = value
+        self.imagePath = os.path.join("Assets", "Cards", image_ref)
+        self.descRectSize = desc_rect_size
+        self.descLines = desc_lines

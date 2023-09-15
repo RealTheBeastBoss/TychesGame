@@ -1,69 +1,71 @@
 import random
+
+import pygame.draw
+
 from card import *
 from meta import *
 from button import Button
+from player import Player
 
 
-pygame.font.init()
 pygame.display.set_caption("Tyche's Game")
-FPS = 60
 
 # Game Cards
 # region
-BLUE_ACE_OF_HEARTS = Card(CardType.BLUE, CardSuit.HEARTS, CardValue.ACE)
-BLUE_TWO_OF_HEARTS = Card(CardType.BLUE, CardSuit.HEARTS, CardValue.TWO)
-BLUE_THREE_OF_HEARTS = Card(CardType.BLUE, CardSuit.HEARTS, CardValue.THREE)
-BLUE_FOUR_OF_HEARTS = Card(CardType.BLUE, CardSuit.HEARTS, CardValue.FOUR)
-BLUE_FIVE_OF_HEARTS = Card(CardType.BLUE, CardSuit.HEARTS, CardValue.FIVE)
-BLUE_SIX_OF_HEARTS = Card(CardType.BLUE, CardSuit.HEARTS, CardValue.SIX)
-BLUE_SEVEN_OF_HEARTS = Card(CardType.BLUE, CardSuit.HEARTS, CardValue.SEVEN)
-BLUE_EIGHT_OF_HEARTS = Card(CardType.BLUE, CardSuit.HEARTS, CardValue.EIGHT)
-BLUE_NINE_OF_HEARTS = Card(CardType.BLUE, CardSuit.HEARTS, CardValue.NINE)
-BLUE_TEN_OF_HEARTS = Card(CardType.BLUE, CardSuit.HEARTS, CardValue.TEN)
-BLUE_JACK_OF_HEARTS = Card(CardType.BLUE, CardSuit.HEARTS, CardValue.JACK)
-BLUE_KING_OF_HEARTS = Card(CardType.BLUE, CardSuit.HEARTS, CardValue.KING)
-BLUE_QUEEN_OF_HEARTS = Card(CardType.BLUE, CardSuit.HEARTS, CardValue.QUEEN)
-BLUE_ACE_OF_DIAMONDS = Card(CardType.BLUE, CardSuit.DIAMONDS, CardValue.ACE)
-BLUE_TWO_OF_DIAMONDS = Card(CardType.BLUE, CardSuit.DIAMONDS, CardValue.TWO)
-BLUE_THREE_OF_DIAMONDS = Card(CardType.BLUE, CardSuit.DIAMONDS, CardValue.THREE)
-BLUE_FOUR_OF_DIAMONDS = Card(CardType.BLUE, CardSuit.DIAMONDS, CardValue.FOUR)
-BLUE_FIVE_OF_DIAMONDS = Card(CardType.BLUE, CardSuit.DIAMONDS, CardValue.FIVE)
-BLUE_SIX_OF_DIAMONDS = Card(CardType.BLUE, CardSuit.DIAMONDS, CardValue.SIX)
-BLUE_SEVEN_OF_DIAMONDS = Card(CardType.BLUE, CardSuit.DIAMONDS, CardValue.SEVEN)
-BLUE_EIGHT_OF_DIAMONDS = Card(CardType.BLUE, CardSuit.DIAMONDS, CardValue.EIGHT)
-BLUE_NINE_OF_DIAMONDS = Card(CardType.BLUE, CardSuit.DIAMONDS, CardValue.NINE)
-BLUE_TEN_OF_DIAMONDS = Card(CardType.BLUE, CardSuit.DIAMONDS, CardValue.TEN)
-BLUE_JACK_OF_DIAMONDS = Card(CardType.BLUE, CardSuit.DIAMONDS, CardValue.JACK)
-BLUE_KING_OF_DIAMONDS = Card(CardType.BLUE, CardSuit.DIAMONDS, CardValue.KING)
-BLUE_QUEEN_OF_DIAMONDS = Card(CardType.BLUE, CardSuit.DIAMONDS, CardValue.QUEEN)
-BLUE_ACE_OF_CLUBS = Card(CardType.BLUE, CardSuit.CLUBS, CardValue.ACE)
-BLUE_TWO_OF_CLUBS = Card(CardType.BLUE, CardSuit.CLUBS, CardValue.TWO)
-BLUE_THREE_OF_CLUBS = Card(CardType.BLUE, CardSuit.CLUBS, CardValue.THREE)
-BLUE_FOUR_OF_CLUBS = Card(CardType.BLUE, CardSuit.CLUBS, CardValue.FOUR)
-BLUE_FIVE_OF_CLUBS = Card(CardType.BLUE, CardSuit.CLUBS, CardValue.FIVE)
-BLUE_SIX_OF_CLUBS = Card(CardType.BLUE, CardSuit.CLUBS, CardValue.SIX)
-BLUE_SEVEN_OF_CLUBS = Card(CardType.BLUE, CardSuit.CLUBS, CardValue.SEVEN)
-BLUE_EIGHT_OF_CLUBS = Card(CardType.BLUE, CardSuit.CLUBS, CardValue.EIGHT)
-BLUE_NINE_OF_CLUBS = Card(CardType.BLUE, CardSuit.CLUBS, CardValue.NINE)
-BLUE_TEN_OF_CLUBS = Card(CardType.BLUE, CardSuit.CLUBS, CardValue.TEN)
-BLUE_JACK_OF_CLUBS = Card(CardType.BLUE, CardSuit.CLUBS, CardValue.JACK)
-BLUE_KING_OF_CLUBS = Card(CardType.BLUE, CardSuit.CLUBS, CardValue.KING)
-BLUE_QUEEN_OF_CLUBS = Card(CardType.BLUE, CardSuit.CLUBS, CardValue.QUEEN)
-BLUE_ACE_OF_SPADES = Card(CardType.BLUE, CardSuit.SPADES, CardValue.ACE)
-BLUE_TWO_OF_SPADES = Card(CardType.BLUE, CardSuit.SPADES, CardValue.TWO)
-BLUE_THREE_OF_SPADES = Card(CardType.BLUE, CardSuit.SPADES, CardValue.THREE)
-BLUE_FOUR_OF_SPADES = Card(CardType.BLUE, CardSuit.SPADES, CardValue.FOUR)
-BLUE_FIVE_OF_SPADES = Card(CardType.BLUE, CardSuit.SPADES, CardValue.FIVE)
-BLUE_SIX_OF_SPADES = Card(CardType.BLUE, CardSuit.SPADES, CardValue.SIX)
-BLUE_SEVEN_OF_SPADES = Card(CardType.BLUE, CardSuit.SPADES, CardValue.SEVEN)
-BLUE_EIGHT_OF_SPADES = Card(CardType.BLUE, CardSuit.SPADES, CardValue.EIGHT)
-BLUE_NINE_OF_SPADES = Card(CardType.BLUE, CardSuit.SPADES, CardValue.NINE)
-BLUE_TEN_OF_SPADES = Card(CardType.BLUE, CardSuit.SPADES, CardValue.TEN)
-BLUE_JACK_OF_SPADES = Card(CardType.BLUE, CardSuit.SPADES, CardValue.JACK)
-BLUE_KING_OF_SPADES = Card(CardType.BLUE, CardSuit.SPADES, CardValue.KING)
-BLUE_QUEEN_OF_SPADES = Card(CardType.BLUE, CardSuit.SPADES, CardValue.QUEEN)
-BLUE_RED_JOKER = Card(CardType.BLUE, CardSuit.RED, CardValue.JOKER)
-BLUE_BLUE_JOKER = Card(CardType.BLUE, CardSuit.BLUE, CardValue.JOKER)
+BLUE_ACE_OF_HEARTS = Card("Blue Ace of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.ACE, "ace_hearts.png")
+BLUE_TWO_OF_HEARTS = Card("Blue Two of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.TWO, "2_hearts.png")
+BLUE_THREE_OF_HEARTS = Card("Blue Three of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.THREE, "3_hearts.png")
+BLUE_FOUR_OF_HEARTS = Card("Blue Four of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.FOUR, "4_hearts.png")
+BLUE_FIVE_OF_HEARTS = Card("Blue Five of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.FIVE, "5_hearts.png")
+BLUE_SIX_OF_HEARTS = Card("Blue Six of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.SIX, "6_hearts.png")
+BLUE_SEVEN_OF_HEARTS = Card("Blue Seven of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.SEVEN, "7_hearts.png")
+BLUE_EIGHT_OF_HEARTS = Card("Blue Eight of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.EIGHT, "8_hearts.png")
+BLUE_NINE_OF_HEARTS = Card("Blue Nine of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.NINE, "9_hearts.png")
+BLUE_TEN_OF_HEARTS = Card("Blue Ten of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.TEN, "10_hearts.png")
+BLUE_JACK_OF_HEARTS = Card("Blue Jack of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.JACK, "jack_hearts.png")
+BLUE_KING_OF_HEARTS = Card("Blue King of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.KING, "king_hearts.png")
+BLUE_QUEEN_OF_HEARTS = Card("Blue Queen of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.QUEEN, "queen_hearts.png")
+BLUE_ACE_OF_DIAMONDS = Card("Blue Ace of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.ACE, "ace_diamonds.png")
+BLUE_TWO_OF_DIAMONDS = Card("Blue Two of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.TWO, "2_diamonds.png")
+BLUE_THREE_OF_DIAMONDS = Card("Blue Three of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.THREE, "3_diamonds.png")
+BLUE_FOUR_OF_DIAMONDS = Card("Blue Four of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.FOUR, "4_diamonds.png")
+BLUE_FIVE_OF_DIAMONDS = Card("Blue Five of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.FIVE, "5_diamonds.png")
+BLUE_SIX_OF_DIAMONDS = Card("Blue Six of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.SIX, "6_diamonds.png")
+BLUE_SEVEN_OF_DIAMONDS = Card("Blue Seven of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.SEVEN, "7_diamonds.png")
+BLUE_EIGHT_OF_DIAMONDS = Card("Blue Eight of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.EIGHT, "8_diamonds.png")
+BLUE_NINE_OF_DIAMONDS = Card("Blue Nine of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.NINE, "9_diamonds.png")
+BLUE_TEN_OF_DIAMONDS = Card("Blue Ten of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.TEN, "10_diamonds.png")
+BLUE_JACK_OF_DIAMONDS = Card("Blue Jack of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.JACK, "jack_diamonds.png")
+BLUE_KING_OF_DIAMONDS = Card("Blue King of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.KING, "king_diamonds.png")
+BLUE_QUEEN_OF_DIAMONDS = Card("Blue Queen of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.QUEEN, "queen_diamonds.png")
+BLUE_ACE_OF_CLUBS = Card("Blue Ace of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.ACE, "ace_clubs.png")
+BLUE_TWO_OF_CLUBS = Card("Blue Two of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.TWO, "2_clubs.png")
+BLUE_THREE_OF_CLUBS = Card("Blue Three of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.THREE, "3_clubs.png")
+BLUE_FOUR_OF_CLUBS = Card("Blue Four of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.FOUR, "4_clubs.png")
+BLUE_FIVE_OF_CLUBS = Card("Blue Five of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.FIVE, "5_clubs.png")
+BLUE_SIX_OF_CLUBS = Card("Blue Six of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.SIX, "6_clubs.png")
+BLUE_SEVEN_OF_CLUBS = Card("Blue Seven of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.SEVEN, "7_clubs.png")
+BLUE_EIGHT_OF_CLUBS = Card("Blue Eight of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.EIGHT, "8_clubs.png")
+BLUE_NINE_OF_CLUBS = Card("Blue Nine of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.NINE, "9_clubs.png")
+BLUE_TEN_OF_CLUBS = Card("Blue Ten of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.TEN, "10_clubs.png")
+BLUE_JACK_OF_CLUBS = Card("Blue Jack of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.JACK, "jack_clubs.png")
+BLUE_KING_OF_CLUBS = Card("Blue King of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.KING, "king_clubs.png")
+BLUE_QUEEN_OF_CLUBS = Card("Blue Queen of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.QUEEN, "queen_clubs.png")
+BLUE_ACE_OF_SPADES = Card("Blue Ace of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.ACE, "ace_spades.png")
+BLUE_TWO_OF_SPADES = Card("Blue Two of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.TWO, "2_spades.png")
+BLUE_THREE_OF_SPADES = Card("Blue Three of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.THREE, "3_spades.png")
+BLUE_FOUR_OF_SPADES = Card("Blue Four of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.FOUR, "4_spades.png")
+BLUE_FIVE_OF_SPADES = Card("Blue Five of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.FIVE, "5_spades.png")
+BLUE_SIX_OF_SPADES = Card("Blue Six of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.SIX, "6_spades.png")
+BLUE_SEVEN_OF_SPADES = Card("Blue Seven of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.SEVEN, "7_spades.png")
+BLUE_EIGHT_OF_SPADES = Card("Blue Eight of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.EIGHT, "8_spades.png")
+BLUE_NINE_OF_SPADES = Card("Blue Nine of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.NINE, "9_spades.png")
+BLUE_TEN_OF_SPADES = Card("Blue Ten of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.TEN, "10_spades.png")
+BLUE_JACK_OF_SPADES = Card("Blue Jack of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.JACK, "jack_spades.png")
+BLUE_KING_OF_SPADES = Card("Blue King of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.KING, "king_spades.png")
+BLUE_QUEEN_OF_SPADES = Card("Blue Queen of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.QUEEN, "queen_spades.png")
+BLUE_RED_JOKER = Card("Blue Coloured Joker", CardType.BLUE, CardSuit.RED, CardValue.JOKER, "red_joker.png")
+BLUE_BLACK_JOKER = Card("Blue Gray Joker", CardType.BLUE, CardSuit.BLACK, CardValue.JOKER, "black_joker.png")
 BLUE_DRAW_DECK = [BLUE_ACE_OF_HEARTS, BLUE_TWO_OF_HEARTS, BLUE_THREE_OF_HEARTS, BLUE_FOUR_OF_HEARTS, BLUE_FIVE_OF_HEARTS, BLUE_SIX_OF_HEARTS,
                   BLUE_SEVEN_OF_HEARTS, BLUE_EIGHT_OF_HEARTS, BLUE_NINE_OF_HEARTS, BLUE_TEN_OF_HEARTS, BLUE_JACK_OF_HEARTS, BLUE_KING_OF_HEARTS,
                   BLUE_QUEEN_OF_HEARTS, BLUE_ACE_OF_DIAMONDS, BLUE_TWO_OF_DIAMONDS, BLUE_THREE_OF_DIAMONDS, BLUE_FOUR_OF_DIAMONDS, BLUE_FIVE_OF_DIAMONDS,
@@ -72,62 +74,62 @@ BLUE_DRAW_DECK = [BLUE_ACE_OF_HEARTS, BLUE_TWO_OF_HEARTS, BLUE_THREE_OF_HEARTS, 
                   BLUE_FIVE_OF_CLUBS, BLUE_SIX_OF_CLUBS, BLUE_SEVEN_OF_CLUBS, BLUE_EIGHT_OF_CLUBS, BLUE_NINE_OF_CLUBS, BLUE_TEN_OF_CLUBS,
                   BLUE_JACK_OF_CLUBS, BLUE_KING_OF_CLUBS, BLUE_QUEEN_OF_CLUBS, BLUE_ACE_OF_SPADES, BLUE_TWO_OF_SPADES, BLUE_THREE_OF_SPADES,
                   BLUE_FOUR_OF_SPADES, BLUE_FIVE_OF_SPADES, BLUE_SIX_OF_SPADES, BLUE_SEVEN_OF_SPADES, BLUE_EIGHT_OF_SPADES, BLUE_NINE_OF_SPADES,
-                  BLUE_TEN_OF_SPADES, BLUE_JACK_OF_SPADES, BLUE_KING_OF_SPADES, BLUE_QUEEN_OF_SPADES, BLUE_BLUE_JOKER, BLUE_RED_JOKER]
+                  BLUE_TEN_OF_SPADES, BLUE_JACK_OF_SPADES, BLUE_KING_OF_SPADES, BLUE_QUEEN_OF_SPADES, BLUE_BLACK_JOKER, BLUE_RED_JOKER]
 random.shuffle(BLUE_DRAW_DECK)
-RED_ACE_OF_HEARTS = Card(CardType.RED, CardSuit.HEARTS, CardValue.ACE)
-RED_TWO_OF_HEARTS = Card(CardType.RED, CardSuit.HEARTS, CardValue.TWO)
-RED_THREE_OF_HEARTS = Card(CardType.RED, CardSuit.HEARTS, CardValue.THREE)
-RED_FOUR_OF_HEARTS = Card(CardType.RED, CardSuit.HEARTS, CardValue.FOUR)
-RED_FIVE_OF_HEARTS = Card(CardType.RED, CardSuit.HEARTS, CardValue.FIVE)
-RED_SIX_OF_HEARTS = Card(CardType.RED, CardSuit.HEARTS, CardValue.SIX)
-RED_SEVEN_OF_HEARTS = Card(CardType.RED, CardSuit.HEARTS, CardValue.SEVEN)
-RED_EIGHT_OF_HEARTS = Card(CardType.RED, CardSuit.HEARTS, CardValue.EIGHT)
-RED_NINE_OF_HEARTS = Card(CardType.RED, CardSuit.HEARTS, CardValue.NINE)
-RED_TEN_OF_HEARTS = Card(CardType.RED, CardSuit.HEARTS, CardValue.TEN)
-RED_JACK_OF_HEARTS = Card(CardType.RED, CardSuit.HEARTS, CardValue.JACK)
-RED_KING_OF_HEARTS = Card(CardType.RED, CardSuit.HEARTS, CardValue.KING)
-RED_QUEEN_OF_HEARTS = Card(CardType.RED, CardSuit.HEARTS, CardValue.QUEEN)
-RED_ACE_OF_DIAMONDS = Card(CardType.RED, CardSuit.DIAMONDS, CardValue.ACE)
-RED_TWO_OF_DIAMONDS = Card(CardType.RED, CardSuit.DIAMONDS, CardValue.TWO)
-RED_THREE_OF_DIAMONDS = Card(CardType.RED, CardSuit.DIAMONDS, CardValue.THREE)
-RED_FOUR_OF_DIAMONDS = Card(CardType.RED, CardSuit.DIAMONDS, CardValue.FOUR)
-RED_FIVE_OF_DIAMONDS = Card(CardType.RED, CardSuit.DIAMONDS, CardValue.FIVE)
-RED_SIX_OF_DIAMONDS = Card(CardType.RED, CardSuit.DIAMONDS, CardValue.SIX)
-RED_SEVEN_OF_DIAMONDS = Card(CardType.RED, CardSuit.DIAMONDS, CardValue.SEVEN)
-RED_EIGHT_OF_DIAMONDS = Card(CardType.RED, CardSuit.DIAMONDS, CardValue.EIGHT)
-RED_NINE_OF_DIAMONDS = Card(CardType.RED, CardSuit.DIAMONDS, CardValue.NINE)
-RED_TEN_OF_DIAMONDS = Card(CardType.RED, CardSuit.DIAMONDS, CardValue.TEN)
-RED_JACK_OF_DIAMONDS = Card(CardType.RED, CardSuit.DIAMONDS, CardValue.JACK)
-RED_KING_OF_DIAMONDS = Card(CardType.RED, CardSuit.DIAMONDS, CardValue.KING)
-RED_QUEEN_OF_DIAMONDS = Card(CardType.RED, CardSuit.DIAMONDS, CardValue.QUEEN)
-RED_ACE_OF_CLUBS = Card(CardType.RED, CardSuit.CLUBS, CardValue.ACE)
-RED_TWO_OF_CLUBS = Card(CardType.RED, CardSuit.CLUBS, CardValue.TWO)
-RED_THREE_OF_CLUBS = Card(CardType.RED, CardSuit.CLUBS, CardValue.THREE)
-RED_FOUR_OF_CLUBS = Card(CardType.RED, CardSuit.CLUBS, CardValue.FOUR)
-RED_FIVE_OF_CLUBS = Card(CardType.RED, CardSuit.CLUBS, CardValue.FIVE)
-RED_SIX_OF_CLUBS = Card(CardType.RED, CardSuit.CLUBS, CardValue.SIX)
-RED_SEVEN_OF_CLUBS = Card(CardType.RED, CardSuit.CLUBS, CardValue.SEVEN)
-RED_EIGHT_OF_CLUBS = Card(CardType.RED, CardSuit.CLUBS, CardValue.EIGHT)
-RED_NINE_OF_CLUBS = Card(CardType.RED, CardSuit.CLUBS, CardValue.NINE)
-RED_TEN_OF_CLUBS = Card(CardType.RED, CardSuit.CLUBS, CardValue.TEN)
-RED_JACK_OF_CLUBS = Card(CardType.RED, CardSuit.CLUBS, CardValue.JACK)
-RED_KING_OF_CLUBS = Card(CardType.RED, CardSuit.CLUBS, CardValue.KING)
-RED_QUEEN_OF_CLUBS = Card(CardType.RED, CardSuit.CLUBS, CardValue.QUEEN)
-RED_ACE_OF_SPADES = Card(CardType.RED, CardSuit.SPADES, CardValue.ACE)
-RED_TWO_OF_SPADES = Card(CardType.RED, CardSuit.SPADES, CardValue.TWO)
-RED_THREE_OF_SPADES = Card(CardType.RED, CardSuit.SPADES, CardValue.THREE)
-RED_FOUR_OF_SPADES = Card(CardType.RED, CardSuit.SPADES, CardValue.FOUR)
-RED_FIVE_OF_SPADES = Card(CardType.RED, CardSuit.SPADES, CardValue.FIVE)
-RED_SIX_OF_SPADES = Card(CardType.RED, CardSuit.SPADES, CardValue.SIX)
-RED_SEVEN_OF_SPADES = Card(CardType.RED, CardSuit.SPADES, CardValue.SEVEN)
-RED_EIGHT_OF_SPADES = Card(CardType.RED, CardSuit.SPADES, CardValue.EIGHT)
-RED_NINE_OF_SPADES = Card(CardType.RED, CardSuit.SPADES, CardValue.NINE)
-RED_TEN_OF_SPADES = Card(CardType.RED, CardSuit.SPADES, CardValue.TEN)
-RED_JACK_OF_SPADES = Card(CardType.RED, CardSuit.SPADES, CardValue.JACK)
-RED_KING_OF_SPADES = Card(CardType.RED, CardSuit.SPADES, CardValue.KING)
-RED_QUEEN_OF_SPADES = Card(CardType.RED, CardSuit.SPADES, CardValue.QUEEN)
-RED_RED_JOKER = Card(CardType.RED, CardSuit.RED, CardValue.JOKER)
-RED_BLUE_JOKER = Card(CardType.RED, CardSuit.BLUE, CardValue.JOKER)
+RED_ACE_OF_HEARTS = Card("Red Ace of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.ACE, "ace_hearts.png")
+RED_TWO_OF_HEARTS = Card("Red Two of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.TWO, "2_hearts.png")
+RED_THREE_OF_HEARTS = Card("Red Three of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.THREE, "3_hearts.png")
+RED_FOUR_OF_HEARTS = Card("Red Four of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.FOUR, "4_hearts.png")
+RED_FIVE_OF_HEARTS = Card("Red Five of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.FIVE, "5_hearts.png")
+RED_SIX_OF_HEARTS = Card("Red Six of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.SIX, "6_hearts.png")
+RED_SEVEN_OF_HEARTS = Card("Red Seven of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.SEVEN, "7_hearts.png")
+RED_EIGHT_OF_HEARTS = Card("Red Eight of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.EIGHT, "8_hearts.png")
+RED_NINE_OF_HEARTS = Card("Red Nine of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.NINE, "9_hearts.png")
+RED_TEN_OF_HEARTS = Card("Red Ten of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.TEN, "10_hearts.png")
+RED_JACK_OF_HEARTS = Card("Red Jack of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.JACK, "jack_hearts.png")
+RED_KING_OF_HEARTS = Card("Red King of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.KING, "king_hearts.png")
+RED_QUEEN_OF_HEARTS = Card("Red Queen of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.QUEEN, "queen_hearts.png")
+RED_ACE_OF_DIAMONDS = Card("Red Ace of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.ACE, "ace_diamonds.png")
+RED_TWO_OF_DIAMONDS = Card("Red Two of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.TWO, "2_diamonds.png")
+RED_THREE_OF_DIAMONDS = Card("Red Three of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.THREE, "3_diamonds.png")
+RED_FOUR_OF_DIAMONDS = Card("Red Four of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.FOUR, "4_diamonds.png")
+RED_FIVE_OF_DIAMONDS = Card("Red Five of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.FIVE, "5_diamonds.png")
+RED_SIX_OF_DIAMONDS = Card("Red Six of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.SIX, "6_diamonds.png")
+RED_SEVEN_OF_DIAMONDS = Card("Red Seven of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.SEVEN, "7_diamonds.png")
+RED_EIGHT_OF_DIAMONDS = Card("Red Eight of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.EIGHT, "8_diamonds.png")
+RED_NINE_OF_DIAMONDS = Card("Red Nine of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.NINE, "9_diamonds.png")
+RED_TEN_OF_DIAMONDS = Card("Red Ten of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.TEN, "10_diamonds.png")
+RED_JACK_OF_DIAMONDS = Card("Red Jack of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.JACK, "jack_diamonds.png")
+RED_KING_OF_DIAMONDS = Card("Red King of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.KING, "king_diamonds.png")
+RED_QUEEN_OF_DIAMONDS = Card("Red Queen of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.QUEEN, "queen_diamonds.png")
+RED_ACE_OF_CLUBS = Card("Red Ace of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.ACE, "ace_clubs.png")
+RED_TWO_OF_CLUBS = Card("Red Two of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.TWO, "2_clubs.png")
+RED_THREE_OF_CLUBS = Card("Red Three of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.THREE, "3_clubs.png")
+RED_FOUR_OF_CLUBS = Card("Red Four of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.FOUR, "4_clubs.png")
+RED_FIVE_OF_CLUBS = Card("Red Five of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.FIVE, "5_clubs.png")
+RED_SIX_OF_CLUBS = Card("Red Six of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.SIX, "6_clubs.png")
+RED_SEVEN_OF_CLUBS = Card("Red Seven of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.SEVEN, "7_clubs.png")
+RED_EIGHT_OF_CLUBS = Card("Red Eight of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.EIGHT, "8_clubs.png")
+RED_NINE_OF_CLUBS = Card("Red Nine of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.NINE, "9_clubs.png")
+RED_TEN_OF_CLUBS = Card("Red Ten of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.TEN, "10_clubs.png")
+RED_JACK_OF_CLUBS = Card("Red Jack of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.JACK, "jack_clubs.png")
+RED_KING_OF_CLUBS = Card("Red King of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.KING, "king_clubs.png")
+RED_QUEEN_OF_CLUBS = Card("Red Queen of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.QUEEN, "queen_clubs.png")
+RED_ACE_OF_SPADES = Card("Red Ace of Spades", CardType.RED, CardSuit.SPADES, CardValue.ACE, "ace_spades.png")
+RED_TWO_OF_SPADES = Card("Red Two of Spades", CardType.RED, CardSuit.SPADES, CardValue.TWO, "2_spades.png")
+RED_THREE_OF_SPADES = Card("Red Three of Spades", CardType.RED, CardSuit.SPADES, CardValue.THREE, "3_spades.png")
+RED_FOUR_OF_SPADES = Card("Red Four of Spades", CardType.RED, CardSuit.SPADES, CardValue.FOUR, "4_spades.png")
+RED_FIVE_OF_SPADES = Card("Red Five of Spades", CardType.RED, CardSuit.SPADES, CardValue.FIVE, "5_spades.png")
+RED_SIX_OF_SPADES = Card("Red Six of Spades", CardType.RED, CardSuit.SPADES, CardValue.SIX, "6_spades.png")
+RED_SEVEN_OF_SPADES = Card("Red Seven of Spades", CardType.RED, CardSuit.SPADES, CardValue.SEVEN, "7_spades.png")
+RED_EIGHT_OF_SPADES = Card("Red Eight of Spades", CardType.RED, CardSuit.SPADES, CardValue.EIGHT, "8_spades.png")
+RED_NINE_OF_SPADES = Card("Red Nine of Spades", CardType.RED, CardSuit.SPADES, CardValue.NINE, "9_spades.png")
+RED_TEN_OF_SPADES = Card("Red Ten of Spades", CardType.RED, CardSuit.SPADES, CardValue.TEN, "10_spades.png")
+RED_JACK_OF_SPADES = Card("Red Jack of Spades", CardType.RED, CardSuit.SPADES, CardValue.JACK, "jack_spades.png")
+RED_KING_OF_SPADES = Card("Red King of Spades", CardType.RED, CardSuit.SPADES, CardValue.KING, "king_spades.png")
+RED_QUEEN_OF_SPADES = Card("Red Queen of Spades", CardType.RED, CardSuit.SPADES, CardValue.QUEEN, "queen_spades.png")
+RED_RED_JOKER = Card("Red Coloured Joker", CardType.RED, CardSuit.RED, CardValue.JOKER, "red_joker.png")
+RED_BLACK_JOKER = Card("Red Gray Joker", CardType.RED, CardSuit.BLACK, CardValue.JOKER, "black_joker.png")
 RED_DRAW_DECK = [RED_ACE_OF_HEARTS, RED_TWO_OF_HEARTS, RED_THREE_OF_HEARTS, RED_FOUR_OF_HEARTS, RED_FIVE_OF_HEARTS, RED_SIX_OF_HEARTS,
                   RED_SEVEN_OF_HEARTS, RED_EIGHT_OF_HEARTS, RED_NINE_OF_HEARTS, RED_TEN_OF_HEARTS, RED_JACK_OF_HEARTS, RED_KING_OF_HEARTS,
                   RED_QUEEN_OF_HEARTS, RED_ACE_OF_DIAMONDS, RED_TWO_OF_DIAMONDS, RED_THREE_OF_DIAMONDS, RED_FOUR_OF_DIAMONDS, RED_FIVE_OF_DIAMONDS,
@@ -136,80 +138,277 @@ RED_DRAW_DECK = [RED_ACE_OF_HEARTS, RED_TWO_OF_HEARTS, RED_THREE_OF_HEARTS, RED_
                   RED_FIVE_OF_CLUBS, RED_SIX_OF_CLUBS, RED_SEVEN_OF_CLUBS, RED_EIGHT_OF_CLUBS, RED_NINE_OF_CLUBS, RED_TEN_OF_CLUBS,
                   RED_JACK_OF_CLUBS, RED_KING_OF_CLUBS, RED_QUEEN_OF_CLUBS, RED_ACE_OF_SPADES, RED_TWO_OF_SPADES, RED_THREE_OF_SPADES,
                   RED_FOUR_OF_SPADES, RED_FIVE_OF_SPADES, RED_SIX_OF_SPADES, RED_SEVEN_OF_SPADES, RED_EIGHT_OF_SPADES, RED_NINE_OF_SPADES,
-                  RED_TEN_OF_SPADES, RED_JACK_OF_SPADES, RED_KING_OF_SPADES, RED_QUEEN_OF_SPADES, RED_BLUE_JOKER, RED_RED_JOKER]
+                  RED_TEN_OF_SPADES, RED_JACK_OF_SPADES, RED_KING_OF_SPADES, RED_QUEEN_OF_SPADES, RED_BLACK_JOKER, RED_RED_JOKER]
 random.shuffle(RED_DRAW_DECK)
-DISCARD_PILE = None
+DISCARD_PILE = []
 # endregion
 
 
-def draw_window(left_mouse_released):
+def draw_window():
     if Meta.CURRENT_STATE == ScreenState.START:  # Start Menu
         WINDOW.fill(BLUE)
-        draw_text("Tyche's Game", BIG_FONT, ORANGE, (WIDTH/2, 69))
-        quit_button = Button("Quit", (WIDTH/2) - 40, 300, 80, 60)
-        if quit_button.check_click(left_mouse_released):
+        draw_text("Tyche's Game", BIG_FONT, ORANGE, (960, 69))
+        quit_button = Button("Quit", 960, 300, 60)
+        if quit_button.check_click():
             pygame.quit()
-        new_game_button = Button("New Game", (WIDTH/2) - 90, 200, 180, 60)
+        new_game_button = Button("New Game", 960, 200, 60)
         pygame.display.update()
-        if new_game_button.check_click(left_mouse_released):
-            return ScreenState.NEW_MENU
-        return ScreenState.START
+        if new_game_button.check_click():
+            Meta.CURRENT_STATE = ScreenState.NEW_MENU
     elif Meta.CURRENT_STATE == ScreenState.NEW_MENU:  # New Game Menu
         WINDOW.fill((100, 100, 100))
-        draw_text("How many players?", MEDIUM_FONT, ORANGE, (WIDTH/2, 69))
-        quit_button = Button("Quit", (WIDTH/2) - 40, 600, 80, 60)
-        if quit_button.check_click(left_mouse_released):
+        draw_text("How many players?", MEDIUM_FONT, ORANGE, (960, 69))
+        quit_button = Button("Quit", 960, 600, 60)
+        if quit_button.check_click():
             pygame.quit()
-        back_button = Button("Back", 800, 600, 80, 60)
-        if back_button.check_click(left_mouse_released):
-            return ScreenState.START
-        return ScreenState.NEW_MENU
-    elif Meta.CURRENT_STATE == ScreenState.PLAYER_NAMING:  # Player Naming Menu
-        WINDOW.fill((0, 0, 0))
-        quit_button = Button("Quit", (WIDTH/2) - 40, 600, 80, 60)
-        if quit_button.check_click(left_mouse_released):
-            pygame.quit()
+        back_button = Button("Back", 800, 600, 60)
+        if back_button.check_click():
+            Meta.CURRENT_STATE = ScreenState.START
+        two_player_button = Button("Two Players", 300, 200, 60)
+        three_player_button = Button("Three Players", 700, 200, 60)
+        four_player_button = Button("Four Players", 300, 300, 60)
+        five_player_button = Button("Five Players", 700, 300, 60)
         pygame.display.update()
-        return ScreenState.PLAYER_NAMING
+        if two_player_button.check_click():
+            Meta.PLAYER_COUNT = 2
+        elif three_player_button.check_click():
+            Meta.PLAYER_COUNT = 3
+        elif four_player_button.check_click():
+            Meta.PLAYER_COUNT = 4
+        elif five_player_button.check_click():
+            Meta.PLAYER_COUNT = 5
+        if Meta.PLAYER_COUNT is not None:
+            Meta.CAN_TEXT_INPUT = True
+            Meta.CURRENT_STATE = ScreenState.PLAYER_NAMING
+    elif Meta.CURRENT_STATE == ScreenState.PLAYER_NAMING:  # Player Naming Menu
+        WINDOW.fill(BLACK)
+        quit_button = Button("Quit", 960, 600, 60)
+        if quit_button.check_click():
+            pygame.quit()
+        elif Meta.CURRENT_PLAYER == Meta.PLAYER_COUNT:
+            Meta.CURRENT_STATE = ScreenState.GAME_INTRO_ONE
+            random.shuffle(Meta.PLAYERS)
+        else:
+            match Meta.CURRENT_PLAYER:  # Draw Screen Title
+                case 0:
+                    draw_text("Enter Player One's Name", MEDIUM_FONT, ORANGE, (960, 69))
+                case 1:
+                    draw_text("Enter Player Two's Name", MEDIUM_FONT, ORANGE, (960, 69))
+                case 2:
+                    draw_text("Enter Player Three's Name", MEDIUM_FONT, ORANGE, (960, 69))
+                case 3:
+                    draw_text("Enter Player Four's Name", MEDIUM_FONT, ORANGE, (960, 69))
+                case 4:
+                    draw_text("Enter Player Five's Name", MEDIUM_FONT, ORANGE, (960, 69))
+            draw_text_input()
+            if Meta.TEXT_CONFIRMED:
+                Meta.PLAYERS.append(Player(Meta.CURRENT_PLAYER, Meta.USER_TEXT))
+                Meta.USER_TEXT = ""
+                Meta.CURRENT_PLAYER += 1
+                Meta.TEXT_CONFIRMED = False
+        pygame.display.update()
+    elif Meta.CURRENT_STATE == ScreenState.GAME_INTRO_ONE:
+        WINDOW.fill((30, 100, 150))
+        quit_button = Button("Quit", 200, 600, 60)
+        if quit_button.check_click():
+            pygame.quit()
+        draw_text("Welcome to Tyche's Game", BIG_FONT, ORANGE, (960, 69))
+        page_background = pygame.Rect((460, 150), (1000, 850))
+        pygame.draw.rect(WINDOW, PASTEL_GREEN, page_background, 0, 5)
+        draw_text("Scenario", MEDIUM_FONT, ORANGE, (960, 190))
+        draw_text("Tyche, the Goddess of Chance, has had enough of humanity", SMALL_FONT, BLACK, (960, 250))
+        draw_text("blaming Luck for their own errors, so she has decided to", SMALL_FONT, BLACK, (960, 290))
+        draw_text("entrap some humans in her game to show them what Luck", SMALL_FONT, BLACK, (960, 330))
+        draw_text("truly means.", SMALL_FONT, BLACK, (960, 370))
+        draw_text("However, Tyche's game isn't all about Luck and Chance. There's", SMALL_FONT, BLACK, (960, 490))
+        draw_text("also a degree of human skill involved in the process. This skill", SMALL_FONT, BLACK, (960, 530))
+        draw_text("comes in several different forms, which you will learn of in time.", SMALL_FONT, BLACK, (960, 570))
+        draw_text("You find yourselves in a dark room containing just an empty table.", SMALL_FONT, BLACK, (960, 690))
+        next_button = Button(">", 1420, 760, 70, WHITE, BLACK, MEDIUM_FONT)
+        if next_button.check_click() or Meta.RIGHT_ARROW_DOWN:
+            Meta.CURRENT_STATE = ScreenState.GAME_INTRO_TWO
+        pygame.display.update()
+    elif Meta.CURRENT_STATE == ScreenState.GAME_INTRO_TWO:
+        WINDOW.fill((30, 100, 150))
+        quit_button = Button("Quit", 200, 600, 60)
+        if quit_button.check_click():
+            pygame.quit()
+        draw_text("Welcome to Tyche's Game", BIG_FONT, ORANGE, (960, 69))
+        page_background = pygame.Rect((460, 150), (1000, 850))
+        pygame.draw.rect(WINDOW, PASTEL_GREEN, page_background, 0, 5)
+        draw_text("Understanding the Game", MEDIUM_FONT, ORANGE, (960, 190))
+        draw_text("Tyche's game is visually similar to Snakes & Ladders with", SMALL_FONT, BLACK, (960, 250))
+        draw_text("the fact that you need to ascend the board to win. However,", SMALL_FONT, BLACK, (960, 290))
+        draw_text("there are also two decks of playing cards that are in play. These", SMALL_FONT, BLACK, (960, 330))
+        draw_text("change the way the game is played somewhat with the Blue being", SMALL_FONT, BLACK, (960, 370))
+        draw_text("positive and the Red being negative. You can click below to see", SMALL_FONT, BLACK, (960, 410))
+        draw_text("the effect each card has on the game.", SMALL_FONT, BLACK, (960, 450))
+        draw_text("The board will contain symbols that determine what type of space", SMALL_FONT, BLACK, (960, 570))
+        draw_text("you'd be in. There is a guide below to help you understand it.", SMALL_FONT, BLACK, (960, 610))
+        back_button = Button("<", 500, 760, 70, WHITE, BLACK, MEDIUM_FONT)
+        blue_guide_button = Button("Blue Card Guide", 800, 690, 60, WHITE, BLACK, SMALL_FONT)
+        red_guide_button = Button("Red Card Guide", 1120, 690, 60, WHITE, BLACK, SMALL_FONT)
+        board_guide_button = Button("Board Symbols Guide", 950, 790, 60, WHITE, BLACK, SMALL_FONT)
+        play_game_button = Button("Play Game", 1360, 760, 60, WHITE, BLACK, SMALL_FONT)
+        if back_button.check_click() or Meta.LEFT_ARROW_DOWN:
+            Meta.CURRENT_STATE = ScreenState.GAME_INTRO_ONE
+        elif blue_guide_button.check_click():
+            Meta.CURRENT_STATE = ScreenState.BLUE_CARD_GUIDE
+        elif red_guide_button.check_click():
+            Meta.CURRENT_STATE = ScreenState.RED_CARD_GUIDE
+        elif board_guide_button.check_click():
+            Meta.CURRENT_STATE = ScreenState.BOARD_SYMBOLS_GUIDE
+        elif play_game_button.check_click():
+            Meta.CURRENT_STATE = ScreenState.PLAYING_GAME
+        pygame.display.update()
+    elif Meta.CURRENT_STATE == ScreenState.BLUE_CARD_GUIDE:
+        WINDOW.fill(PASTEL_GREEN)
+        draw_text("Blue Card Guide", MEDIUM_FONT, ORANGE, (960, 69))
+        quit_button = Button("Quit", 1280, 950, 60)
+        back_button = Button("Back", 640, 950, 60)
+        if quit_button.check_click():
+            pygame.quit()
+        elif back_button.check_click():
+            Meta.CURRENT_STATE = ScreenState.GAME_INTRO_TWO
+        draw_card(BLUE_ACE_OF_HEARTS, (320, 270), 2)
+        draw_card(BLUE_TWO_OF_HEARTS, (640, 270), 2)
+        draw_card(BLUE_THREE_OF_HEARTS, (960, 270), 2)
+        draw_card(BLUE_FOUR_OF_HEARTS, (1280, 270), 2)
+        draw_card(BLUE_FIVE_OF_HEARTS, (1600, 270), 2)
+        draw_card(BLUE_SIX_OF_HEARTS, (320, 540), 2)
+        draw_card(BLUE_SEVEN_OF_HEARTS, (640, 540), 2)
+        draw_card(BLUE_EIGHT_OF_HEARTS, (960, 540), 2)
+        draw_card(BLUE_NINE_OF_HEARTS, (1280, 540), 2)
+        draw_card(BLUE_TEN_OF_HEARTS, (1600, 540), 2)
+        draw_card(BLUE_JACK_OF_HEARTS, (320, 810), 2)
+        draw_card(BLUE_KING_OF_HEARTS, (640, 810), 2)
+        draw_card(BLUE_QUEEN_OF_HEARTS, (960, 810), 2)
+        draw_card(BLUE_RED_JOKER, (1280, 810), 2)
+        draw_card(BLUE_BLACK_JOKER, (1600, 810), 2)
+        check_card_descs()
+        pygame.display.update()
+    elif Meta.CURRENT_STATE == ScreenState.RED_CARD_GUIDE:
+        WINDOW.fill(PASTEL_GREEN)
+        draw_text("Red Card Guide", MEDIUM_FONT, ORANGE, (960, 69))
+        quit_button = Button("Quit", 1280, 950, 60)
+        back_button = Button("Back", 640, 950, 60)
+        if quit_button.check_click():
+            pygame.quit()
+        elif back_button.check_click():
+            Meta.CURRENT_STATE = ScreenState.GAME_INTRO_TWO
+        draw_card(RED_ACE_OF_HEARTS, (320, 270), 2)
+        draw_card(RED_TWO_OF_HEARTS, (640, 270), 2)
+        draw_card(RED_THREE_OF_HEARTS, (960, 270), 2)
+        draw_card(RED_FOUR_OF_HEARTS, (1280, 270), 2)
+        draw_card(RED_FIVE_OF_HEARTS, (1600, 270), 2)
+        draw_card(RED_SIX_OF_HEARTS, (320, 540), 2)
+        draw_card(RED_SEVEN_OF_HEARTS, (640, 540), 2)
+        draw_card(RED_EIGHT_OF_HEARTS, (960, 540), 2)
+        draw_card(RED_NINE_OF_HEARTS, (1280, 540), 2)
+        draw_card(RED_TEN_OF_HEARTS, (1600, 540), 2)
+        draw_card(RED_JACK_OF_HEARTS, (320, 810), 2)
+        draw_card(RED_KING_OF_HEARTS, (640, 810), 2)
+        draw_card(RED_QUEEN_OF_HEARTS, (960, 810), 2)
+        draw_card(RED_RED_JOKER, (1280, 810), 2)
+        draw_card(RED_BLACK_JOKER, (1600, 810), 2)
+        check_card_descs()
+        pygame.display.update()
+    elif Meta.CURRENT_STATE == ScreenState.BOARD_SYMBOLS_GUIDE:
+        WINDOW.fill(PASTEL_GREEN)
+        draw_text("Board Symbols Guide", MEDIUM_FONT, ORANGE, (960, 69))
+        quit_button = Button("Quit", 960, 900, 60)
+        back_button = Button("Back", 960, 800, 60)
+        if quit_button.check_click():
+            pygame.quit()
+        elif back_button.check_click():
+            Meta.CURRENT_STATE = ScreenState.GAME_INTRO_TWO
+        pygame.display.update()
+    elif Meta.CURRENT_STATE == ScreenState.PLAYING_GAME:
+        pygame.display.update()
 
 
-def draw_text(text, font, colour, location):  # Draws text centered on a location
+def draw_text(text, font, colour, location, center = True):  # Draws text centered on a location
     text_surface = font.render(text, True, colour)
     text_width = text_surface.get_width()
     text_height = text_surface.get_height()
-    WINDOW.blit(text_surface, (location[0] - (text_width/2), location[1] - (text_height/2)))
+    if center:
+        WINDOW.blit(text_surface, (location[0] - (text_width/2), location[1] - (text_height/2)))
+    else:
+        WINDOW.blit(text_surface, location)
+
+
+def draw_text_input(location = (960, 400), max_length = 300):  # Creates Text Input Visuals
+    text_surface = SMALL_FONT.render(Meta.USER_TEXT, True, ORANGE)
+    if text_surface.get_width() >= max_length:
+        Meta.CAN_TEXT_INPUT = False
+    else:
+        Meta.CAN_TEXT_INPUT = True
+    input_rect_width = max(text_surface.get_width() + 10, 200)
+    input_rect = pygame.Rect(location[0] - (input_rect_width / 2), location[1], input_rect_width, 60)
+    pygame.draw.rect(WINDOW, BLUE, input_rect, 2)
+    WINDOW.blit(text_surface, ((input_rect.x + (input_rect.width / 2)) - (text_surface.get_width() / 2), (input_rect.y + (input_rect.height / 2)) -
+    text_surface.get_height() / 2))
+
+
+def draw_card(card, location, scale, draw_front = True):
+    if draw_front:
+        card_image = pygame.image.load(card.imagePath)
+        card_width = CARD_SIZE[0] * scale
+        card_height = CARD_SIZE[1] * scale
+        card_image = pygame.transform.scale(card_image, (card_width, card_height))
+    else:
+        if card.cardType == CardType.RED:
+            card_image = pygame.image.load(os.path.join("Assets", "Cards", "red_back.png"))
+        else:
+            card_image = pygame.image.load(os.path.join("Assets", "Cards", "blue_back.png"))
+    card_width = CARD_SIZE[0] * scale
+    card_height = CARD_SIZE[1] * scale
+    card_image = pygame.transform.scale(card_image, (card_width, card_height))
+    new_location = (location[0] - (card_width/2), location[1] - (card_height/2))
+    Meta.DRAWN_CARDS.append((card, card_image, new_location))
+    WINDOW.blit(card_image, new_location)
+
+
+def check_card_descs():
+    for card in Meta.DRAWN_CARDS:
+        card_rect = card[1].get_rect()
+        card_rect.topleft = card[2]
+        mouse_pos = pygame.mouse.get_pos()
+        if card_rect.collidepoint(mouse_pos):
+            card_desc_rect = pygame.Rect((mouse_pos[0] + 5, mouse_pos[1] + 5), card[0].descRectSize)
+            pygame.draw.rect(WINDOW, WHITE, card_desc_rect, 0, 5)
+            draw_text(card[0].displayName, TINY_FONT, BLACK, (mouse_pos[0] + 15, mouse_pos[1] + 15), False)
 
 
 def main():  # Game Loop
     clock = pygame.time.Clock()
     while True:
         clock.tick(FPS)
+        Meta.DRAWN_CARDS.clear()
         # Game Events
-        left_mouse_released = False
+        Meta.LEFT_MOUSE_RELEASED = False
+        Meta.LEFT_ARROW_DOWN = False
+        Meta.RIGHT_ARROW_DOWN = False
         for event in pygame.event.get():  # Event Handler
             if event.type == pygame.QUIT:
                 pygame.quit()
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                left_mouse_released = True
+                Meta.LEFT_MOUSE_RELEASED = True
             elif event.type == BUTTON_COOLDOWN_EVENT:
                 Meta.BUTTONS_ENABLED = True
-        Meta.CURRENT_STATE = draw_window(left_mouse_released)
-        if Meta.CURRENT_STATE == ScreenState.NEW_MENU:  # Player Count Buttons
-            two_player_button = Button("Two Players", 300, 200, 220, 60)
-            three_player_button = Button("Three Players", 700, 200, 220, 60)
-            four_player_button = Button("Four Players", 300, 300, 220, 60)
-            five_player_button = Button("Five Players", 700, 300, 220, 60)
-            if two_player_button.check_click(left_mouse_released):
-                Meta.PLAYER_COUNT = 2
-            elif three_player_button.check_click(left_mouse_released):
-                Meta.PLAYER_COUNT = 3
-            elif four_player_button.check_click(left_mouse_released):
-                Meta.PLAYER_COUNT = 4
-            elif five_player_button.check_click(left_mouse_released):
-                Meta.PLAYER_COUNT = 5
-            if Meta.PLAYER_COUNT is not None:
-                Meta.CURRENT_STATE = ScreenState.PLAYER_NAMING
-            pygame.display.update()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    Meta.LEFT_ARROW_DOWN = True
+                elif event.key == pygame.K_RIGHT:
+                    Meta.RIGHT_ARROW_DOWN = True
+                if event.key in ALLOWED_KEYS:
+                    if event.key == pygame.K_BACKSPACE:
+                        Meta.USER_TEXT = Meta.USER_TEXT[:-1]
+                    elif event.key == pygame.K_RETURN:
+                        Meta.TEXT_CONFIRMED = True
+                    elif Meta.CAN_TEXT_INPUT:
+                        Meta.USER_TEXT += event.unicode
+        draw_window()
 
 
 if __name__ == "__main__":
