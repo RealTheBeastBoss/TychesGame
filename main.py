@@ -188,6 +188,7 @@ def draw_window():
             pygame.quit()
         elif Meta.CURRENT_PLAYER == Meta.PLAYER_COUNT:
             Meta.CURRENT_STATE = ScreenState.GAME_INTRO_ONE
+            Meta.CURRENT_PLAYER = 0
             random.shuffle(Meta.PLAYERS)
         else:
             match Meta.CURRENT_PLAYER:  # Draw Screen Title
@@ -261,6 +262,8 @@ def draw_window():
             Meta.CURRENT_STATE = ScreenState.BOARD_SYMBOLS_GUIDE
         elif play_game_button.check_click():
             Meta.CURRENT_STATE = ScreenState.PLAYING_GAME
+            for x in range(len(Meta.PLAYERS)):
+                BOARD_SQUARES[0].players.append(Meta.PLAYERS[x])
         pygame.display.update()
     elif Meta.CURRENT_STATE == ScreenState.BLUE_CARD_GUIDE:
         WINDOW.fill(PASTEL_GREEN)
@@ -323,13 +326,37 @@ def draw_window():
             pygame.quit()
         elif back_button.check_click():
             Meta.CURRENT_STATE = ScreenState.GAME_INTRO_TWO
-        draw_game_image(BLUE_CARD_SYMBOL, (320, 270), 2, True, (330, 80), "Blue Card", "", "Draw 1 from the Blue Draw Deck")
-        draw_game_image(RED_CARD_SYMBOL, (640, 270), 2, True, (330, 80), "Red Card", "", "Draw 1 from the Red Draw Deck")
+        draw_game_image(BLUE_CARD_SYMBOL, (320, 270), 2, True, (330, 80),
+                        "Blue Card", "", "Draw 1 from the Blue Draw Deck")
+        draw_game_image(RED_CARD_SYMBOL, (640, 270), 2, True, (330, 80),
+                        "Red Card", "", "Draw 1 from the Red Draw Deck")
         check_hover_boxes()
         pygame.display.update()
     elif Meta.CURRENT_STATE == ScreenState.PLAYING_GAME:
         WINDOW.fill(WHITE)
-        quit_button = Button("Quit", 960, 900, 60)
+        current_player = Meta.PLAYERS[Meta.CURRENT_PLAYER]
+        draw_text(current_player.playerName + "'s Turn", SMALL_FONT, PLAYER_TO_COLOUR[current_player.playerNumber], (960, 30))
+        game_board = pygame.Rect((480, 60), (960, 960))
+        pygame.draw.rect(WINDOW, BLUE, game_board)
+        roll_background = pygame.Rect((1460, 100), (440, 700))
+        pygame.draw.rect(WINDOW, PASTEL_GREEN, roll_background, 0, 20)
+        for x in range(len(BOARD_SQUARES)):  # Draw Squares
+            square = BOARD_SQUARES[x]
+            square_rect = pygame.Rect((square.center[0] - 44, square.center[1] - 44), (89, 89))
+            pygame.draw.rect(WINDOW, WHITE, square_rect)
+            if x == 0:  # Start Square
+                draw_text("START", TINY_FONT, BLUE, square.center)
+            elif x == 99:  # Finish Square
+                draw_text("FINISH", TINY_FONT, BLUE, square.center)
+            else:
+                draw_text(str(x + 1), TINY_FONT, BLUE, (square.center[0] - 30, square.center[1] + 35))
+                #  TODO: Draw Symbols
+            for x in range(len(square.players)):
+                player_image = pygame.image.load(square.players[x].playerPiece)
+                WINDOW.blit(player_image, ((square.center[0] + PLAYER_TO_POSITION[x][0]) - 14, (square.center[1] + PLAYER_TO_POSITION[x][1]) - 14))
+        if Meta.TURN_STAGE == TurnStage.ROLL_DICE:
+            draw_text("Roll the d6 to move:", SMALL_FONT, BLACK, (1680, 240))
+        quit_button = Button("Quit", 300, 540, 60)
         if quit_button.check_click():
             pygame.quit()
         pygame.display.update()
