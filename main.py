@@ -12,14 +12,15 @@ pygame.display.set_caption("Tyche's Game")
 
 # Game Cards
 # region
-BLUE_ACE_OF_HEARTS = Card("Blue Ace of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.ACE, "ace_hearts.png")
+BLUE_ACE_OF_HEARTS = Card("Blue Ace of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.ACE, "ace_hearts.png", (300, 150),
+                          "This is a test card description", "with two lines")
 BLUE_TWO_OF_HEARTS = Card("Blue Two of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.TWO, "2_hearts.png")
 BLUE_THREE_OF_HEARTS = Card("Blue Three of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.THREE, "3_hearts.png")
 BLUE_FOUR_OF_HEARTS = Card("Blue Four of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.FOUR, "4_hearts.png")
 BLUE_FIVE_OF_HEARTS = Card("Blue Five of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.FIVE, "5_hearts.png")
 BLUE_SIX_OF_HEARTS = Card("Blue Six of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.SIX, "6_hearts.png")
 BLUE_SEVEN_OF_HEARTS = Card("Blue Seven of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.SEVEN, "7_hearts.png")
-BLUE_EIGHT_OF_HEARTS = Card("Blue Eight of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.EIGHT, "8_hearts.png")
+BLUE_EIGHT_OF_HEARTS = Card("Blue Eight of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.EIGHT, "8_hearts.png", (300, 150))
 BLUE_NINE_OF_HEARTS = Card("Blue Nine of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.NINE, "9_hearts.png")
 BLUE_TEN_OF_HEARTS = Card("Blue Ten of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.TEN, "10_hearts.png")
 BLUE_JACK_OF_HEARTS = Card("Blue Jack of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.JACK, "jack_hearts.png")
@@ -164,10 +165,10 @@ def draw_window():
         back_button = Button("Back", 800, 600, 60)
         if back_button.check_click():
             Meta.CURRENT_STATE = ScreenState.START
-        two_player_button = Button("Two Players", 300, 200, 60)
-        three_player_button = Button("Three Players", 700, 200, 60)
-        four_player_button = Button("Four Players", 300, 300, 60)
-        five_player_button = Button("Five Players", 700, 300, 60)
+        two_player_button = Button("Two Players", 300, 200, 60, BLUE, ORANGE, SMALL_FONT, 220)
+        three_player_button = Button("Three Players", 700, 200, 60, BLUE, ORANGE, SMALL_FONT, 220)
+        four_player_button = Button("Four Players", 300, 300, 60, BLUE, ORANGE, SMALL_FONT, 220)
+        five_player_button = Button("Five Players", 700, 300, 60, BLUE, ORANGE, SMALL_FONT, 220)
         pygame.display.update()
         if two_player_button.check_click():
             Meta.PLAYER_COUNT = 2
@@ -285,7 +286,7 @@ def draw_window():
         draw_card(BLUE_QUEEN_OF_HEARTS, (960, 810), 2)
         draw_card(BLUE_RED_JOKER, (1280, 810), 2)
         draw_card(BLUE_BLACK_JOKER, (1600, 810), 2)
-        check_card_descs()
+        check_hover_boxes()
         pygame.display.update()
     elif Meta.CURRENT_STATE == ScreenState.RED_CARD_GUIDE:
         WINDOW.fill(PASTEL_GREEN)
@@ -311,7 +312,7 @@ def draw_window():
         draw_card(RED_QUEEN_OF_HEARTS, (960, 810), 2)
         draw_card(RED_RED_JOKER, (1280, 810), 2)
         draw_card(RED_BLACK_JOKER, (1600, 810), 2)
-        check_card_descs()
+        check_hover_boxes()
         pygame.display.update()
     elif Meta.CURRENT_STATE == ScreenState.BOARD_SYMBOLS_GUIDE:
         WINDOW.fill(PASTEL_GREEN)
@@ -322,8 +323,15 @@ def draw_window():
             pygame.quit()
         elif back_button.check_click():
             Meta.CURRENT_STATE = ScreenState.GAME_INTRO_TWO
+        draw_game_image(BLUE_CARD_SYMBOL, (320, 270), 2, True, (330, 80), "Blue Card", "", "Draw 1 from the Blue Draw Deck")
+        draw_game_image(RED_CARD_SYMBOL, (640, 270), 2, True, (330, 80), "Red Card", "", "Draw 1 from the Red Draw Deck")
+        check_hover_boxes()
         pygame.display.update()
     elif Meta.CURRENT_STATE == ScreenState.PLAYING_GAME:
+        WINDOW.fill(WHITE)
+        quit_button = Button("Quit", 960, 900, 60)
+        if quit_button.check_click():
+            pygame.quit()
         pygame.display.update()
 
 
@@ -350,41 +358,72 @@ def draw_text_input(location = (960, 400), max_length = 300):  # Creates Text In
     text_surface.get_height() / 2))
 
 
-def draw_card(card, location, scale, draw_front = True):
-    if draw_front:
-        card_image = pygame.image.load(card.imagePath)
-        card_width = CARD_SIZE[0] * scale
-        card_height = CARD_SIZE[1] * scale
-        card_image = pygame.transform.scale(card_image, (card_width, card_height))
-    else:
-        if card.cardType == CardType.RED:
-            card_image = pygame.image.load(os.path.join("Assets", "Cards", "red_back.png"))
-        else:
-            card_image = pygame.image.load(os.path.join("Assets", "Cards", "blue_back.png"))
+def draw_card(card, location, scale, hover_box = True):
+    card_image = pygame.image.load(card.imagePath)
     card_width = CARD_SIZE[0] * scale
     card_height = CARD_SIZE[1] * scale
     card_image = pygame.transform.scale(card_image, (card_width, card_height))
     new_location = (location[0] - (card_width/2), location[1] - (card_height/2))
-    Meta.DRAWN_CARDS.append((card, card_image, new_location))
+    if hover_box: Meta.HOVER_BOXES.append(("card", card, card_image, new_location))
     WINDOW.blit(card_image, new_location)
 
 
-def check_card_descs():
-    for card in Meta.DRAWN_CARDS:
-        card_rect = card[1].get_rect()
-        card_rect.topleft = card[2]
-        mouse_pos = pygame.mouse.get_pos()
-        if card_rect.collidepoint(mouse_pos):
-            card_desc_rect = pygame.Rect((mouse_pos[0] + 5, mouse_pos[1] + 5), card[0].descRectSize)
-            pygame.draw.rect(WINDOW, WHITE, card_desc_rect, 0, 5)
-            draw_text(card[0].displayName, TINY_FONT, BLACK, (mouse_pos[0] + 15, mouse_pos[1] + 15), False)
+def draw_game_image(symbol, location, scale, hover_box = False, desc_size = (0, 0), *desc_lines):
+    image_width = symbol[1][0] * scale
+    image_height = symbol[1][1] * scale
+    image = pygame.image.load(symbol[0])
+    image = pygame.transform.scale(image, (image_width, image_height))
+    new_location = (location[0] - (image_width/2), location[1] - (image_height/2))
+    if hover_box:
+        Meta.HOVER_BOXES.append(("board symbol", desc_lines, image, new_location, desc_size))
+    WINDOW.blit(image, new_location)
+
+
+def check_hover_boxes():
+    for hover_box in Meta.HOVER_BOXES:
+        if hover_box[0] == "card":
+            card_rect = hover_box[2].get_rect()
+            card_rect.topleft = hover_box[3]
+            mouse_pos = pygame.mouse.get_pos()
+            if card_rect.collidepoint(mouse_pos):
+                if mouse_pos[0] <= 960:  # Card Desc. Horizontal Positioning
+                    rect_left_position = mouse_pos[0] + 5
+                else:
+                    rect_left_position = mouse_pos[0] - hover_box[1].descRectSize[0]
+                if mouse_pos[1] <= 540:
+                    rect_top_position = mouse_pos[1] + 5
+                else:
+                    rect_top_position = mouse_pos[1] - hover_box[1].descRectSize[1]
+                # Draw Card Name and Description
+                card_desc_rect = pygame.Rect((rect_left_position, rect_top_position), hover_box[1].descRectSize)
+                pygame.draw.rect(WINDOW, WHITE, card_desc_rect, 0, 5)
+                draw_text(hover_box[1].displayName, TINY_FONT, BLACK, (rect_left_position + 5, rect_top_position + 5), False)
+                for x in range(len(hover_box[1].descLines)):
+                    draw_text(hover_box[1].descLines[x], TINY_FONT, BLACK, (rect_left_position + 5, rect_top_position + (20 * (x + 3))), False)
+        elif hover_box[0] == "board symbol":
+            card_rect = hover_box[2].get_rect()
+            card_rect.topleft = hover_box[3]
+            mouse_pos = pygame.mouse.get_pos()
+            if card_rect.collidepoint(mouse_pos):
+                if mouse_pos[0] <= 960:  # Card Back Desc. Horizontal Positioning
+                    rect_left_position = mouse_pos[0] + 5
+                else:
+                    rect_left_position = mouse_pos[0] - hover_box[1].descRectSize[0]
+                if mouse_pos[1] <= 540:
+                    rect_top_position = mouse_pos[1] + 5
+                else:
+                    rect_top_position = mouse_pos[1] - hover_box[1].descRectSize[1]
+                card_desc_rect = pygame.Rect((rect_left_position, rect_top_position), hover_box[4])
+                pygame.draw.rect(WINDOW, WHITE, card_desc_rect, 0, 5)
+                for x in range(len(hover_box[1])):
+                    draw_text(hover_box[1][x], TINY_FONT, BLACK, (rect_left_position + 5, rect_top_position + ((20 * x) + 5)), False)
 
 
 def main():  # Game Loop
     clock = pygame.time.Clock()
     while True:
         clock.tick(FPS)
-        Meta.DRAWN_CARDS.clear()
+        Meta.HOVER_BOXES.clear()
         # Game Events
         Meta.LEFT_MOUSE_RELEASED = False
         Meta.LEFT_ARROW_DOWN = False

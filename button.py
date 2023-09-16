@@ -1,7 +1,7 @@
 from meta import *
 
 class Button:
-    def __init__(self, text, x_pos, y_pos, height, colour_one = BLUE, colour_two = ORANGE, font = SMALL_FONT):
+    def __init__(self, text, x_pos, y_pos, height, colour_one = BLUE, colour_two = ORANGE, font = SMALL_FONT, width = 0):
         self.text = text
         self.xPos = x_pos
         self.yPos = y_pos
@@ -9,7 +9,7 @@ class Button:
         self.font = font
         self.colourOne = colour_one
         self.colourTwo = colour_two
-        self.width = 0
+        self.width = width
         self.draw()
 
     def draw(self):

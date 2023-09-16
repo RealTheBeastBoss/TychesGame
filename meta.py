@@ -23,8 +23,13 @@ BLACK = (0, 0, 0)
 PASTEL_GREEN = (193, 225, 193)
 
 
-# Unchangeable Global Variables
+# Game Images
+BLUE_CARD_SYMBOL = (os.path.join("Assets", "Cards", "blue_back.png"), (68, 100))
+RED_CARD_SYMBOL = (os.path.join("Assets", "Cards", "red_back.png"), (68, 100))
+
+
 pygame.font.init()
+# Unchangeable Global Variables
 FPS = 60
 BIG_FONT = pygame.font.Font(os.path.join("Fonts", "beastboss_font.ttf"), 90)
 MEDIUM_FONT = pygame.font.Font(os.path.join("Fonts", "beastboss_font.ttf"), 60)
@@ -48,7 +53,7 @@ class Meta:  # Changeable Global Variables
     CURRENT_PLAYER = 0
     CAN_TEXT_INPUT = False
     USER_TEXT = ""
-    DRAWN_CARDS = []
+    HOVER_BOXES = []
     # Global Events
     TEXT_CONFIRMED = False
     BUTTONS_ENABLED = True
