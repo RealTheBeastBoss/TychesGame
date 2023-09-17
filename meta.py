@@ -18,6 +18,9 @@ class ScreenState(Enum):
 
 class TurnStage(Enum):
     ROLL_DICE = 1
+    MOVEMENT = 2
+    SQUARE_ACTION = 3
+    GAME_WON = 69
 
 
 # Game Colours
@@ -37,8 +40,16 @@ PLAYER_TWO = os.path.join("Assets", "player_two.png")
 PLAYER_THREE = os.path.join("Assets", "player_three.png")
 PLAYER_FOUR = os.path.join("Assets", "player_four.png")
 PLAYER_FIVE = os.path.join("Assets", "player_five.png")
+D6_ONE = (os.path.join("Assets", "Dice", "d6_one.png"), (42, 42))
+D6_TWO = (os.path.join("Assets", "Dice", "d6_two.png"), (42, 42))
+D6_THREE = (os.path.join("Assets", "Dice", "d6_three.png"), (42, 42))
+D6_FOUR = (os.path.join("Assets", "Dice", "d6_four.png"), (42, 42))
+D6_FIVE = (os.path.join("Assets", "Dice", "d6_five.png"), (42, 42))
+D6_SIX = (os.path.join("Assets", "Dice", "d6_six.png"), (42, 42))
 BLUE_CARD_SYMBOL = (os.path.join("Assets", "Cards", "blue_back.png"), (68, 100))
 RED_CARD_SYMBOL = (os.path.join("Assets", "Cards", "red_back.png"), (68, 100))
+ONE_BLUE = os.path.join("Assets", "Symbols", "one_blue.png")
+ONE_RED = os.path.join("Assets", "Symbols", "one_red.png")
 
 
 pygame.font.init()
@@ -53,6 +64,8 @@ WIDTH, HEIGHT = 1920, 1080
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 CARD_SIZE = (68, 100)
 DEBUG_MODE = False
+BLUE_DRAW_DECK_RECT = pygame.Rect((258, 100), (204, 300))
+RED_DRAW_DECK_RECT = pygame.Rect((258, 500), (204, 300))
 PLAYER_TO_POSITION = {
     0: (-25, -25),
     1: (25, -25),
@@ -67,9 +80,17 @@ PLAYER_TO_COLOUR = {
     3: PINK,
     4: RED
 }
-BOARD_SQUARES = [Square(None, (534, 965)), Square(None, (628, 965)), Square(None, (722, 965)),
-                 Square(None, (816, 965)), Square(None, (910, 965)), Square(None, (1009, 965)),
-                 Square(None, (1103, 965)), Square(None, (1197, 965)), Square(None, (1291, 965)),
+D6_IMAGES = {
+    1: D6_ONE,
+    2: D6_TWO,
+    3: D6_THREE,
+    4: D6_FOUR,
+    5: D6_FIVE,
+    6: D6_SIX
+}
+BOARD_SQUARES = [Square(None, (534, 965)), Square(ONE_RED, (628, 965)), Square(ONE_BLUE, (722, 965)),
+                 Square(None, (816, 965)), Square(ONE_BLUE, (910, 965)), Square(None, (1009, 965)),
+                 Square(ONE_BLUE, (1103, 965)), Square(ONE_BLUE, (1197, 965)), Square(None, (1291, 965)),
                  Square(None, (1385, 965)), Square(None, (1385, 871)), Square(None, (1291, 871)),
                  Square(None, (1197, 871)), Square(None, (1103, 871)), Square(None, (1009, 871)),
                  Square(None, (910, 871)), Square(None, (816, 871)), Square(None, (722, 871)),
@@ -116,6 +137,9 @@ class Meta:  # Changeable Global Variables
     CAN_TEXT_INPUT = False
     USER_TEXT = ""
     HOVER_BOXES = []
+    CAN_PROGRESS = False
+    CARDS_TO_DRAW = None
+    DISPLAY_CARD = None
     # Global Events
     TEXT_CONFIRMED = False
     BUTTONS_ENABLED = True

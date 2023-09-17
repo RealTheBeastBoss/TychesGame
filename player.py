@@ -6,6 +6,7 @@ class Player:
         self.playerName = given_name
         self.blueDeck = []
         self.redDeck = []
+        self.currentSquare = 0
         self.playerNumber = player_number
         if player_number == 0:
             self.playerPiece = PLAYER_ONE

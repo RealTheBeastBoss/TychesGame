@@ -6,6 +6,10 @@ from card import *
 from meta import *
 from button import Button
 from player import Player
+from dice import Dice
+
+
+D6 = Dice(6, D6_IMAGES)
 
 
 pygame.display.set_caption("Tyche's Game")
@@ -262,6 +266,7 @@ def draw_window():
             Meta.CURRENT_STATE = ScreenState.BOARD_SYMBOLS_GUIDE
         elif play_game_button.check_click():
             Meta.CURRENT_STATE = ScreenState.PLAYING_GAME
+            D6.enabled = True
             for x in range(len(Meta.PLAYERS)):
                 BOARD_SQUARES[0].players.append(Meta.PLAYERS[x])
         pygame.display.update()
@@ -326,9 +331,9 @@ def draw_window():
             pygame.quit()
         elif back_button.check_click():
             Meta.CURRENT_STATE = ScreenState.GAME_INTRO_TWO
-        draw_game_image(BLUE_CARD_SYMBOL, (320, 270), 2, True, (330, 80),
+        draw_game_image(BLUE_CARD_SYMBOL, (320, 270), 2, True, WHITE, (330, 80),
                         "Blue Card", "", "Draw 1 from the Blue Draw Deck")
-        draw_game_image(RED_CARD_SYMBOL, (640, 270), 2, True, (330, 80),
+        draw_game_image(RED_CARD_SYMBOL, (640, 270), 2, True, WHITE, (330, 80),
                         "Red Card", "", "Draw 1 from the Red Draw Deck")
         check_hover_boxes()
         pygame.display.update()
@@ -340,6 +345,10 @@ def draw_window():
         pygame.draw.rect(WINDOW, BLUE, game_board)
         roll_background = pygame.Rect((1460, 100), (440, 700))
         pygame.draw.rect(WINDOW, PASTEL_GREEN, roll_background, 0, 20)
+        draw_game_image(BLUE_CARD_SYMBOL, (360, 250), 3, True, PASTEL_GREEN, (170, 75),
+                        "Blue Draw Pile", "", "Current Size: " + str(len(BLUE_DRAW_DECK)))
+        draw_game_image(RED_CARD_SYMBOL, (360, 650), 3, True, PASTEL_GREEN, (170, 75),
+                        "Red Draw Pile", "", "Current Size: " + str(len(RED_DRAW_DECK)))
         for x in range(len(BOARD_SQUARES)):  # Draw Squares
             square = BOARD_SQUARES[x]
             square_rect = pygame.Rect((square.center[0] - 44, square.center[1] - 44), (89, 89))
@@ -350,13 +359,76 @@ def draw_window():
                 draw_text("FINISH", TINY_FONT, BLUE, square.center)
             else:
                 draw_text(str(x + 1), TINY_FONT, BLUE, (square.center[0] - 30, square.center[1] + 35))
-                #  TODO: Draw Symbols
-            for x in range(len(square.players)):
-                player_image = pygame.image.load(square.players[x].playerPiece)
-                WINDOW.blit(player_image, ((square.center[0] + PLAYER_TO_POSITION[x][0]) - 14, (square.center[1] + PLAYER_TO_POSITION[x][1]) - 14))
-        if Meta.TURN_STAGE == TurnStage.ROLL_DICE:
+                if square.symbol is not None: draw_game_image((square.symbol, (89, 89)), square.center, 1)
+            for i in range(len(square.players)):
+                player_image = pygame.image.load(square.players[i].playerPiece)
+                WINDOW.blit(player_image, ((square.center[0] + PLAYER_TO_POSITION[i][0]) - 14, (square.center[1] + PLAYER_TO_POSITION[i][1]) - 14))
+        check_hover_boxes()
+        if Meta.TURN_STAGE == TurnStage.ROLL_DICE:  # Rolling the Movement Dice
             draw_text("Roll the d6 to move:", SMALL_FONT, BLACK, (1680, 240))
-        quit_button = Button("Quit", 300, 540, 60)
+            draw_dice(D6, (1680, 330), 2)
+            if D6.check_click():
+                Meta.TURN_STAGE = TurnStage.MOVEMENT
+        elif Meta.TURN_STAGE == TurnStage.MOVEMENT:  # Moving the Current Player
+            draw_dice(D6, (1680, 330), 2)
+            BOARD_SQUARES[current_player.currentSquare].players.remove(current_player)
+            current_player.currentSquare = min(99, current_player.currentSquare + D6.sideFacing)
+            BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+            Meta.TURN_STAGE = TurnStage.SQUARE_ACTION
+            Meta.CAN_PROGRESS = False
+        elif Meta.TURN_STAGE == TurnStage.SQUARE_ACTION:  # Doing what the Square wants
+            draw_dice(D6, (1680, 330), 2)
+            current_square = BOARD_SQUARES[current_player.currentSquare]
+            if current_player.currentSquare == 99:
+                Meta.TURN_STAGE = TurnStage.GAME_WON
+            else:
+                if Meta.DISPLAY_CARD == CardType.BLUE:
+                    draw_card(current_player.blueDeck[len(current_player.blueDeck) - 1], (1680, 380), 3)
+                    continue_button = Button("Continue", 1680, 600, 60)
+                    if continue_button.check_click():
+                        # On Draw Card Actions
+                        Meta.CARDS_TO_DRAW -= 1
+                        Meta.DISPLAY_CARD = None
+                    check_hover_boxes()
+                elif Meta.DISPLAY_CARD == CardType.RED:
+                    draw_card(current_player.redDeck[len(current_player.redDeck) - 1], (1680, 380), 3)
+                    continue_button = Button("Continue", 1680, 600, 60)
+                    if continue_button.check_click():
+                        # On Draw Card Actions
+                        Meta.CARDS_TO_DRAW -= 1
+                        Meta.DISPLAY_CARD = None
+                    check_hover_boxes()
+                else:
+                    if current_square.symbol == ONE_BLUE:
+                        draw_text("Draw One Blue Card", SMALL_FONT, BLACK, (1680, 240))
+                        if Meta.CARDS_TO_DRAW is None:
+                            Meta.CARDS_TO_DRAW = 1
+                        if Meta.CARDS_TO_DRAW == 0:
+                            Meta.CAN_PROGRESS = True
+                            Meta.CARDS_TO_DRAW = None
+                        else:
+                            check_get_card(CardType.BLUE)
+                    elif current_square.symbol == ONE_RED:
+                        draw_text("Draw One Red Card", SMALL_FONT, BLACK, (1680, 240))
+                        if Meta.CARDS_TO_DRAW is None:
+                            Meta.CARDS_TO_DRAW = 1
+                        if Meta.CARDS_TO_DRAW == 0:
+                            Meta.CAN_PROGRESS = True
+                            Meta.CARDS_TO_DRAW = None
+                        else:
+                            check_get_card(CardType.RED)
+                    elif current_square.symbol is None:
+                        Meta.CAN_PROGRESS = True
+                    if Meta.CAN_PROGRESS:
+                        Meta.TURN_STAGE = TurnStage.ROLL_DICE
+                        if Meta.CURRENT_PLAYER == Meta.PLAYER_COUNT - 1:
+                            Meta.CURRENT_PLAYER = 0
+                        else:
+                            Meta.CURRENT_PLAYER += 1
+                        D6.enabled = True
+        elif Meta.TURN_STAGE == TurnStage.GAME_WON:
+            draw_text(current_player.playerName + " has Won!!", SMALL_FONT, BLACK, (1680, 240))
+        quit_button = Button("Quit", 360, 450, 60)
         if quit_button.check_click():
             pygame.quit()
         pygame.display.update()
@@ -395,15 +467,42 @@ def draw_card(card, location, scale, hover_box = True):
     WINDOW.blit(card_image, new_location)
 
 
-def draw_game_image(symbol, location, scale, hover_box = False, desc_size = (0, 0), *desc_lines):
+def draw_dice(dice, location, scale):
+    dice_width = dice.valueToImage[dice.sideFacing][1][0] * scale
+    dice_height = dice.valueToImage[dice.sideFacing][1][1] * scale
+    dice_image = pygame.image.load(dice.valueToImage[dice.sideFacing][0])
+    dice_image = pygame.transform.scale(dice_image, (dice_width, dice_height))
+    new_location = (location[0] - (dice_width/2), location[1] - (dice_height/2))
+    dice.currentRect = pygame.Rect(new_location, (dice_width, dice_height))
+    WINDOW.blit(dice_image, new_location)
+
+
+def draw_game_image(symbol, location, scale, hover_box = False, colour = WHITE, desc_size = (0, 0), *desc_lines):
     image_width = symbol[1][0] * scale
     image_height = symbol[1][1] * scale
     image = pygame.image.load(symbol[0])
     image = pygame.transform.scale(image, (image_width, image_height))
     new_location = (location[0] - (image_width/2), location[1] - (image_height/2))
     if hover_box:
-        Meta.HOVER_BOXES.append(("board symbol", desc_lines, image, new_location, desc_size))
+        Meta.HOVER_BOXES.append(("board symbol", desc_lines, image, new_location, desc_size, colour))
     WINDOW.blit(image, new_location)
+
+
+def check_get_card(card_colour):
+    mouse_pos = pygame.mouse.get_pos()
+    if card_colour == CardType.BLUE:
+        if BLUE_DRAW_DECK_RECT.collidepoint(mouse_pos) and Meta.LEFT_MOUSE_RELEASED:
+            card = BLUE_DRAW_DECK.pop()
+            Meta.PLAYERS[Meta.CURRENT_PLAYER].blueDeck.append(card)
+            Meta.DISPLAY_CARD = CardType.BLUE
+            return True
+    else:
+        if RED_DRAW_DECK_RECT.collidepoint(mouse_pos) and Meta.LEFT_MOUSE_RELEASED:
+            card = RED_DRAW_DECK.pop()
+            Meta.PLAYERS[Meta.CURRENT_PLAYER].redDeck.append(card)
+            Meta.DISPLAY_CARD = CardType.RED
+            return True
+    return False
 
 
 def check_hover_boxes():
@@ -435,13 +534,13 @@ def check_hover_boxes():
                 if mouse_pos[0] <= 960:  # Card Back Desc. Horizontal Positioning
                     rect_left_position = mouse_pos[0] + 5
                 else:
-                    rect_left_position = mouse_pos[0] - hover_box[1].descRectSize[0]
+                    rect_left_position = mouse_pos[0] - hover_box[4][0]
                 if mouse_pos[1] <= 540:
                     rect_top_position = mouse_pos[1] + 5
                 else:
-                    rect_top_position = mouse_pos[1] - hover_box[1].descRectSize[1]
+                    rect_top_position = mouse_pos[1] - hover_box[4][1]
                 card_desc_rect = pygame.Rect((rect_left_position, rect_top_position), hover_box[4])
-                pygame.draw.rect(WINDOW, WHITE, card_desc_rect, 0, 5)
+                pygame.draw.rect(WINDOW, hover_box[5], card_desc_rect, 0, 5)
                 for x in range(len(hover_box[1])):
                     draw_text(hover_box[1][x], TINY_FONT, BLACK, (rect_left_position + 5, rect_top_position + ((20 * x) + 5)), False)
 
