@@ -7,6 +7,8 @@ class Player:
         self.blueDeck = []
         self.redDeck = []
         self.currentSquare = 0
+        self.missNextTurn = False
+        self.setNextRoll = None
         self.playerNumber = player_number
         if player_number == 0:
             self.playerPiece = PLAYER_ONE

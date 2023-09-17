@@ -3,3 +3,4 @@ class Square:
         self.symbol = square_symbol
         self.center = center
         self.players = []
+        self.hasBarrier = False

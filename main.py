@@ -16,59 +16,98 @@ pygame.display.set_caption("Tyche's Game")
 
 # Game Cards
 # region
-BLUE_ACE_OF_HEARTS = Card("Blue Ace of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.ACE, "ace_hearts.png", (300, 150),
-                          "This is a test card description", "with two lines")
-BLUE_TWO_OF_HEARTS = Card("Blue Two of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.TWO, "2_hearts.png")
-BLUE_THREE_OF_HEARTS = Card("Blue Three of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.THREE, "3_hearts.png")
-BLUE_FOUR_OF_HEARTS = Card("Blue Four of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.FOUR, "4_hearts.png")
-BLUE_FIVE_OF_HEARTS = Card("Blue Five of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.FIVE, "5_hearts.png")
+BLUE_ACE_OF_HEARTS = Card("Blue Ace of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.ACE, "ace_hearts.png", (382, 92),
+                          "Use this card to swap with a non-Joker", "card on top of the Discard Pile")
+BLUE_TWO_OF_HEARTS = Card("Blue Two of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.TWO, "2_hearts.png", (340, 70),
+                          "Roll your next dice with advantage")
+BLUE_THREE_OF_HEARTS = Card("Blue Three of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.THREE, "3_hearts.png", (352, 92),
+                            "Other Player(s) get 1 Red Card, but", "you must choose one to spare")
+BLUE_FOUR_OF_HEARTS = Card("Blue Four of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.FOUR, "4_hearts.png", (360, 92),
+                           "Add a d4 Elemental Damage to your", "next Attack Roll")
+BLUE_FIVE_OF_HEARTS = Card("Blue Five of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.FIVE, "5_hearts.png", (280, 92),
+                           "You can choose the value of", "someone's next d6 Roll")
 BLUE_SIX_OF_HEARTS = Card("Blue Six of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.SIX, "6_hearts.png")
 BLUE_SEVEN_OF_HEARTS = Card("Blue Seven of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.SEVEN, "7_hearts.png")
-BLUE_EIGHT_OF_HEARTS = Card("Blue Eight of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.EIGHT, "8_hearts.png", (300, 150))
-BLUE_NINE_OF_HEARTS = Card("Blue Nine of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.NINE, "9_hearts.png")
-BLUE_TEN_OF_HEARTS = Card("Blue Ten of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.TEN, "10_hearts.png")
-BLUE_JACK_OF_HEARTS = Card("Blue Jack of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.JACK, "jack_hearts.png")
+BLUE_EIGHT_OF_HEARTS = Card("Blue Eight of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.EIGHT, "8_hearts.png", (425, 70),
+                            "Use this card as a shield against a Monster")
+BLUE_NINE_OF_HEARTS = Card("Blue Nine of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.NINE, "9_hearts.png", (250, 92),
+                           "Place a Magic Barrier on", "any square you choose")
+BLUE_TEN_OF_HEARTS = Card("Blue Ten of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.TEN, "10_hearts.png", (295, 92),
+                          "Sneak through the next Magic", "Barrier you come across")
+BLUE_JACK_OF_HEARTS = Card("Blue Jack of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.JACK, "jack_hearts.png", (392, 70), ""
+                                     "Make your next Movement Roll with 2 d6")
 BLUE_KING_OF_HEARTS = Card("Blue King of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.KING, "king_hearts.png")
-BLUE_QUEEN_OF_HEARTS = Card("Blue Queen of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.QUEEN, "queen_hearts.png")
-BLUE_ACE_OF_DIAMONDS = Card("Blue Ace of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.ACE, "ace_diamonds.png")
-BLUE_TWO_OF_DIAMONDS = Card("Blue Two of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.TWO, "2_diamonds.png")
-BLUE_THREE_OF_DIAMONDS = Card("Blue Three of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.THREE, "3_diamonds.png")
-BLUE_FOUR_OF_DIAMONDS = Card("Blue Four of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.FOUR, "4_diamonds.png")
-BLUE_FIVE_OF_DIAMONDS = Card("Blue Five of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.FIVE, "5_diamonds.png")
+BLUE_QUEEN_OF_HEARTS = Card("Blue Queen of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.QUEEN, "queen_hearts.png", (437, 70),
+                            "Use this card to not draw a set of Red Cards")
+BLUE_ACE_OF_DIAMONDS = Card("Blue Ace of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.ACE, "ace_diamonds.png",
+                            (382, 92), "Use this card to swap with a non-Joker", "card on top of the Discard Pile")
+BLUE_TWO_OF_DIAMONDS = Card("Blue Two of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.TWO, "2_diamonds.png", (340, 70),
+                          "Roll your next dice with advantage")
+BLUE_THREE_OF_DIAMONDS = Card("Blue Three of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.THREE, "3_diamonds.png", (352, 92),
+                            "Other Player(s) get 1 Red Card, but", "you must choose one to spare")
+BLUE_FOUR_OF_DIAMONDS = Card("Blue Four of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.FOUR, "4_diamonds.png", (360, 92),
+                           "Add a d4 Elemental Damage to your", "next Attack Roll")
+BLUE_FIVE_OF_DIAMONDS = Card("Blue Five of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.FIVE, "5_diamonds.png", (280, 92),
+                           "You can choose the value of", "someone's next d6 Roll")
 BLUE_SIX_OF_DIAMONDS = Card("Blue Six of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.SIX, "6_diamonds.png")
 BLUE_SEVEN_OF_DIAMONDS = Card("Blue Seven of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.SEVEN, "7_diamonds.png")
-BLUE_EIGHT_OF_DIAMONDS = Card("Blue Eight of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.EIGHT, "8_diamonds.png")
-BLUE_NINE_OF_DIAMONDS = Card("Blue Nine of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.NINE, "9_diamonds.png")
-BLUE_TEN_OF_DIAMONDS = Card("Blue Ten of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.TEN, "10_diamonds.png")
-BLUE_JACK_OF_DIAMONDS = Card("Blue Jack of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.JACK, "jack_diamonds.png")
+BLUE_EIGHT_OF_DIAMONDS = Card("Blue Eight of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.EIGHT, "8_diamonds.png", (425, 70),
+                            "Use this card as a shield against a Monster")
+BLUE_NINE_OF_DIAMONDS = Card("Blue Nine of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.NINE, "9_diamonds.png", (250, 92),
+                           "Place a Magic Barrier on", "any square you choose")
+BLUE_TEN_OF_DIAMONDS = Card("Blue Ten of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.TEN, "10_diamonds.png", (295, 92),
+                          "Sneak through the next Magic", "Barrier you come across")
+BLUE_JACK_OF_DIAMONDS = Card("Blue Jack of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.JACK, "jack_diamonds.png", (392, 70), ""
+                                     "Make your next Movement Roll with 2 d6")
 BLUE_KING_OF_DIAMONDS = Card("Blue King of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.KING, "king_diamonds.png")
-BLUE_QUEEN_OF_DIAMONDS = Card("Blue Queen of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.QUEEN, "queen_diamonds.png")
-BLUE_ACE_OF_CLUBS = Card("Blue Ace of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.ACE, "ace_clubs.png")
-BLUE_TWO_OF_CLUBS = Card("Blue Two of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.TWO, "2_clubs.png")
-BLUE_THREE_OF_CLUBS = Card("Blue Three of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.THREE, "3_clubs.png")
-BLUE_FOUR_OF_CLUBS = Card("Blue Four of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.FOUR, "4_clubs.png")
-BLUE_FIVE_OF_CLUBS = Card("Blue Five of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.FIVE, "5_clubs.png")
+BLUE_QUEEN_OF_DIAMONDS = Card("Blue Queen of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.QUEEN, "queen_diamonds.png", (437, 70),
+                            "Use this card to not draw a set of Red Cards")
+BLUE_ACE_OF_CLUBS = Card("Blue Ace of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.ACE, "ace_clubs.png", (382, 92),
+                          "Use this card to swap with a non-Joker", "card on top of the Discard Pile")
+BLUE_TWO_OF_CLUBS = Card("Blue Two of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.TWO, "2_clubs.png", (340, 70),
+                          "Roll your next dice with advantage")
+BLUE_THREE_OF_CLUBS = Card("Blue Three of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.THREE, "3_clubs.png", (352, 92),
+                            "Other Player(s) get 1 Red Card, but", "you must choose one to spare")
+BLUE_FOUR_OF_CLUBS = Card("Blue Four of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.FOUR, "4_clubs.png", (360, 92),
+                           "Add a d4 Elemental Damage to your", "next Attack Roll")
+BLUE_FIVE_OF_CLUBS = Card("Blue Five of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.FIVE, "5_clubs.png", (280, 92),
+                           "You can choose the value of", "someone's next d6 Roll")
 BLUE_SIX_OF_CLUBS = Card("Blue Six of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.SIX, "6_clubs.png")
 BLUE_SEVEN_OF_CLUBS = Card("Blue Seven of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.SEVEN, "7_clubs.png")
-BLUE_EIGHT_OF_CLUBS = Card("Blue Eight of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.EIGHT, "8_clubs.png")
-BLUE_NINE_OF_CLUBS = Card("Blue Nine of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.NINE, "9_clubs.png")
-BLUE_TEN_OF_CLUBS = Card("Blue Ten of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.TEN, "10_clubs.png")
-BLUE_JACK_OF_CLUBS = Card("Blue Jack of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.JACK, "jack_clubs.png")
+BLUE_EIGHT_OF_CLUBS = Card("Blue Eight of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.EIGHT, "8_clubs.png", (425, 70),
+                            "Use this card as a shield against a Monster")
+BLUE_NINE_OF_CLUBS = Card("Blue Nine of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.NINE, "9_clubs.png", (250, 92),
+                           "Place a Magic Barrier on", "any square you choose")
+BLUE_TEN_OF_CLUBS = Card("Blue Ten of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.TEN, "10_clubs.png", (295, 92),
+                          "Sneak through the next Magic", "Barrier you come across")
+BLUE_JACK_OF_CLUBS = Card("Blue Jack of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.JACK, "jack_clubs.png", (392, 70), ""
+                                     "Make your next Movement Roll with 2 d6")
 BLUE_KING_OF_CLUBS = Card("Blue King of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.KING, "king_clubs.png")
-BLUE_QUEEN_OF_CLUBS = Card("Blue Queen of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.QUEEN, "queen_clubs.png")
-BLUE_ACE_OF_SPADES = Card("Blue Ace of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.ACE, "ace_spades.png")
-BLUE_TWO_OF_SPADES = Card("Blue Two of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.TWO, "2_spades.png")
-BLUE_THREE_OF_SPADES = Card("Blue Three of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.THREE, "3_spades.png")
-BLUE_FOUR_OF_SPADES = Card("Blue Four of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.FOUR, "4_spades.png")
-BLUE_FIVE_OF_SPADES = Card("Blue Five of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.FIVE, "5_spades.png")
+BLUE_QUEEN_OF_CLUBS = Card("Blue Queen of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.QUEEN, "queen_clubs.png", (437, 70),
+                            "Use this card to not draw a set of Red Cards")
+BLUE_ACE_OF_SPADES = Card("Blue Ace of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.ACE, "ace_spades.png", (382, 92),
+                          "Use this card to swap with a non-Joker", "card on top of the Discard Pile")
+BLUE_TWO_OF_SPADES = Card("Blue Two of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.TWO, "2_spades.png", (340, 70),
+                          "Roll your next dice with advantage")
+BLUE_THREE_OF_SPADES = Card("Blue Three of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.THREE, "3_spades.png", (352, 92),
+                            "Other Player(s) get 1 Red Card, but", "you must choose one to spare")
+BLUE_FOUR_OF_SPADES = Card("Blue Four of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.FOUR, "4_spades.png", (360, 92),
+                           "Add a d4 Elemental Damage to your", "next Attack Roll")
+BLUE_FIVE_OF_SPADES = Card("Blue Five of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.FIVE, "5_spades.png", (280, 92),
+                           "You can choose the value of", "someone's next d6 Roll")
 BLUE_SIX_OF_SPADES = Card("Blue Six of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.SIX, "6_spades.png")
 BLUE_SEVEN_OF_SPADES = Card("Blue Seven of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.SEVEN, "7_spades.png")
-BLUE_EIGHT_OF_SPADES = Card("Blue Eight of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.EIGHT, "8_spades.png")
-BLUE_NINE_OF_SPADES = Card("Blue Nine of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.NINE, "9_spades.png")
-BLUE_TEN_OF_SPADES = Card("Blue Ten of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.TEN, "10_spades.png")
-BLUE_JACK_OF_SPADES = Card("Blue Jack of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.JACK, "jack_spades.png")
+BLUE_EIGHT_OF_SPADES = Card("Blue Eight of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.EIGHT, "8_spades.png", (425, 70),
+                            "Use this card as a shield against a Monster")
+BLUE_NINE_OF_SPADES = Card("Blue Nine of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.NINE, "9_spades.png", (250, 92),
+                           "Place a Magic Barrier on", "any square you choose")
+BLUE_TEN_OF_SPADES = Card("Blue Ten of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.TEN, "10_spades.png", (295, 92),
+                          "Sneak through the next Magic", "Barrier you come across")
+BLUE_JACK_OF_SPADES = Card("Blue Jack of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.JACK, "jack_spades.png", (392, 70), ""
+                                     "Make your next Movement Roll with 2 d6")
 BLUE_KING_OF_SPADES = Card("Blue King of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.KING, "king_spades.png")
-BLUE_QUEEN_OF_SPADES = Card("Blue Queen of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.QUEEN, "queen_spades.png")
+BLUE_QUEEN_OF_SPADES = Card("Blue Queen of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.QUEEN, "queen_spades.png", (437, 70),
+                            "Use this card to not draw a set of Red Cards")
 BLUE_RED_JOKER = Card("Blue Coloured Joker", CardType.BLUE, CardSuit.RED, CardValue.JOKER, "red_joker.png")
 BLUE_BLACK_JOKER = Card("Blue Gray Joker", CardType.BLUE, CardSuit.BLACK, CardValue.JOKER, "black_joker.png")
 BLUE_DRAW_DECK = [BLUE_ACE_OF_HEARTS, BLUE_TWO_OF_HEARTS, BLUE_THREE_OF_HEARTS, BLUE_FOUR_OF_HEARTS, BLUE_FIVE_OF_HEARTS, BLUE_SIX_OF_HEARTS,
@@ -335,10 +374,13 @@ def draw_window():
                         "Blue Card", "", "Draw 1 from the Blue Draw Deck")
         draw_game_image(RED_CARD_SYMBOL, (640, 270), 2, True, WHITE, (330, 80),
                         "Red Card", "", "Draw 1 from the Red Draw Deck")
+        draw_game_image((MISS_TURN, (89, 89)), (960, 270), 2, True, WHITE, (330, 80),
+                        "Miss a Turn", "", "Landing here traps you for a turn")
         check_hover_boxes()
         pygame.display.update()
     elif Meta.CURRENT_STATE == ScreenState.PLAYING_GAME:
         WINDOW.fill(WHITE)
+        Meta.BUTTONS_ENABLED = True
         current_player = Meta.PLAYERS[Meta.CURRENT_PLAYER]
         draw_text(current_player.playerName + "'s Turn", SMALL_FONT, PLAYER_TO_COLOUR[current_player.playerNumber], (960, 30))
         game_board = pygame.Rect((480, 60), (960, 960))
@@ -349,6 +391,26 @@ def draw_window():
                         "Blue Draw Pile", "", "Current Size: " + str(len(BLUE_DRAW_DECK)))
         draw_game_image(RED_CARD_SYMBOL, (360, 650), 3, True, PASTEL_GREEN, (170, 75),
                         "Red Draw Pile", "", "Current Size: " + str(len(RED_DRAW_DECK)))
+        if len(current_player.blueDeck) != 0:
+            turned_blue_deck_image = pygame.transform.rotate(BLUE_CARD_SYMBOL[0], -90)
+            turned_blue_deck_image = pygame.transform.scale(turned_blue_deck_image, (BLUE_CARD_SYMBOL[1][1] * 3, BLUE_CARD_SYMBOL[1][0] * 3))
+            WINDOW.blit(turned_blue_deck_image, (95, 835))
+            if Meta.CARD_HANDS_ACTIVE: Meta.HOVER_BOXES.append(("board symbol", ["Your Blue Card Hand"], turned_blue_deck_image, (95, 835), (215, 35), PASTEL_GREEN))
+            blue_hand_rect = turned_blue_deck_image.get_rect()
+            blue_hand_rect.topleft = (95, 835)
+            if blue_hand_rect.collidepoint(pygame.mouse.get_pos()) and Meta.LEFT_MOUSE_RELEASED and Meta.CARD_HANDS_ACTIVE:
+                Meta.SHOW_HAND = CardType.BLUE
+                Meta.CARD_HANDS_ACTIVE = False
+        if len(current_player.redDeck) != 0:
+            turned_red_deck_image = pygame.transform.rotate(RED_CARD_SYMBOL[0], 90)
+            turned_red_deck_image = pygame.transform.scale(turned_red_deck_image, (RED_CARD_SYMBOL[1][1] * 3, RED_CARD_SYMBOL[1][0] * 3))
+            WINDOW.blit(turned_red_deck_image, (1530, 835))
+            if Meta.CARD_HANDS_ACTIVE: Meta.HOVER_BOXES.append(("board symbol", ["Your Red Card Hand"], turned_red_deck_image, (1530, 835), (215, 35), PASTEL_GREEN))
+            red_hand_rect = turned_red_deck_image.get_rect()
+            red_hand_rect.topleft = (1530, 835)
+            if red_hand_rect.collidepoint(pygame.mouse.get_pos()) and Meta.LEFT_MOUSE_RELEASED and Meta.CARD_HANDS_ACTIVE:
+                Meta.SHOW_HAND = CardType.RED
+                Meta.CARD_HANDS_ACTIVE = False
         for x in range(len(BOARD_SQUARES)):  # Draw Squares
             square = BOARD_SQUARES[x]
             square_rect = pygame.Rect((square.center[0] - 44, square.center[1] - 44), (89, 89))
@@ -361,14 +423,49 @@ def draw_window():
                 draw_text(str(x + 1), TINY_FONT, BLUE, (square.center[0] - 30, square.center[1] + 35))
                 if square.symbol is not None: draw_game_image((square.symbol, (89, 89)), square.center, 1)
             for i in range(len(square.players)):
-                player_image = pygame.image.load(square.players[i].playerPiece)
+                player_image = square.players[i].playerPiece
                 WINDOW.blit(player_image, ((square.center[0] + PLAYER_TO_POSITION[i][0]) - 14, (square.center[1] + PLAYER_TO_POSITION[i][1]) - 14))
-        check_hover_boxes()
-        if Meta.TURN_STAGE == TurnStage.ROLL_DICE:  # Rolling the Movement Dice
-            draw_text("Roll the d6 to move:", SMALL_FONT, BLACK, (1680, 240))
-            draw_dice(D6, (1680, 330), 2)
-            if D6.check_click():
-                Meta.TURN_STAGE = TurnStage.MOVEMENT
+        if Meta.SHOW_HAND is None: check_hover_boxes()
+        if Meta.SHOW_HAND == CardType.BLUE:
+            Meta.HOVER_BOXES.clear()
+            WINDOW.fill(PASTEL_GREEN)
+            draw_text(current_player.playerName + "'s Blue Card Hand", MEDIUM_FONT, ORANGE, (960, 69))
+            back_button = Button("Back", 960, 950, 60)
+            if back_button.check_click():
+                Meta.SHOW_HAND = None
+                Meta.CARD_HANDS_ACTIVE = True
+            for x in range(len(current_player.blueDeck)):
+                draw_card(current_player.blueDeck[x], CARD_TO_POSITION[x], 2)
+            Meta.BUTTONS_ENABLED = False
+            check_hover_boxes()
+        elif Meta.SHOW_HAND == CardType.RED:
+            Meta.HOVER_BOXES.clear()
+            WINDOW.fill(PASTEL_GREEN)
+            draw_text(current_player.playerName + "'s Red Card Hand", MEDIUM_FONT, ORANGE, (960, 69))
+            back_button = Button("Back", 960, 950, 60)
+            if back_button.check_click():
+                Meta.SHOW_HAND = None
+                Meta.CARD_HANDS_ACTIVE = True
+            for x in range(len(current_player.redDeck)):
+                draw_card(current_player.redDeck[x], CARD_TO_POSITION[x], 2)
+            Meta.BUTTONS_ENABLED = False
+            check_hover_boxes()
+        elif Meta.TURN_STAGE == TurnStage.ROLL_DICE:  # Rolling the Movement Dice
+            if current_player.missNextTurn:
+                draw_text("You don't get to take this turn", SMALL_FONT, BLACK, (1680, 240))
+                continue_button = Button("Continue", 1680, 600, 60)
+                if continue_button.check_click():
+                    current_player.missNextTurn = False
+                    if Meta.CURRENT_PLAYER == Meta.PLAYER_COUNT - 1:
+                        Meta.CURRENT_PLAYER = 0
+                    else:
+                        Meta.CURRENT_PLAYER += 1
+                    D6.enabled = True
+            else:
+                draw_text("Roll the d6 to move:", SMALL_FONT, BLACK, (1680, 240))
+                draw_dice(D6, (1680, 330), 2)
+                if D6.check_click():
+                    Meta.TURN_STAGE = TurnStage.MOVEMENT
         elif Meta.TURN_STAGE == TurnStage.MOVEMENT:  # Moving the Current Player
             draw_dice(D6, (1680, 330), 2)
             BOARD_SQUARES[current_player.currentSquare].players.remove(current_player)
@@ -417,6 +514,12 @@ def draw_window():
                             Meta.CARDS_TO_DRAW = None
                         else:
                             check_get_card(CardType.RED)
+                    elif current_square.symbol == MISS_TURN:
+                        draw_text("You Miss your Next Turn", SMALL_FONT, BLACK, (1680, 240))
+                        current_player.missNextTurn = True
+                        continue_button = Button("Continue", 1680, 600, 60)
+                        if continue_button.check_click():
+                            Meta.CAN_PROGRESS = True
                     elif current_square.symbol is None:
                         Meta.CAN_PROGRESS = True
                     if Meta.CAN_PROGRESS:
@@ -428,9 +531,10 @@ def draw_window():
                         D6.enabled = True
         elif Meta.TURN_STAGE == TurnStage.GAME_WON:
             draw_text(current_player.playerName + " has Won!!", SMALL_FONT, BLACK, (1680, 240))
-        quit_button = Button("Quit", 360, 450, 60)
-        if quit_button.check_click():
-            pygame.quit()
+        if Meta.SHOW_HAND is None:
+            quit_button = Button("Quit", 360, 450, 60)
+            if quit_button.check_click():
+                pygame.quit()
         pygame.display.update()
 
 
@@ -470,7 +574,7 @@ def draw_card(card, location, scale, hover_box = True):
 def draw_dice(dice, location, scale):
     dice_width = dice.valueToImage[dice.sideFacing][1][0] * scale
     dice_height = dice.valueToImage[dice.sideFacing][1][1] * scale
-    dice_image = pygame.image.load(dice.valueToImage[dice.sideFacing][0])
+    dice_image = dice.valueToImage[dice.sideFacing][0]
     dice_image = pygame.transform.scale(dice_image, (dice_width, dice_height))
     new_location = (location[0] - (dice_width/2), location[1] - (dice_height/2))
     dice.currentRect = pygame.Rect(new_location, (dice_width, dice_height))
@@ -480,7 +584,7 @@ def draw_dice(dice, location, scale):
 def draw_game_image(symbol, location, scale, hover_box = False, colour = WHITE, desc_size = (0, 0), *desc_lines):
     image_width = symbol[1][0] * scale
     image_height = symbol[1][1] * scale
-    image = pygame.image.load(symbol[0])
+    image = symbol[0]
     image = pygame.transform.scale(image, (image_width, image_height))
     new_location = (location[0] - (image_width/2), location[1] - (image_height/2))
     if hover_box:
@@ -525,7 +629,7 @@ def check_hover_boxes():
                 pygame.draw.rect(WINDOW, WHITE, card_desc_rect, 0, 5)
                 draw_text(hover_box[1].displayName, TINY_FONT, BLACK, (rect_left_position + 5, rect_top_position + 5), False)
                 for x in range(len(hover_box[1].descLines)):
-                    draw_text(hover_box[1].descLines[x], TINY_FONT, BLACK, (rect_left_position + 5, rect_top_position + (20 * (x + 3))), False)
+                    draw_text(hover_box[1].descLines[x], TINY_FONT, BLACK, (rect_left_position + 5, rect_top_position + (20 * (x + 2))), False)
         elif hover_box[0] == "board symbol":
             card_rect = hover_box[2].get_rect()
             card_rect.topleft = hover_box[3]

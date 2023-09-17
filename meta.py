@@ -35,21 +35,23 @@ PASTEL_GREEN = (193, 225, 193)
 
 
 # Game Images
-PLAYER_ONE = os.path.join("Assets", "player_one.png")
-PLAYER_TWO = os.path.join("Assets", "player_two.png")
-PLAYER_THREE = os.path.join("Assets", "player_three.png")
-PLAYER_FOUR = os.path.join("Assets", "player_four.png")
-PLAYER_FIVE = os.path.join("Assets", "player_five.png")
-D6_ONE = (os.path.join("Assets", "Dice", "d6_one.png"), (42, 42))
-D6_TWO = (os.path.join("Assets", "Dice", "d6_two.png"), (42, 42))
-D6_THREE = (os.path.join("Assets", "Dice", "d6_three.png"), (42, 42))
-D6_FOUR = (os.path.join("Assets", "Dice", "d6_four.png"), (42, 42))
-D6_FIVE = (os.path.join("Assets", "Dice", "d6_five.png"), (42, 42))
-D6_SIX = (os.path.join("Assets", "Dice", "d6_six.png"), (42, 42))
-BLUE_CARD_SYMBOL = (os.path.join("Assets", "Cards", "blue_back.png"), (68, 100))
-RED_CARD_SYMBOL = (os.path.join("Assets", "Cards", "red_back.png"), (68, 100))
-ONE_BLUE = os.path.join("Assets", "Symbols", "one_blue.png")
-ONE_RED = os.path.join("Assets", "Symbols", "one_red.png")
+PLAYER_ONE = pygame.image.load(os.path.join("Assets", "player_one.png"))
+PLAYER_TWO = pygame.image.load(os.path.join("Assets", "player_two.png"))
+PLAYER_THREE = pygame.image.load(os.path.join("Assets", "player_three.png"))
+PLAYER_FOUR = pygame.image.load(os.path.join("Assets", "player_four.png"))
+PLAYER_FIVE = pygame.image.load(os.path.join("Assets", "player_five.png"))
+D6_ONE = (pygame.image.load(os.path.join("Assets", "Dice", "d6_one.png")), (42, 42))
+D6_TWO = (pygame.image.load(os.path.join("Assets", "Dice", "d6_two.png")), (42, 42))
+D6_THREE = (pygame.image.load(os.path.join("Assets", "Dice", "d6_three.png")), (42, 42))
+D6_FOUR = (pygame.image.load(os.path.join("Assets", "Dice", "d6_four.png")), (42, 42))
+D6_FIVE = (pygame.image.load(os.path.join("Assets", "Dice", "d6_five.png")), (42, 42))
+D6_SIX = (pygame.image.load(os.path.join("Assets", "Dice", "d6_six.png")), (42, 42))
+BLUE_CARD_SYMBOL = (pygame.image.load(os.path.join("Assets", "Cards", "blue_back.png")), (68, 100))
+RED_CARD_SYMBOL = (pygame.image.load(os.path.join("Assets", "Cards", "red_back.png")), (68, 100))
+# Board Symbols
+ONE_BLUE = pygame.image.load(os.path.join("Assets", "Symbols", "one_blue.png"))
+ONE_RED = pygame.image.load(os.path.join("Assets", "Symbols", "one_red.png"))
+MISS_TURN = pygame.image.load(os.path.join("Assets", "Symbols", "miss_turn.png"))
 
 
 pygame.font.init()
@@ -80,6 +82,23 @@ PLAYER_TO_COLOUR = {
     3: PINK,
     4: RED
 }
+CARD_TO_POSITION = {
+    0: (320, 270),
+    1: (640, 270),
+    2: (960, 270),
+    3: (1280, 270),
+    4: (1600, 270),
+    5: (320, 540),
+    6: (640, 540),
+    7: (960, 540),
+    8: (1280, 540),
+    9: (1600, 540),
+    10: (320, 810),
+    11: (640, 810),
+    12: (960, 810),
+    13: (1280, 810),
+    14: (1600, 810)
+}
 D6_IMAGES = {
     1: D6_ONE,
     2: D6_TWO,
@@ -91,7 +110,7 @@ D6_IMAGES = {
 BOARD_SQUARES = [Square(None, (534, 965)), Square(ONE_RED, (628, 965)), Square(ONE_BLUE, (722, 965)),
                  Square(None, (816, 965)), Square(ONE_BLUE, (910, 965)), Square(None, (1009, 965)),
                  Square(ONE_BLUE, (1103, 965)), Square(ONE_BLUE, (1197, 965)), Square(None, (1291, 965)),
-                 Square(None, (1385, 965)), Square(None, (1385, 871)), Square(None, (1291, 871)),
+                 Square(ONE_RED, (1385, 965)), Square(MISS_TURN, (1385, 871)), Square(None, (1291, 871)),
                  Square(None, (1197, 871)), Square(None, (1103, 871)), Square(None, (1009, 871)),
                  Square(None, (910, 871)), Square(None, (816, 871)), Square(None, (722, 871)),
                  Square(None, (628, 871)), Square(None, (534, 871)), Square(None, (534, 777)),
@@ -140,6 +159,8 @@ class Meta:  # Changeable Global Variables
     CAN_PROGRESS = False
     CARDS_TO_DRAW = None
     DISPLAY_CARD = None
+    CARD_HANDS_ACTIVE = True
+    SHOW_HAND = None
     # Global Events
     TEXT_CONFIRMED = False
     BUTTONS_ENABLED = True
