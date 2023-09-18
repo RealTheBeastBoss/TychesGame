@@ -20,15 +20,16 @@ class TurnStage(Enum):
     ROLL_DICE = 1
     MOVEMENT = 2
     SQUARE_ACTION = 3
+    END_TURN = 42
     GAME_WON = 69
 
 
 # Game Colours
 BLUE = (0, 0, 255)
 ORANGE = (255, 102, 0)
-GREEN = (0, 50, 3)
-PINK = (100, 0, 89)
-RED = (69, 0, 0)
+GREEN = (0, 128, 8)
+PINK = (255, 0, 228)
+RED = (176, 0, 0)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 PASTEL_GREEN = (193, 225, 193)
@@ -65,7 +66,7 @@ BUTTON_COOLDOWN_EVENT = pygame.USEREVENT + 1
 WIDTH, HEIGHT = 1920, 1080
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 CARD_SIZE = (68, 100)
-DEBUG_MODE = False
+DEBUG_MODE = True
 BLUE_DRAW_DECK_RECT = pygame.Rect((258, 100), (204, 300))
 RED_DRAW_DECK_RECT = pygame.Rect((258, 500), (204, 300))
 PLAYER_TO_POSITION = {
@@ -148,6 +149,7 @@ ALLOWED_KEYS = [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pyga
 
 
 class Meta:  # Changeable Global Variables
+    DEBUG_INFO = []
     PLAYER_COUNT = None
     CURRENT_STATE = ScreenState.START
     TURN_STAGE = TurnStage.ROLL_DICE
@@ -161,6 +163,7 @@ class Meta:  # Changeable Global Variables
     DISPLAY_CARD = None
     CARD_HANDS_ACTIVE = True
     SHOW_HAND = None
+    CARD_TO_REMOVE = None
     # Global Events
     TEXT_CONFIRMED = False
     BUTTONS_ENABLED = True
