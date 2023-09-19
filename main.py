@@ -10,6 +10,7 @@ from dice import Dice
 
 
 D6 = Dice(6, D6_IMAGES)
+D6_2 = Dice(6, D6_IMAGES)
 
 
 pygame.display.set_caption("Tyche's Game")
@@ -334,6 +335,7 @@ def draw_window():
         elif play_game_button.check_click():
             Meta.CURRENT_STATE = ScreenState.PLAYING_GAME
             D6.enabled = True
+            D6_2.enabled = True
             for x in range(len(Meta.PLAYERS)):
                 BOARD_SQUARES[0].players.append(Meta.PLAYERS[x])
     elif Meta.CURRENT_STATE == ScreenState.BLUE_CARD_GUIDE:
@@ -440,6 +442,9 @@ def draw_window():
                 Meta.CARD_HANDS_ACTIVE = False
                 if Meta.CARDS_TO_DRAW is not None:
                     Meta.CARDS_TO_DRAW = max(Meta.CARDS_TO_DRAW - 1, 0)
+                    if Meta.CARDS_TO_DRAW == 0:
+                        Meta.CARDS_TO_DRAW = None
+                        Meta.TURN_STAGE = TurnStage.END_TURN
                 Meta.DISPLAY_CARD = None
         for x in range(len(BOARD_SQUARES)):  # Draw Squares
             square = BOARD_SQUARES[x]
@@ -455,7 +460,7 @@ def draw_window():
             for i in range(len(square.players)):
                 player_image = square.players[i].playerPiece
                 WINDOW.blit(player_image, ((square.center[0] + PLAYER_TO_POSITION[i][0]) - 14, (square.center[1] + PLAYER_TO_POSITION[i][1]) - 14))
-        if Meta.SHOW_HAND is None: check_hover_boxes()
+        if Meta.SHOW_HAND is None and Meta.CHOOSE_PLAYERS is None: check_hover_boxes()
         if Meta.SHOW_HAND == CardType.BLUE:
             Meta.HOVER_BOXES.clear()
             WINDOW.fill(PASTEL_GREEN)
@@ -480,6 +485,23 @@ def draw_window():
                 draw_card(current_player.redDeck[x], CARD_TO_POSITION[x], 2)
             Meta.BUTTONS_ENABLED = False
             check_hover_boxes()
+        elif Meta.CHOOSE_PLAYERS is not None:
+            Meta.HOVER_BOXES.clear()
+            WINDOW.fill(PASTEL_GREEN)
+            draw_text("Choose a Player:", MEDIUM_FONT, ORANGE, (960, 69))
+            player = None
+            for x in range(len(Meta.PLAYERS)):
+                if Meta.PLAYERS[x] != current_player:
+                    button = Button(Meta.PLAYERS[x].playerName, CARD_TO_POSITION[x][0], CARD_TO_POSITION[x][1], 60)
+                    if button.check_click():
+                        player = Meta.PLAYERS[x]
+            if player is not None:
+                if Meta.CHOOSE_PLAYERS == "Blue Three":
+                    for x in range(len(Meta.PLAYERS)):
+                        if Meta.PLAYERS[x] != player and Meta.PLAYERS[x] != current_player:
+                            Meta.PLAYERS[x].redDeck.append(RED_DRAW_DECK.pop())
+                    Meta.CHOOSE_PLAYERS = None
+            Meta.BUTTONS_ENABLED = False
         elif Meta.TURN_STAGE == TurnStage.ROLL_DICE:  # Rolling the Movement Dice
             if current_player.missNextTurn:
                 draw_text("You don't get to take this turn", SMALL_FONT, BLACK, (1680, 240))
@@ -491,20 +513,51 @@ def draw_window():
                     else:
                         Meta.CURRENT_PLAYER += 1
                     D6.enabled = True
+                    D6_2.enabled = True
             else:
-                draw_text("Roll the d6 to move:", SMALL_FONT, BLACK, (1680, 240))
-                draw_dice(D6, (1680, 330), 2)
-                if D6.check_click():
-                    Meta.TURN_STAGE = TurnStage.MOVEMENT
+                if Meta.ROLLING_WITH_ADVANTAGE and Meta.DICE_ROLLED == 2:
+                    draw_text("Pick a dice to use:", SMALL_FONT, BLACK, (1680, 240))
+                    draw_dice(D6, (1628, 330), 2)
+                    draw_dice(D6_2, (1732, 330), 2)
+                    if D6.check_click(False):
+                        Meta.ROLLING_WITH_ADVANTAGE = False
+                        Meta.DICE_ROLLED = 0
+                        Meta.SQUARES_TO_MOVE = D6.sideFacing
+                        Meta.TURN_STAGE = TurnStage.MOVEMENT
+                        Meta.DICE_USED = (D6, D6_2)
+                    if D6_2.check_click(False):
+                        Meta.ROLLING_WITH_ADVANTAGE = False
+                        Meta.DICE_ROLLED = 0
+                        Meta.SQUARES_TO_MOVE = D6_2.sideFacing
+                        Meta.TURN_STAGE = TurnStage.MOVEMENT
+                        Meta.DICE_USED = (D6_2, D6)
+                else:
+                    draw_text("Roll d6 to move:", SMALL_FONT, BLACK, (1680, 240))
+                    if not Meta.ROLLING_WITH_ADVANTAGE:
+                        draw_dice(D6, (1680, 330), 2)
+                        if D6.check_click():
+                            Meta.TURN_STAGE = TurnStage.MOVEMENT
+                            Meta.DICE_USED = (D6, D6_2)
+                            Meta.SQUARES_TO_MOVE = D6.sideFacing
+                    else:
+                        draw_dice(D6, (1628, 330), 2)
+                        draw_dice(D6_2, (1732, 330), 2)
+                        if D6.check_click():
+                            Meta.DICE_ROLLED += 1
+                        if D6_2.check_click():
+                            Meta.DICE_ROLLED += 1
+                        if Meta.DICE_ROLLED == 2:
+                            D6.enabled = True
+                            D6_2.enabled = True
         elif Meta.TURN_STAGE == TurnStage.MOVEMENT:  # Moving the Current Player
-            draw_dice(D6, (1680, 330), 2)
+            draw_dice(Meta.DICE_USED[0], (1680, 330), 2)
             BOARD_SQUARES[current_player.currentSquare].players.remove(current_player)
-            current_player.currentSquare = min(99, current_player.currentSquare + D6.sideFacing)
+            current_player.currentSquare = min(99, current_player.currentSquare + Meta.SQUARES_TO_MOVE)
             BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
             Meta.TURN_STAGE = TurnStage.SQUARE_ACTION
             Meta.CAN_PROGRESS = False
         elif Meta.TURN_STAGE == TurnStage.SQUARE_ACTION:  # Doing what the Square wants
-            draw_dice(D6, (1680, 330), 2)
+            draw_dice(Meta.DICE_USED[0], (1680, 330), 2)
             current_square = BOARD_SQUARES[current_player.currentSquare]
             if current_player.currentSquare == 99:
                 Meta.TURN_STAGE = TurnStage.GAME_WON
@@ -516,6 +569,9 @@ def draw_window():
                         # On Draw Card Actions
                         Meta.CARDS_TO_DRAW -= 1
                         Meta.DISPLAY_CARD = None
+                        if Meta.CARDS_TO_DRAW == 0:
+                            Meta.CARDS_TO_DRAW = None
+                            Meta.TURN_STAGE = TurnStage.END_TURN
                     check_hover_boxes()
                 elif Meta.DISPLAY_CARD == CardType.RED:
                     draw_card(current_player.redDeck[len(current_player.redDeck) - 1], (1680, 380), 3)
@@ -524,6 +580,9 @@ def draw_window():
                         # On Draw Card Actions
                         Meta.CARDS_TO_DRAW -= 1
                         Meta.DISPLAY_CARD = None
+                        if Meta.CARDS_TO_DRAW == 0:
+                            Meta.CARDS_TO_DRAW = None
+                            Meta.TURN_STAGE = TurnStage.END_TURN
                     check_hover_boxes()
                 else:
                     if current_square.symbol == ONE_BLUE:
@@ -547,15 +606,21 @@ def draw_window():
                     elif current_square.symbol == MISS_TURN:
                         draw_text("You Miss your Next Turn", SMALL_FONT, BLACK, (1680, 240))
                         current_player.missNextTurn = True
-                        continue_button = Button("Continue", 1680, 600, 60)
+                        continue_button = Button("End Turn", 1680, 600, 60)
                         if continue_button.check_click():
-                            Meta.CAN_PROGRESS = True
+                            Meta.TURN_STAGE = TurnStage.ROLL_DICE
+                            if Meta.CURRENT_PLAYER == Meta.PLAYER_COUNT - 1:
+                                Meta.CURRENT_PLAYER = 0
+                            else:
+                                Meta.CURRENT_PLAYER += 1
+                            D6.enabled = True
+                            D6_2.enabled = True
                     elif current_square.symbol is None:
                         Meta.CAN_PROGRESS = True
                     if Meta.CAN_PROGRESS:
                         Meta.TURN_STAGE = TurnStage.END_TURN
         elif Meta.TURN_STAGE == TurnStage.END_TURN:
-            draw_dice(D6, (1680, 330), 2)
+            draw_dice(Meta.DICE_USED[0], (1680, 330), 2)
             continue_button = Button("Continue", 1680, 600, 60)
             if continue_button.check_click():
                 Meta.TURN_STAGE = TurnStage.ROLL_DICE
@@ -564,6 +629,7 @@ def draw_window():
                 else:
                     Meta.CURRENT_PLAYER += 1
                 D6.enabled = True
+                D6_2.enabled = True
         elif Meta.TURN_STAGE == TurnStage.GAME_WON:
             draw_text(current_player.playerName + " has Won!!", SMALL_FONT, BLACK, (1680, 240))
         if Meta.SHOW_HAND is None:
@@ -652,14 +718,15 @@ def check_get_card(card_colour):
 
 
 def check_card_usable(card):
+    if Meta.PLAYERS[Meta.CURRENT_PLAYER].missNextTurn: return False
     if card.cardType == CardType.BLUE:
         match card.cardValue:
-            case CardValue.ACE:  # True if there is a non-Joker Card in the Discard Pile
+            case CardValue.ACE:  # True if there is a non-Joker and non-Ace Card in the Discard Pile
                 for card in DISCARD_PILE:
-                    if card.cardValue != CardValue.JOKER:
+                    if card.cardValue != CardValue.JOKER and card.cardValue != CardValue.ACE:
                         return True
-            case CardValue.TWO:  # True anytime you need to roll a dice
-                if Meta.TURN_STAGE == TurnStage.ROLL_DICE:
+            case CardValue.TWO:  # True anytime you need to roll a dice but not when in disadvantage
+                if Meta.TURN_STAGE == TurnStage.ROLL_DICE and not Meta.ROLLING_WITH_DISADVANTAGE:
                     return True
             case CardValue.THREE:  # Always True
                 return True
@@ -722,11 +789,25 @@ def check_card_usable(card):
 def perform_card_action(card):
     if card.cardType == CardType.BLUE:
         match card.cardValue:
-            case CardValue.ACE:
+            case CardValue.ACE:  # Swaps with the last non-Joker and non-Ace card in the Discard Pile
+                for x in range(len(DISCARD_PILE)):
+                    if DISCARD_PILE[len(DISCARD_PILE) - (x + 1)].cardValue != CardValue.JOKER and DISCARD_PILE[len(DISCARD_PILE) - (x + 1)].cardValue != CardValue.ACE:
+                        if DISCARD_PILE[len(DISCARD_PILE) - (x + 1)].cardType == CardType.BLUE:
+                            Meta.PLAYERS[Meta.CURRENT_PLAYER].blueDeck.append(DISCARD_PILE[len(DISCARD_PILE) - (x + 1)])
+                        else:
+                            Meta.PLAYERS[Meta.CURRENT_PLAYER].redDeck.append(DISCARD_PILE[len(DISCARD_PILE) - (x + 1)])
+                        DISCARD_PILE.remove(DISCARD_PILE[len(DISCARD_PILE) - (x + 1)])
+                        break
                 print("Card Used: " + card.displayName)
-            case CardValue.TWO:
+            case CardValue.TWO:  # Rolls dice with advantage
+                Meta.ROLLING_WITH_ADVANTAGE = True
                 print("Card Used: " + card.displayName)
-            case CardValue.THREE:
+            case CardValue.THREE:  # Open menu for choosing another player and give all others a Red Card
+                if Meta.PLAYER_COUNT > 3: Meta.CHOOSE_PLAYERS = "Blue Three"
+                else:
+                    for player in Meta.PLAYERS:
+                        if player != Meta.PLAYERS[Meta.CURRENT_PLAYER]:
+                            player.redDeck.append(RED_DRAW_DECK.pop())
                 print("Card Used: " + card.displayName)
             case CardValue.FOUR:
                 print("Card Used: " + card.displayName)
@@ -847,13 +928,23 @@ def main():  # Game Loop
         Meta.DEBUG_INFO.clear()
         if Meta.CURRENT_STATE == ScreenState.PLAYING_GAME:
             Meta.DEBUG_INFO.append((str(Meta.TURN_STAGE), BLACK))
+            Meta.DEBUG_INFO.append(("Rolling with Advantage: " + str(Meta.ROLLING_WITH_ADVANTAGE), BLACK))
+            Meta.DEBUG_INFO.append(("D6 One: " + str(D6.enabled), BLACK))
+            Meta.DEBUG_INFO.append(("D6 Two: " + str(D6_2.enabled), BLACK))
+            Meta.DEBUG_INFO.append(("Dice Rolled: " + str(Meta.DICE_ROLLED), BLACK))
             Meta.DEBUG_INFO.append(("Discard Pile Size: " + str(len(DISCARD_PILE)), BLACK))
+            for card in DISCARD_PILE:
+                Meta.DEBUG_INFO.append((card.displayName, BLACK))
             Meta.DEBUG_INFO.append(("Player Turn Order:", BLACK))
             for player in Meta.PLAYERS:
                 text = player.playerName
                 if player == Meta.PLAYERS[Meta.CURRENT_PLAYER]:
                     text += " -"
                 Meta.DEBUG_INFO.append((text, player.playerColour))
+                for blue_card in player.blueDeck:
+                    Meta.DEBUG_INFO.append((blue_card.displayName, BLACK))
+                for red_card in player.redDeck:
+                    Meta.DEBUG_INFO.append((red_card.displayName, BLACK))
         # Game Events
         Meta.LEFT_MOUSE_RELEASED = False
         Meta.LEFT_ARROW_DOWN = False

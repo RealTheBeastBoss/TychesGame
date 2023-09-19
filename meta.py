@@ -164,6 +164,13 @@ class Meta:  # Changeable Global Variables
     CARD_HANDS_ACTIVE = True
     SHOW_HAND = None
     CARD_TO_REMOVE = None
+    ROLLING_WITH_ADVANTAGE = False
+    ROLLING_WITH_DISADVANTAGE = False
+    DICE_ROLLED = 0
+    SQUARES_TO_MOVE = 0
+    DICE_USED = None
+    CHOOSE_PLAYERS = None
+    CHOSEN_PLAYER = None
     # Global Events
     TEXT_CONFIRMED = False
     BUTTONS_ENABLED = True
