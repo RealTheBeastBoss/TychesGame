@@ -171,6 +171,8 @@ class Meta:  # Changeable Global Variables
     DICE_USED = None
     CHOOSE_PLAYERS = None
     CHOSEN_PLAYER = None
+    CHOOSE_DICE = None
+    CHOOSE_SQUARE = None
     # Global Events
     TEXT_CONFIRMED = False
     BUTTONS_ENABLED = True

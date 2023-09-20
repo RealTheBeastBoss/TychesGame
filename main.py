@@ -1,7 +1,6 @@
 import random
 
 import pygame.draw
-
 from card import *
 from meta import *
 from button import Button
@@ -450,17 +449,25 @@ def draw_window():
             square = BOARD_SQUARES[x]
             square_rect = pygame.Rect((square.center[0] - 44, square.center[1] - 44), (89, 89))
             pygame.draw.rect(WINDOW, WHITE, square_rect)
+            if square.symbol is not None: draw_game_image((square.symbol, (89, 89)), square.center, 1)
+            if square.hasBarrier:
+                if BOARD_SQUARES[x + 1].center[0] > square.center[0]:
+                    barrier_rect = pygame.Rect((square.center[0] + 34, square.center[1] - 39), (5, 79))
+                elif BOARD_SQUARES[x + 1].center[0] < square.center[0]:
+                    barrier_rect = pygame.Rect((square.center[0] - 39, square.center[1] - 39), (5, 79))
+                else:
+                    barrier_rect = pygame.Rect((square.center[0] - 39, square.center[1] - 39), (79, 5))
+                pygame.draw.rect(WINDOW, PASTEL_GREEN, barrier_rect)
             if x == 0:  # Start Square
                 draw_text("START", TINY_FONT, BLUE, square.center)
             elif x == 99:  # Finish Square
                 draw_text("FINISH", TINY_FONT, BLUE, square.center)
             else:
                 draw_text(str(x + 1), TINY_FONT, BLUE, (square.center[0] - 30, square.center[1] + 35))
-                if square.symbol is not None: draw_game_image((square.symbol, (89, 89)), square.center, 1)
             for i in range(len(square.players)):
                 player_image = square.players[i].playerPiece
                 WINDOW.blit(player_image, ((square.center[0] + PLAYER_TO_POSITION[i][0]) - 14, (square.center[1] + PLAYER_TO_POSITION[i][1]) - 14))
-        if Meta.SHOW_HAND is None and Meta.CHOOSE_PLAYERS is None: check_hover_boxes()
+        if Meta.SHOW_HAND is None and Meta.CHOOSE_PLAYERS is None and Meta.CHOOSE_PLAYERS is None and Meta.CHOOSE_SQUARE is None: check_hover_boxes()
         if Meta.SHOW_HAND == CardType.BLUE:
             Meta.HOVER_BOXES.clear()
             WINDOW.fill(PASTEL_GREEN)
@@ -501,6 +508,77 @@ def draw_window():
                         if Meta.PLAYERS[x] != player and Meta.PLAYERS[x] != current_player:
                             Meta.PLAYERS[x].redDeck.append(RED_DRAW_DECK.pop())
                     Meta.CHOOSE_PLAYERS = None
+                elif Meta.CHOOSE_PLAYERS == "Blue Five":
+                    Meta.CHOOSE_PLAYERS = None
+                    Meta.CHOOSE_DICE = player
+            Meta.BUTTONS_ENABLED = False
+        elif Meta.CHOOSE_DICE is not None:
+            Meta.HOVER_BOXES.clear()
+            WINDOW.fill(PASTEL_GREEN)
+            draw_text("Choose a Dice Value:", MEDIUM_FONT, ORANGE, (960, 69))
+            one_d6 = Dice(1, D6_IMAGES)
+            two_d6 = Dice(2, D6_IMAGES)
+            three_d6 = Dice(3, D6_IMAGES)
+            four_d6 = Dice(4, D6_IMAGES)
+            five_d6 = Dice(5, D6_IMAGES)
+            six_d6 = Dice(6, D6_IMAGES)
+            draw_dice(one_d6, CARD_TO_POSITION[0], 2)
+            draw_dice(two_d6, CARD_TO_POSITION[1], 2)
+            draw_dice(three_d6, CARD_TO_POSITION[2], 2)
+            draw_dice(four_d6, CARD_TO_POSITION[3], 2)
+            draw_dice(five_d6, CARD_TO_POSITION[4], 2)
+            draw_dice(six_d6, CARD_TO_POSITION[5], 2)
+            if one_d6.check_click(False):
+                Meta.CHOOSE_DICE.setNextRoll = 1
+                Meta.CHOOSE_DICE = None
+            if two_d6.check_click(False):
+                Meta.CHOOSE_DICE.setNextRoll = 2
+                Meta.CHOOSE_DICE = None
+            if three_d6.check_click(False):
+                Meta.CHOOSE_DICE.setNextRoll = 3
+                Meta.CHOOSE_DICE = None
+            if four_d6.check_click(False):
+                Meta.CHOOSE_DICE.setNextRoll = 4
+                Meta.CHOOSE_DICE = None
+            if five_d6.check_click(False):
+                Meta.CHOOSE_DICE.setNextRoll = 5
+                Meta.CHOOSE_DICE = None
+            if six_d6.check_click(False):
+                Meta.CHOOSE_DICE.setNextRoll = 6
+                Meta.CHOOSE_DICE = None
+            Meta.BUTTONS_ENABLED = False
+        elif Meta.CHOOSE_SQUARE is not None:
+            Meta.HOVER_BOXES.clear()
+            WINDOW.fill(PASTEL_GREEN)
+            for x in range(len(BOARD_SQUARES)):  # Draw Squares
+                square = BOARD_SQUARES[x]
+                square_rect = pygame.Rect((square.center[0] - 44, square.center[1] - 44), (89, 89))
+                pygame.draw.rect(WINDOW, WHITE, square_rect)
+                if square.symbol is not None: draw_game_image((square.symbol, (89, 89)), square.center, 1)
+                if square.hasBarrier:
+                    if BOARD_SQUARES[x + 1].center[0] > square.center[0]:
+                        barrier_rect = pygame.Rect((square.center[0] + 34, square.center[1] - 39), (5, 79))
+                    elif BOARD_SQUARES[x + 1].center[0] < square.center[0]:
+                        barrier_rect = pygame.Rect((square.center[0] - 39, square.center[1] - 39), (5, 79))
+                    else:
+                        barrier_rect = pygame.Rect((square.center[0] - 39, square.center[1] - 39), (79, 5))
+                    pygame.draw.rect(WINDOW, PASTEL_GREEN, barrier_rect)
+                if x == 0:  # Start Square
+                    draw_text("START", TINY_FONT, BLUE, square.center)
+                elif x == 99:  # Finish Square
+                    draw_text("FINISH", TINY_FONT, BLUE, square.center)
+                else:
+                    draw_text(str(x + 1), TINY_FONT, BLUE, (square.center[0] - 30, square.center[1] + 35))
+                for i in range(len(square.players)):
+                    player_image = square.players[i].playerPiece
+                    WINDOW.blit(player_image, ((square.center[0] + PLAYER_TO_POSITION[i][0]) - 14,
+                                               (square.center[1] + PLAYER_TO_POSITION[i][1]) - 14))
+            square_clicked = check_squares_clicked()
+            if square_clicked is not None:
+                if Meta.CHOOSE_SQUARE == "Blue Nine":
+                    if not square_clicked.hasBarrier:
+                        square_clicked.hasBarrier = True
+                        Meta.CHOOSE_SQUARE = None
             Meta.BUTTONS_ENABLED = False
         elif Meta.TURN_STAGE == TurnStage.ROLL_DICE:  # Rolling the Movement Dice
             if current_player.missNextTurn:
@@ -632,7 +710,7 @@ def draw_window():
                 D6_2.enabled = True
         elif Meta.TURN_STAGE == TurnStage.GAME_WON:
             draw_text(current_player.playerName + " has Won!!", SMALL_FONT, BLACK, (1680, 240))
-        if Meta.SHOW_HAND is None:
+        if Meta.SHOW_HAND is None and Meta.CHOOSE_DICE is None and Meta.CHOOSE_PLAYERS is None and Meta.CHOOSE_SQUARE is None:
             quit_button = Button("Quit", 360, 450, 60)
             if quit_button.check_click():
                 pygame.quit()
@@ -725,8 +803,8 @@ def check_card_usable(card):
                 for card in DISCARD_PILE:
                     if card.cardValue != CardValue.JOKER and card.cardValue != CardValue.ACE:
                         return True
-            case CardValue.TWO:  # True anytime you need to roll a dice but not when in disadvantage
-                if Meta.TURN_STAGE == TurnStage.ROLL_DICE and not Meta.ROLLING_WITH_DISADVANTAGE:
+            case CardValue.TWO:  # True anytime you need to roll a dice but not when in disadvantage or being controlled
+                if Meta.TURN_STAGE == TurnStage.ROLL_DICE and not Meta.ROLLING_WITH_DISADVANTAGE and Meta.PLAYERS[Meta.CURRENT_PLAYER].setNextRoll is None:
                     return True
             case CardValue.THREE:  # Always True
                 return True
@@ -740,8 +818,9 @@ def check_card_usable(card):
                 return True
             case CardValue.EIGHT:  # True after losing a defence roll
                 return True
-            case CardValue.NINE:  # Always True
-                return True
+            case CardValue.NINE:  # True before movement
+                if Meta.TURN_STAGE == TurnStage.ROLL_DICE:
+                    return True
             case CardValue.TEN:  # Never True (Card Uses Automatically)
                 return False
             case CardValue.JACK:  # True anytime you are about to roll for movement
@@ -812,6 +891,7 @@ def perform_card_action(card):
             case CardValue.FOUR:
                 print("Card Used: " + card.displayName)
             case CardValue.FIVE:
+                Meta.CHOOSE_PLAYERS = "Blue Five"
                 print("Card Used: " + card.displayName)
             case CardValue.SIX:
                 print("Card Used: " + card.displayName)
@@ -819,7 +899,8 @@ def perform_card_action(card):
                 print("Card Used: " + card.displayName)
             case CardValue.EIGHT:
                 print("Card Used: " + card.displayName)
-            case CardValue.NINE:
+            case CardValue.NINE:  # Tells the player to click on a square and place a magic barrier there
+                Meta.CHOOSE_SQUARE = "Blue Nine"
                 print("Card Used: " + card.displayName)
             case CardValue.TEN:
                 print("Card Used: " + card.displayName)
@@ -914,6 +995,13 @@ def check_hover_boxes():
                     draw_text(hover_box[1][x], TINY_FONT, BLACK, (rect_left_position + 5, rect_top_position + ((20 * x) + 5)), False)
 
 
+def check_squares_clicked():
+    for square in BOARD_SQUARES:
+        if square.currentRect.collidepoint(pygame.mouse.get_pos()) and Meta.LEFT_MOUSE_RELEASED:
+            return square
+    return None
+
+
 def display_debug_info():
     if DEBUG_MODE:
         for x in range(len(Meta.DEBUG_INFO)):
@@ -938,6 +1026,8 @@ def main():  # Game Loop
             Meta.DEBUG_INFO.append(("Player Turn Order:", BLACK))
             for player in Meta.PLAYERS:
                 text = player.playerName
+                if player.setNextRoll is not None:
+                    text += " Next Roll: " + str(player.setNextRoll)
                 if player == Meta.PLAYERS[Meta.CURRENT_PLAYER]:
                     text += " -"
                 Meta.DEBUG_INFO.append((text, player.playerColour))
