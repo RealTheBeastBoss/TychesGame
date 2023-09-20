@@ -1,7 +1,7 @@
 import pygame
-import os
-from enum import Enum
+import random
 from square import Square
+from card import *
 
 
 class ScreenState(Enum):
@@ -20,6 +20,7 @@ class TurnStage(Enum):
     ROLL_DICE = 1
     MOVEMENT = 2
     SQUARE_ACTION = 3
+    DRAW_CARDS = 4
     END_TURN = 42
     GAME_WON = 69
 
@@ -54,6 +55,210 @@ ONE_BLUE = pygame.image.load(os.path.join("Assets", "Symbols", "one_blue.png"))
 ONE_RED = pygame.image.load(os.path.join("Assets", "Symbols", "one_red.png"))
 MISS_TURN = pygame.image.load(os.path.join("Assets", "Symbols", "miss_turn.png"))
 
+# Game Cards
+# region
+BLUE_ACE_OF_HEARTS = Card("Blue Ace of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.ACE, "ace_hearts.png", (382, 92),
+                          "Use this card to swap with a non-Joker", "card on top of the Discard Pile")
+BLUE_TWO_OF_HEARTS = Card("Blue Two of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.TWO, "2_hearts.png", (340, 70),
+                          "Roll your next dice with advantage")
+BLUE_THREE_OF_HEARTS = Card("Blue Three of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.THREE, "3_hearts.png", (352, 92),
+                            "Other Player(s) get 1 Red Card, but", "you must choose one to spare")
+BLUE_FOUR_OF_HEARTS = Card("Blue Four of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.FOUR, "4_hearts.png", (360, 92),
+                           "Add a d4 Elemental Damage to your", "next Attack Roll")
+BLUE_FIVE_OF_HEARTS = Card("Blue Five of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.FIVE, "5_hearts.png", (280, 92),
+                           "You can choose the value of", "someone's next d6 Roll")
+BLUE_SIX_OF_HEARTS = Card("Blue Six of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.SIX, "6_hearts.png")
+BLUE_SEVEN_OF_HEARTS = Card("Blue Seven of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.SEVEN, "7_hearts.png")
+BLUE_EIGHT_OF_HEARTS = Card("Blue Eight of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.EIGHT, "8_hearts.png", (425, 70),
+                            "Use this card as a shield against a Monster")
+BLUE_NINE_OF_HEARTS = Card("Blue Nine of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.NINE, "9_hearts.png", (250, 92),
+                           "Place a Magic Barrier on", "any square you choose")
+BLUE_TEN_OF_HEARTS = Card("Blue Ten of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.TEN, "10_hearts.png", (295, 92),
+                          "Sneak through the next Magic", "Barrier you come across")
+BLUE_JACK_OF_HEARTS = Card("Blue Jack of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.JACK, "jack_hearts.png", (392, 70),
+                                     "Make your next Movement Roll with 2 d6")
+BLUE_KING_OF_HEARTS = Card("Blue King of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.KING, "king_hearts.png")
+BLUE_QUEEN_OF_HEARTS = Card("Blue Queen of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.QUEEN, "queen_hearts.png", (437, 70),
+                            "Use this card to not draw a set of Red Cards")
+BLUE_ACE_OF_DIAMONDS = Card("Blue Ace of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.ACE, "ace_diamonds.png",
+                            (382, 92), "Use this card to swap with a non-Joker", "card on top of the Discard Pile")
+BLUE_TWO_OF_DIAMONDS = Card("Blue Two of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.TWO, "2_diamonds.png", (340, 70),
+                          "Roll your next dice with advantage")
+BLUE_THREE_OF_DIAMONDS = Card("Blue Three of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.THREE, "3_diamonds.png", (352, 92),
+                            "Other Player(s) get 1 Red Card, but", "you must choose one to spare")
+BLUE_FOUR_OF_DIAMONDS = Card("Blue Four of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.FOUR, "4_diamonds.png", (360, 92),
+                           "Add a d4 Elemental Damage to your", "next Attack Roll")
+BLUE_FIVE_OF_DIAMONDS = Card("Blue Five of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.FIVE, "5_diamonds.png", (280, 92),
+                           "You can choose the value of", "someone's next d6 Roll")
+BLUE_SIX_OF_DIAMONDS = Card("Blue Six of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.SIX, "6_diamonds.png")
+BLUE_SEVEN_OF_DIAMONDS = Card("Blue Seven of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.SEVEN, "7_diamonds.png")
+BLUE_EIGHT_OF_DIAMONDS = Card("Blue Eight of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.EIGHT, "8_diamonds.png", (425, 70),
+                            "Use this card as a shield against a Monster")
+BLUE_NINE_OF_DIAMONDS = Card("Blue Nine of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.NINE, "9_diamonds.png", (250, 92),
+                           "Place a Magic Barrier on", "any square you choose")
+BLUE_TEN_OF_DIAMONDS = Card("Blue Ten of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.TEN, "10_diamonds.png", (295, 92),
+                          "Sneak through the next Magic", "Barrier you come across")
+BLUE_JACK_OF_DIAMONDS = Card("Blue Jack of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.JACK, "jack_diamonds.png", (392, 70),
+                                     "Make your next Movement Roll with 2 d6")
+BLUE_KING_OF_DIAMONDS = Card("Blue King of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.KING, "king_diamonds.png")
+BLUE_QUEEN_OF_DIAMONDS = Card("Blue Queen of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.QUEEN, "queen_diamonds.png", (437, 70),
+                            "Use this card to not draw a set of Red Cards")
+BLUE_ACE_OF_CLUBS = Card("Blue Ace of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.ACE, "ace_clubs.png", (382, 92),
+                          "Use this card to swap with a non-Joker", "card on top of the Discard Pile")
+BLUE_TWO_OF_CLUBS = Card("Blue Two of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.TWO, "2_clubs.png", (340, 70),
+                          "Roll your next dice with advantage")
+BLUE_THREE_OF_CLUBS = Card("Blue Three of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.THREE, "3_clubs.png", (352, 92),
+                            "Other Player(s) get 1 Red Card, but", "you must choose one to spare")
+BLUE_FOUR_OF_CLUBS = Card("Blue Four of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.FOUR, "4_clubs.png", (360, 92),
+                           "Add a d4 Elemental Damage to your", "next Attack Roll")
+BLUE_FIVE_OF_CLUBS = Card("Blue Five of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.FIVE, "5_clubs.png", (280, 92),
+                           "You can choose the value of", "someone's next d6 Roll")
+BLUE_SIX_OF_CLUBS = Card("Blue Six of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.SIX, "6_clubs.png")
+BLUE_SEVEN_OF_CLUBS = Card("Blue Seven of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.SEVEN, "7_clubs.png")
+BLUE_EIGHT_OF_CLUBS = Card("Blue Eight of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.EIGHT, "8_clubs.png", (425, 70),
+                            "Use this card as a shield against a Monster")
+BLUE_NINE_OF_CLUBS = Card("Blue Nine of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.NINE, "9_clubs.png", (250, 92),
+                           "Place a Magic Barrier on", "any square you choose")
+BLUE_TEN_OF_CLUBS = Card("Blue Ten of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.TEN, "10_clubs.png", (295, 92),
+                          "Sneak through the next Magic", "Barrier you come across")
+BLUE_JACK_OF_CLUBS = Card("Blue Jack of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.JACK, "jack_clubs.png", (392, 70),
+                                     "Make your next Movement Roll with 2 d6")
+BLUE_KING_OF_CLUBS = Card("Blue King of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.KING, "king_clubs.png")
+BLUE_QUEEN_OF_CLUBS = Card("Blue Queen of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.QUEEN, "queen_clubs.png", (437, 70),
+                            "Use this card to not draw a set of Red Cards")
+BLUE_ACE_OF_SPADES = Card("Blue Ace of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.ACE, "ace_spades.png", (382, 92),
+                          "Use this card to swap with a non-Joker", "card on top of the Discard Pile")
+BLUE_TWO_OF_SPADES = Card("Blue Two of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.TWO, "2_spades.png", (340, 70),
+                          "Roll your next dice with advantage")
+BLUE_THREE_OF_SPADES = Card("Blue Three of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.THREE, "3_spades.png", (352, 92),
+                            "Other Player(s) get 1 Red Card, but", "you must choose one to spare")
+BLUE_FOUR_OF_SPADES = Card("Blue Four of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.FOUR, "4_spades.png", (360, 92),
+                           "Add a d4 Elemental Damage to your", "next Attack Roll")
+BLUE_FIVE_OF_SPADES = Card("Blue Five of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.FIVE, "5_spades.png", (280, 92),
+                           "You can choose the value of", "someone's next d6 Roll")
+BLUE_SIX_OF_SPADES = Card("Blue Six of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.SIX, "6_spades.png")
+BLUE_SEVEN_OF_SPADES = Card("Blue Seven of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.SEVEN, "7_spades.png")
+BLUE_EIGHT_OF_SPADES = Card("Blue Eight of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.EIGHT, "8_spades.png", (425, 70),
+                            "Use this card as a shield against a Monster")
+BLUE_NINE_OF_SPADES = Card("Blue Nine of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.NINE, "9_spades.png", (250, 92),
+                           "Place a Magic Barrier on", "any square you choose")
+BLUE_TEN_OF_SPADES = Card("Blue Ten of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.TEN, "10_spades.png", (295, 92),
+                          "Sneak through the next Magic", "Barrier you come across")
+BLUE_JACK_OF_SPADES = Card("Blue Jack of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.JACK, "jack_spades.png", (392, 70),
+                                     "Make your next Movement Roll with 2 d6")
+BLUE_KING_OF_SPADES = Card("Blue King of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.KING, "king_spades.png")
+BLUE_QUEEN_OF_SPADES = Card("Blue Queen of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.QUEEN, "queen_spades.png", (437, 70),
+                            "Use this card to not draw a set of Red Cards")
+BLUE_RED_JOKER = Card("Blue Coloured Joker", CardType.BLUE, CardSuit.RED, CardValue.JOKER, "red_joker.png")
+BLUE_BLACK_JOKER = Card("Blue Gray Joker", CardType.BLUE, CardSuit.BLACK, CardValue.JOKER, "black_joker.png")
+BLUE_DRAW_DECK = [BLUE_ACE_OF_HEARTS, BLUE_TWO_OF_HEARTS, BLUE_THREE_OF_HEARTS, BLUE_FOUR_OF_HEARTS, BLUE_FIVE_OF_HEARTS, BLUE_SIX_OF_HEARTS,
+                  BLUE_SEVEN_OF_HEARTS, BLUE_EIGHT_OF_HEARTS, BLUE_NINE_OF_HEARTS, BLUE_TEN_OF_HEARTS, BLUE_JACK_OF_HEARTS, BLUE_KING_OF_HEARTS,
+                  BLUE_QUEEN_OF_HEARTS, BLUE_ACE_OF_DIAMONDS, BLUE_TWO_OF_DIAMONDS, BLUE_THREE_OF_DIAMONDS, BLUE_FOUR_OF_DIAMONDS, BLUE_FIVE_OF_DIAMONDS,
+                  BLUE_SIX_OF_DIAMONDS, BLUE_SEVEN_OF_DIAMONDS, BLUE_EIGHT_OF_DIAMONDS, BLUE_NINE_OF_DIAMONDS, BLUE_TEN_OF_DIAMONDS, BLUE_JACK_OF_DIAMONDS,
+                  BLUE_KING_OF_DIAMONDS, BLUE_QUEEN_OF_DIAMONDS, BLUE_ACE_OF_CLUBS, BLUE_TWO_OF_CLUBS, BLUE_THREE_OF_CLUBS, BLUE_FOUR_OF_CLUBS,
+                  BLUE_FIVE_OF_CLUBS, BLUE_SIX_OF_CLUBS, BLUE_SEVEN_OF_CLUBS, BLUE_EIGHT_OF_CLUBS, BLUE_NINE_OF_CLUBS, BLUE_TEN_OF_CLUBS,
+                  BLUE_JACK_OF_CLUBS, BLUE_KING_OF_CLUBS, BLUE_QUEEN_OF_CLUBS, BLUE_ACE_OF_SPADES, BLUE_TWO_OF_SPADES, BLUE_THREE_OF_SPADES,
+                  BLUE_FOUR_OF_SPADES, BLUE_FIVE_OF_SPADES, BLUE_SIX_OF_SPADES, BLUE_SEVEN_OF_SPADES, BLUE_EIGHT_OF_SPADES, BLUE_NINE_OF_SPADES,
+                  BLUE_TEN_OF_SPADES, BLUE_JACK_OF_SPADES, BLUE_KING_OF_SPADES, BLUE_QUEEN_OF_SPADES, BLUE_BLACK_JOKER, BLUE_RED_JOKER]
+random.shuffle(BLUE_DRAW_DECK)
+RED_ACE_OF_HEARTS = Card("Red Ace of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.ACE, "ace_hearts.png")
+RED_TWO_OF_HEARTS = Card("Red Two of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.TWO, "2_hearts.png", (368, 70),
+                          "Roll your next dice with disadvantage")
+RED_THREE_OF_HEARTS = Card("Red Three of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.THREE, "3_hearts.png", (358, 92),
+                            "Other Player(s) get 1 Blue Card, but", "you must choose one to miss out")
+RED_FOUR_OF_HEARTS = Card("Red Four of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.FOUR, "4_hearts.png", (355, 92),
+                           "Subtract a d4 from your next Attack", "Roll, you've been poisoned")
+RED_FIVE_OF_HEARTS = Card("Red Five of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.FIVE, "5_hearts.png", (280, 92),
+                           "Someone chooses the value", "of your next d6 Roll")
+RED_SIX_OF_HEARTS = Card("Red Six of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.SIX, "6_hearts.png")
+RED_SEVEN_OF_HEARTS = Card("Red Seven of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.SEVEN, "7_hearts.png")
+RED_EIGHT_OF_HEARTS = Card("Red Eight of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.EIGHT, "8_hearts.png", (335, 70),
+                           "Lowers a successful defence to 2")
+RED_NINE_OF_HEARTS = Card("Red Nine of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.NINE, "9_hearts.png", (270, 92),
+                          "Other Players agree where", "to put a Magic Barrier")
+RED_TEN_OF_HEARTS = Card("Red Ten of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.TEN, "10_hearts.png")
+RED_JACK_OF_HEARTS = Card("Red Jack of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.JACK, "jack_hearts.png", (392, 70),
+                                     "Make your next Movement Roll with 1 d4")
+RED_KING_OF_HEARTS = Card("Red King of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.KING, "king_hearts.png")
+RED_QUEEN_OF_HEARTS = Card("Red Queen of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.QUEEN, "queen_hearts.png", (248, 92),
+                           "Blocks you from drawing", "next set of Blue Cards")
+RED_ACE_OF_DIAMONDS = Card("Red Ace of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.ACE, "ace_diamonds.png")
+RED_TWO_OF_DIAMONDS = Card("Red Two of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.TWO, "2_diamonds.png", (368, 70),
+                          "Roll your next dice with disadvantage")
+RED_THREE_OF_DIAMONDS = Card("Red Three of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.THREE, "3_diamonds.png", (358, 92),
+                            "Other Player(s) get 1 Blue Card, but", "you must choose one to miss out")
+RED_FOUR_OF_DIAMONDS = Card("Red Four of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.FOUR, "4_diamonds.png", (355, 92),
+                           "Subtract a d4 from your next Attack", "Roll, you've been poisoned")
+RED_FIVE_OF_DIAMONDS = Card("Red Five of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.FIVE, "5_diamonds.png", (280, 92),
+                           "Someone chooses the value", "of your next d6 Roll")
+RED_SIX_OF_DIAMONDS = Card("Red Six of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.SIX, "6_diamonds.png")
+RED_SEVEN_OF_DIAMONDS = Card("Red Seven of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.SEVEN, "7_diamonds.png")
+RED_EIGHT_OF_DIAMONDS = Card("Red Eight of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.EIGHT, "8_diamonds.png", (335, 70),
+                           "Lowers a successful defence to 2")
+RED_NINE_OF_DIAMONDS = Card("Red Nine of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.NINE, "9_diamonds.png", (270, 92),
+                          "Other Players agree where", "to put a Magic Barrier")
+RED_TEN_OF_DIAMONDS = Card("Red Ten of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.TEN, "10_diamonds.png")
+RED_JACK_OF_DIAMONDS = Card("Red Jack of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.JACK, "jack_diamonds.png", (392, 70),
+                                     "Make your next Movement Roll with 1 d4")
+RED_KING_OF_DIAMONDS = Card("Red King of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.KING, "king_diamonds.png")
+RED_QUEEN_OF_DIAMONDS = Card("Red Queen of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.QUEEN, "queen_diamonds.png", (248, 92),
+                           "Blocks you from drawing", "next set of Blue Cards")
+RED_ACE_OF_CLUBS = Card("Red Ace of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.ACE, "ace_clubs.png")
+RED_TWO_OF_CLUBS = Card("Red Two of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.TWO, "2_clubs.png", (368, 70),
+                          "Roll your next dice with disadvantage")
+RED_THREE_OF_CLUBS = Card("Red Three of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.THREE, "3_clubs.png", (358, 92),
+                            "Other Player(s) get 1 Blue Card, but", "you must choose one to miss out")
+RED_FOUR_OF_CLUBS = Card("Red Four of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.FOUR, "4_clubs.png", (355, 92),
+                           "Subtract a d4 from your next Attack", "Roll, you've been poisoned")
+RED_FIVE_OF_CLUBS = Card("Red Five of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.FIVE, "5_clubs.png", (280, 92),
+                           "Someone chooses the value", "of your next d6 Roll")
+RED_SIX_OF_CLUBS = Card("Red Six of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.SIX, "6_clubs.png")
+RED_SEVEN_OF_CLUBS = Card("Red Seven of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.SEVEN, "7_clubs.png")
+RED_EIGHT_OF_CLUBS = Card("Red Eight of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.EIGHT, "8_clubs.png", (335, 70),
+                           "Lowers a successful defence to 2")
+RED_NINE_OF_CLUBS = Card("Red Nine of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.NINE, "9_clubs.png", (270, 92),
+                          "Other Players agree where", "to put a Magic Barrier")
+RED_TEN_OF_CLUBS = Card("Red Ten of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.TEN, "10_clubs.png")
+RED_JACK_OF_CLUBS = Card("Red Jack of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.JACK, "jack_clubs.png", (392, 70),
+                                     "Make your next Movement Roll with 1 d4")
+RED_KING_OF_CLUBS = Card("Red King of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.KING, "king_clubs.png")
+RED_QUEEN_OF_CLUBS = Card("Red Queen of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.QUEEN, "queen_clubs.png", (248, 92),
+                           "Blocks you from drawing", "next set of Blue Cards")
+RED_ACE_OF_SPADES = Card("Red Ace of Spades", CardType.RED, CardSuit.SPADES, CardValue.ACE, "ace_spades.png")
+RED_TWO_OF_SPADES = Card("Red Two of Spades", CardType.RED, CardSuit.SPADES, CardValue.TWO, "2_spades.png", (368, 70),
+                          "Roll your next dice with disadvantage")
+RED_THREE_OF_SPADES = Card("Red Three of Spades", CardType.RED, CardSuit.SPADES, CardValue.THREE, "3_spades.png", (358, 92),
+                            "Other Player(s) get 1 Blue Card, but", "you must choose one to miss out")
+RED_FOUR_OF_SPADES = Card("Red Four of Spades", CardType.RED, CardSuit.SPADES, CardValue.FOUR, "4_spades.png", (355, 92),
+                           "Subtract a d4 from your next Attack", "Roll, you've been poisoned")
+RED_FIVE_OF_SPADES = Card("Red Five of Spades", CardType.RED, CardSuit.SPADES, CardValue.FIVE, "5_spades.png", (280, 92),
+                           "Someone chooses the value", "of your next d6 Roll")
+RED_SIX_OF_SPADES = Card("Red Six of Spades", CardType.RED, CardSuit.SPADES, CardValue.SIX, "6_spades.png")
+RED_SEVEN_OF_SPADES = Card("Red Seven of Spades", CardType.RED, CardSuit.SPADES, CardValue.SEVEN, "7_spades.png")
+RED_EIGHT_OF_SPADES = Card("Red Eight of Spades", CardType.RED, CardSuit.SPADES, CardValue.EIGHT, "8_spades.png", (335, 70),
+                           "Lowers a successful defence to 2")
+RED_NINE_OF_SPADES = Card("Red Nine of Spades", CardType.RED, CardSuit.SPADES, CardValue.NINE, "9_spades.png", (270, 92),
+                          "Other Players agree where", "to put a Magic Barrier")
+RED_TEN_OF_SPADES = Card("Red Ten of Spades", CardType.RED, CardSuit.SPADES, CardValue.TEN, "10_spades.png")
+RED_JACK_OF_SPADES = Card("Red Jack of Spades", CardType.RED, CardSuit.SPADES, CardValue.JACK, "jack_spades.png", (392, 70),
+                                     "Make your next Movement Roll with 1 d4")
+RED_KING_OF_SPADES = Card("Red King of Spades", CardType.RED, CardSuit.SPADES, CardValue.KING, "king_spades.png")
+RED_QUEEN_OF_SPADES = Card("Red Queen of Spades", CardType.RED, CardSuit.SPADES, CardValue.QUEEN, "queen_spades.png", (248, 92),
+                           "Blocks you from drawing", "next set of Blue Cards")
+RED_RED_JOKER = Card("Red Coloured Joker", CardType.RED, CardSuit.RED, CardValue.JOKER, "red_joker.png")
+RED_BLACK_JOKER = Card("Red Gray Joker", CardType.RED, CardSuit.BLACK, CardValue.JOKER, "black_joker.png")
+RED_DRAW_DECK = [RED_ACE_OF_HEARTS, RED_TWO_OF_HEARTS, RED_THREE_OF_HEARTS, RED_FOUR_OF_HEARTS, RED_FIVE_OF_HEARTS, RED_SIX_OF_HEARTS,
+                  RED_SEVEN_OF_HEARTS, RED_EIGHT_OF_HEARTS, RED_NINE_OF_HEARTS, RED_TEN_OF_HEARTS, RED_JACK_OF_HEARTS, RED_KING_OF_HEARTS,
+                  RED_QUEEN_OF_HEARTS, RED_ACE_OF_DIAMONDS, RED_TWO_OF_DIAMONDS, RED_THREE_OF_DIAMONDS, RED_FOUR_OF_DIAMONDS, RED_FIVE_OF_DIAMONDS,
+                  RED_SIX_OF_DIAMONDS, RED_SEVEN_OF_DIAMONDS, RED_EIGHT_OF_DIAMONDS, RED_NINE_OF_DIAMONDS, RED_TEN_OF_DIAMONDS, RED_JACK_OF_DIAMONDS,
+                  RED_KING_OF_DIAMONDS, RED_QUEEN_OF_DIAMONDS, RED_ACE_OF_CLUBS, RED_TWO_OF_CLUBS, RED_THREE_OF_CLUBS, RED_FOUR_OF_CLUBS,
+                  RED_FIVE_OF_CLUBS, RED_SIX_OF_CLUBS, RED_SEVEN_OF_CLUBS, RED_EIGHT_OF_CLUBS, RED_NINE_OF_CLUBS, RED_TEN_OF_CLUBS,
+                  RED_JACK_OF_CLUBS, RED_KING_OF_CLUBS, RED_QUEEN_OF_CLUBS, RED_ACE_OF_SPADES, RED_TWO_OF_SPADES, RED_THREE_OF_SPADES,
+                  RED_FOUR_OF_SPADES, RED_FIVE_OF_SPADES, RED_SIX_OF_SPADES, RED_SEVEN_OF_SPADES, RED_EIGHT_OF_SPADES, RED_NINE_OF_SPADES,
+                  RED_TEN_OF_SPADES, RED_JACK_OF_SPADES, RED_KING_OF_SPADES, RED_QUEEN_OF_SPADES, RED_BLACK_JOKER, RED_RED_JOKER]
+random.shuffle(RED_DRAW_DECK)
+DISCARD_PILE = []
+# endregion
 
 pygame.font.init()
 # Unchangeable Global Variables
@@ -158,14 +363,12 @@ class Meta:  # Changeable Global Variables
     CAN_TEXT_INPUT = False
     USER_TEXT = ""
     HOVER_BOXES = []
-    CAN_PROGRESS = False
-    CARDS_TO_DRAW = None
-    DISPLAY_CARD = None
     CARD_HANDS_ACTIVE = True
     SHOW_HAND = None
     CARD_TO_REMOVE = None
     ROLLING_WITH_ADVANTAGE = False
     ROLLING_WITH_DISADVANTAGE = False
+    ROLLING_DOUBLE = False
     DICE_ROLLED = 0
     SQUARES_TO_MOVE = 0
     DICE_USED = None
@@ -173,6 +376,8 @@ class Meta:  # Changeable Global Variables
     CHOSEN_PLAYER = None
     CHOOSE_DICE = None
     CHOOSE_SQUARE = None
+    CARDS_TO_DRAW = []
+    DISPLAYING_CARD = False
     # Global Events
     TEXT_CONFIRMED = False
     BUTTONS_ENABLED = True
