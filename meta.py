@@ -17,10 +17,12 @@ class ScreenState(Enum):
 
 
 class TurnStage(Enum):
+    START_TURN = 0
     ROLL_DICE = 1
     MOVEMENT = 2
     SQUARE_ACTION = 3
     DRAW_CARDS = 4
+    ATTACK_MONSTER = 5
     END_TURN = 42
     GAME_WON = 69
 
@@ -48,12 +50,26 @@ D6_THREE = (pygame.image.load(os.path.join("Assets", "Dice", "d6_three.png")), (
 D6_FOUR = (pygame.image.load(os.path.join("Assets", "Dice", "d6_four.png")), (42, 42))
 D6_FIVE = (pygame.image.load(os.path.join("Assets", "Dice", "d6_five.png")), (42, 42))
 D6_SIX = (pygame.image.load(os.path.join("Assets", "Dice", "d6_six.png")), (42, 42))
+D12_ONE = (pygame.image.load(os.path.join("Assets", "Dice", "d12_one.png")), (41, 43))
+D12_TWO = (pygame.image.load(os.path.join("Assets", "Dice", "d12_two.png")), (41, 43))
+D12_THREE = (pygame.image.load(os.path.join("Assets", "Dice", "d12_three.png")), (41, 43))
+D12_FOUR = (pygame.image.load(os.path.join("Assets", "Dice", "d12_four.png")), (41, 43))
+D12_FIVE = (pygame.image.load(os.path.join("Assets", "Dice", "d12_five.png")), (41, 43))
+D12_SIX = (pygame.image.load(os.path.join("Assets", "Dice", "d12_six.png")), (41, 43))
+D12_SEVEN = (pygame.image.load(os.path.join("Assets", "Dice", "d12_seven.png")), (41, 43))
+D12_EIGHT = (pygame.image.load(os.path.join("Assets", "Dice", "d12_eight.png")), (41, 43))
+D12_NINE = (pygame.image.load(os.path.join("Assets", "Dice", "d12_nine.png")), (41, 43))
+D12_TEN = (pygame.image.load(os.path.join("Assets", "Dice", "d12_ten.png")), (41, 43))
+D12_ELEVEN = (pygame.image.load(os.path.join("Assets", "Dice", "d12_eleven.png")), (41, 43))
+D12_TWELVE = (pygame.image.load(os.path.join("Assets", "Dice", "d12_twelve.png")), (41, 43))
 BLUE_CARD_SYMBOL = (pygame.image.load(os.path.join("Assets", "Cards", "blue_back.png")), (68, 100))
 RED_CARD_SYMBOL = (pygame.image.load(os.path.join("Assets", "Cards", "red_back.png")), (68, 100))
+GAME_TITLE = (pygame.image.load(os.path.join("Assets", "Text", "title.png")), (617, 95))
 # Board Symbols
 ONE_BLUE = pygame.image.load(os.path.join("Assets", "Symbols", "one_blue.png"))
 ONE_RED = pygame.image.load(os.path.join("Assets", "Symbols", "one_red.png"))
 MISS_TURN = pygame.image.load(os.path.join("Assets", "Symbols", "miss_turn.png"))
+MONSTER = pygame.image.load(os.path.join("Assets", "Symbols", "monster.png"))
 
 # Game Cards
 # region
@@ -263,6 +279,7 @@ DISCARD_PILE = []
 pygame.font.init()
 # Unchangeable Global Variables
 FPS = 60
+BIGGER_FONT = pygame.font.Font(os.path.join("Fonts", "beastboss_font.ttf"), 120)
 BIG_FONT = pygame.font.Font(os.path.join("Fonts", "beastboss_font.ttf"), 90)
 MEDIUM_FONT = pygame.font.Font(os.path.join("Fonts", "beastboss_font.ttf"), 60)
 SMALL_FONT = pygame.font.Font(os.path.join("Fonts", "beastboss_font.ttf"), 30)
@@ -313,10 +330,24 @@ D6_IMAGES = {
     5: D6_FIVE,
     6: D6_SIX
 }
+D12_IMAGES = {
+    1: D12_ONE,
+    2: D12_TWO,
+    3: D12_THREE,
+    4: D12_FOUR,
+    5: D12_FIVE,
+    6: D12_SIX,
+    7: D12_SEVEN,
+    8: D12_EIGHT,
+    9: D12_NINE,
+    10: D12_TEN,
+    11: D12_ELEVEN,
+    12: D12_TWELVE
+}
 BOARD_SQUARES = [Square(None, (534, 965)), Square(ONE_RED, (628, 965)), Square(ONE_BLUE, (722, 965)),
                  Square(None, (816, 965)), Square(ONE_BLUE, (910, 965)), Square(None, (1009, 965)),
                  Square(ONE_BLUE, (1103, 965)), Square(ONE_BLUE, (1197, 965)), Square(None, (1291, 965)),
-                 Square(ONE_RED, (1385, 965)), Square(MISS_TURN, (1385, 871)), Square(None, (1291, 871)),
+                 Square(ONE_RED, (1385, 965)), Square(MISS_TURN, (1385, 871)), Square(MONSTER, (1291, 871), False, 6),
                  Square(None, (1197, 871)), Square(None, (1103, 871)), Square(None, (1009, 871)),
                  Square(None, (910, 871)), Square(None, (816, 871)), Square(None, (722, 871)),
                  Square(None, (628, 871)), Square(None, (534, 871)), Square(None, (534, 777)),

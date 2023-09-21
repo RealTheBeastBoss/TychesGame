@@ -7,6 +7,7 @@ from dice import Dice
 
 D6 = Dice(6, D6_IMAGES)
 D6_2 = Dice(6, D6_IMAGES)
+D12 = Dice(12, D12_IMAGES)
 
 
 pygame.display.set_caption("Tyche's Game")
@@ -14,27 +15,27 @@ pygame.display.set_caption("Tyche's Game")
 
 def draw_window():
     if Meta.CURRENT_STATE == ScreenState.START:  # Start Menu
-        WINDOW.fill(BLUE)
-        draw_text("Tyche's Game", BIG_FONT, ORANGE, (960, 69))
-        quit_button = Button("Quit", 960, 300, 60)
+        WINDOW.fill(GREEN)
+        draw_game_image(GAME_TITLE, (960, 90), 1)
+        quit_button = Button("Quit", 960, 610, 60)
         if quit_button.check_click():
             pygame.quit()
-        new_game_button = Button("New Game", 960, 200, 60)
+        new_game_button = Button("New Game", 960, 470, 60)
         if new_game_button.check_click():
             Meta.CURRENT_STATE = ScreenState.NEW_MENU
     elif Meta.CURRENT_STATE == ScreenState.NEW_MENU:  # New Game Menu
-        WINDOW.fill((100, 100, 100))
-        draw_text("How many players?", MEDIUM_FONT, ORANGE, (960, 69))
-        quit_button = Button("Quit", 960, 600, 60)
+        WINDOW.fill(GREEN)
+        draw_text("How many players?", BIG_FONT, ORANGE, (960, 100))
+        quit_button = Button("Quit", 1060, 600, 60)
         if quit_button.check_click():
             pygame.quit()
-        back_button = Button("Back", 800, 600, 60)
+        back_button = Button("Back", 860, 600, 60)
         if back_button.check_click():
             Meta.CURRENT_STATE = ScreenState.START
-        two_player_button = Button("Two Players", 300, 200, 60, BLUE, ORANGE, SMALL_FONT, 220)
-        three_player_button = Button("Three Players", 700, 200, 60, BLUE, ORANGE, SMALL_FONT, 220)
-        four_player_button = Button("Four Players", 300, 300, 60, BLUE, ORANGE, SMALL_FONT, 220)
-        five_player_button = Button("Five Players", 700, 300, 60, BLUE, ORANGE, SMALL_FONT, 220)
+        two_player_button = Button("Two Players", 820, 300, 60, BLUE, ORANGE, SMALL_FONT, 220)
+        three_player_button = Button("Three Players", 1100, 300, 60, BLUE, ORANGE, SMALL_FONT, 220)
+        four_player_button = Button("Four Players", 820, 400, 60, BLUE, ORANGE, SMALL_FONT, 220)
+        five_player_button = Button("Five Players", 1100, 400, 60, BLUE, ORANGE, SMALL_FONT, 220)
         if two_player_button.check_click():
             Meta.PLAYER_COUNT = 2
         elif three_player_button.check_click():
@@ -47,7 +48,7 @@ def draw_window():
             Meta.CAN_TEXT_INPUT = True
             Meta.CURRENT_STATE = ScreenState.PLAYER_NAMING
     elif Meta.CURRENT_STATE == ScreenState.PLAYER_NAMING:  # Player Naming Menu
-        WINDOW.fill(BLACK)
+        WINDOW.fill(GREEN)
         quit_button = Button("Quit", 960, 600, 60)
         if quit_button.check_click():
             pygame.quit()
@@ -194,6 +195,8 @@ def draw_window():
                         "Red Card", "", "Draw 1 from the Red Draw Deck")
         draw_game_image((MISS_TURN, (89, 89)), (960, 270), 2, True, WHITE, (330, 80),
                         "Miss a Turn", "", "Landing here traps you for a turn")
+        draw_game_image((MONSTER, (89, 89)), (1280, 270), 2, True, WHITE, (330, 80),
+                        "Monster", "", "This square contains a Monster")
         check_hover_boxes()
     elif Meta.CURRENT_STATE == ScreenState.PLAYING_GAME:
         WINDOW.fill(WHITE)
@@ -240,7 +243,13 @@ def draw_window():
             square = BOARD_SQUARES[x]
             square_rect = pygame.Rect((square.center[0] - 44, square.center[1] - 44), (89, 89))
             pygame.draw.rect(WINDOW, WHITE, square_rect)
-            if square.symbol is not None: draw_game_image((square.symbol, (89, 89)), square.center, 1)
+            if square.symbol is not None:
+                if square.symbol == MONSTER:
+                    if square.monsterHealth > 0:
+                        draw_game_image((square.symbol, (89, 89)), square.center, 1)
+                        draw_text(str(square.monsterHealth) + "hp", TINY_FONT, BLUE, (square.center[0], square.center[1] + 20), False)
+                else:
+                    draw_game_image((square.symbol, (89, 89)), square.center, 1)
             if square.hasBarrier:
                 if BOARD_SQUARES[x + 1].center[0] > square.center[0]:
                     barrier_rect = pygame.Rect((square.center[0] + 34, square.center[1] - 39), (5, 79))
@@ -371,7 +380,7 @@ def draw_window():
                         square_clicked.hasBarrier = True
                         Meta.CHOOSE_SQUARE = None
             Meta.BUTTONS_ENABLED = False
-        elif Meta.TURN_STAGE == TurnStage.ROLL_DICE:  # Rolling the Movement Dice
+        elif Meta.TURN_STAGE == TurnStage.START_TURN:
             if current_player.missNextTurn:
                 draw_text("You don't get to take this turn", SMALL_FONT, BLACK, (1680, 240))
                 continue_button = Button("Continue", 1680, 600, 60)
@@ -384,69 +393,83 @@ def draw_window():
                     D6.enabled = True
                     D6_2.enabled = True
             else:
-                for card in current_player.redDeck:
-                    if card.cardValue == CardValue.TWO:
-                        Meta.ROLLING_WITH_DISADVANTAGE = True
-                        Meta.CARD_TO_REMOVE = (current_player.redDeck, card)
-                        DISCARD_PILE.append(card)
-                if Meta.ROLLING_WITH_ADVANTAGE and Meta.DICE_ROLLED == 2:
-                    draw_text("Pick a dice to use:", SMALL_FONT, BLACK, (1680, 240))
+                if not Meta.ROLLING_DOUBLE:
+                    draw_dice(Meta.DICE_USED[0], (1680, 330), 2)
+                    draw_dice(Meta.DICE_USED[1], (1500, 760), 1)
+                else:
                     draw_dice(D6, (1628, 330), 2)
                     draw_dice(D6_2, (1732, 330), 2)
-                    if D6.check_click(False):
-                        Meta.ROLLING_WITH_ADVANTAGE = False
-                        Meta.DICE_ROLLED = 0
-                        Meta.SQUARES_TO_MOVE = D6.sideFacing
+                Meta.TURN_STAGE = TurnStage.ROLL_DICE
+        elif Meta.TURN_STAGE == TurnStage.ATTACK_MONSTER:
+            draw_text("Attack the Monster:", SMALL_FONT, BLACK, (1680, 240))
+            draw_dice(D6, (1500, 760), 1)
+            draw_dice(D6_2, (1560, 760), 1)
+        elif Meta.TURN_STAGE == TurnStage.ROLL_DICE:  # Rolling the Movement Dice
+            for card in current_player.redDeck:
+                if card.cardValue == CardValue.TWO:
+                    Meta.ROLLING_WITH_DISADVANTAGE = True
+                    Meta.CARD_TO_REMOVE = (current_player.redDeck, card)
+                    DISCARD_PILE.append(card)
+            if Meta.ROLLING_WITH_ADVANTAGE and Meta.DICE_ROLLED == 2:
+                draw_text("Pick a dice to use:", SMALL_FONT, BLACK, (1680, 240))
+                draw_dice(D6, (1628, 330), 2)
+                draw_dice(D6_2, (1732, 330), 2)
+                if D6.check_click(False):
+                    Meta.ROLLING_WITH_ADVANTAGE = False
+                    Meta.DICE_ROLLED = 0
+                    Meta.SQUARES_TO_MOVE = D6.sideFacing
+                    Meta.TURN_STAGE = TurnStage.MOVEMENT
+                    Meta.DICE_USED = (D6, D6_2)
+                if D6_2.check_click(False):
+                    Meta.ROLLING_WITH_ADVANTAGE = False
+                    Meta.DICE_ROLLED = 0
+                    Meta.SQUARES_TO_MOVE = D6_2.sideFacing
+                    Meta.TURN_STAGE = TurnStage.MOVEMENT
+                    Meta.DICE_USED = (D6_2, D6)
+            else:
+                draw_text("Roll d6 to move:", SMALL_FONT, BLACK, (1680, 240))
+                if not Meta.ROLLING_WITH_ADVANTAGE and not Meta.ROLLING_DOUBLE and not Meta.ROLLING_WITH_DISADVANTAGE:
+                    draw_dice(D6, (1680, 330), 2)
+                    draw_dice(D6_2, (1500, 760), 1)
+                    if D6.check_click():
                         Meta.TURN_STAGE = TurnStage.MOVEMENT
                         Meta.DICE_USED = (D6, D6_2)
-                    if D6_2.check_click(False):
-                        Meta.ROLLING_WITH_ADVANTAGE = False
-                        Meta.DICE_ROLLED = 0
-                        Meta.SQUARES_TO_MOVE = D6_2.sideFacing
-                        Meta.TURN_STAGE = TurnStage.MOVEMENT
-                        Meta.DICE_USED = (D6_2, D6)
-                else:
-                    draw_text("Roll d6 to move:", SMALL_FONT, BLACK, (1680, 240))
-                    if not Meta.ROLLING_WITH_ADVANTAGE and not Meta.ROLLING_DOUBLE and not Meta.ROLLING_WITH_DISADVANTAGE:
-                        draw_dice(D6, (1680, 330), 2)
-                        if D6.check_click():
-                            Meta.TURN_STAGE = TurnStage.MOVEMENT
+                        Meta.SQUARES_TO_MOVE = D6.sideFacing
+                elif Meta.ROLLING_WITH_ADVANTAGE:
+                    draw_dice(D6, (1628, 330), 2)
+                    draw_dice(D6_2, (1732, 330), 2)
+                    if D6.check_click():
+                        Meta.DICE_ROLLED += 1
+                    if D6_2.check_click():
+                        Meta.DICE_ROLLED += 1
+                    if Meta.DICE_ROLLED == 2:
+                        D6.enabled = True
+                        D6_2.enabled = True
+                elif Meta.ROLLING_WITH_DISADVANTAGE:
+                    draw_dice(D6, (1628, 330), 2)
+                    draw_dice(D6_2, (1732, 330), 2)
+                    D6.check_click()
+                    D6_2.check_click()
+                    if not D6.enabled and not D6_2.enabled:
+                        Meta.SQUARES_TO_MOVE = min(D6.sideFacing, D6_2.sideFacing)
+                        if D6.sideFacing > D6_2.sideFacing:
+                            Meta.DICE_USED = (D6_2, D6)
+                        else:
                             Meta.DICE_USED = (D6, D6_2)
-                            Meta.SQUARES_TO_MOVE = D6.sideFacing
-                    elif Meta.ROLLING_WITH_ADVANTAGE:
-                        draw_dice(D6, (1628, 330), 2)
-                        draw_dice(D6_2, (1732, 330), 2)
-                        if D6.check_click():
-                            Meta.DICE_ROLLED += 1
-                        if D6_2.check_click():
-                            Meta.DICE_ROLLED += 1
-                        if Meta.DICE_ROLLED == 2:
-                            D6.enabled = True
-                            D6_2.enabled = True
-                    elif Meta.ROLLING_WITH_DISADVANTAGE:
-                        draw_dice(D6, (1628, 330), 2)
-                        draw_dice(D6_2, (1732, 330), 2)
-                        D6.check_click()
-                        D6_2.check_click()
-                        if not D6.enabled and not D6_2.enabled:
-                            Meta.SQUARES_TO_MOVE = min(D6.sideFacing, D6_2.sideFacing)
-                            if D6.sideFacing > D6_2.sideFacing:
-                                Meta.DICE_USED = (D6_2, D6)
-                            else:
-                                Meta.DICE_USED = (D6, D6_2)
-                            Meta.TURN_STAGE = TurnStage.MOVEMENT
-                            Meta.ROLLING_WITH_DISADVANTAGE = False
-                    elif Meta.ROLLING_DOUBLE:
-                        draw_dice(D6, (1628, 330), 2)
-                        draw_dice(D6_2, (1732, 330), 2)
-                        D6.check_click()
-                        D6_2.check_click()
-                        if not D6.enabled and not D6_2.enabled:
-                            Meta.SQUARES_TO_MOVE = D6.sideFacing + D6_2.sideFacing
-                            Meta.TURN_STAGE = TurnStage.MOVEMENT
+                        Meta.TURN_STAGE = TurnStage.MOVEMENT
+                        Meta.ROLLING_WITH_DISADVANTAGE = False
+                elif Meta.ROLLING_DOUBLE:
+                    draw_dice(D6, (1628, 330), 2)
+                    draw_dice(D6_2, (1732, 330), 2)
+                    D6.check_click()
+                    D6_2.check_click()
+                    if not D6.enabled and not D6_2.enabled:
+                        Meta.SQUARES_TO_MOVE = D6.sideFacing + D6_2.sideFacing
+                        Meta.TURN_STAGE = TurnStage.MOVEMENT
         elif Meta.TURN_STAGE == TurnStage.MOVEMENT:  # Moving the Current Player
             if not Meta.ROLLING_DOUBLE:
                 draw_dice(Meta.DICE_USED[0], (1680, 330), 2)
+                draw_dice(Meta.DICE_USED[1], (1500, 760), 1)
             else:
                 draw_dice(D6, (1628, 330), 2)
                 draw_dice(D6_2, (1732, 330), 2)
@@ -467,6 +490,7 @@ def draw_window():
         elif Meta.TURN_STAGE == TurnStage.SQUARE_ACTION:  # Doing what the Square wants
             if not Meta.ROLLING_DOUBLE:
                 draw_dice(Meta.DICE_USED[0], (1680, 330), 2)
+                draw_dice(Meta.DICE_USED[1], (1500, 760), 1)
             else:
                 draw_dice(D6, (1628, 330), 2)
                 draw_dice(D6_2, (1732, 330), 2)
@@ -485,7 +509,7 @@ def draw_window():
                     current_player.missNextTurn = True
                     continue_button = Button("End Turn", 1680, 600, 60)
                     if continue_button.check_click():
-                        Meta.TURN_STAGE = TurnStage.ROLL_DICE
+                        Meta.TURN_STAGE = TurnStage.START_TURN
                         BOARD_SQUARES[current_player.currentSquare].hasBarrier = False
                         if Meta.CURRENT_PLAYER == Meta.PLAYER_COUNT - 1:
                             Meta.CURRENT_PLAYER = 0
@@ -493,6 +517,13 @@ def draw_window():
                             Meta.CURRENT_PLAYER += 1
                         D6.enabled = True
                         D6_2.enabled = True
+                        if Meta.ROLLING_DOUBLE: Meta.ROLLING_DOUBLE = False
+                elif current_square.symbol == MONSTER:
+                    if current_square.monsterHealth > 0:
+                        current_square.monsterAwake = True
+                        Meta.TURN_STAGE = TurnStage.ATTACK_MONSTER
+                    else:
+                        Meta.CAN_PROGRESS = True
                 elif current_square.symbol is None:
                     Meta.CAN_PROGRESS = True
                 if Meta.CAN_PROGRESS:
@@ -503,6 +534,7 @@ def draw_window():
             else:
                 if not Meta.ROLLING_DOUBLE:
                     draw_dice(Meta.DICE_USED[0], (1680, 330), 2)
+                    draw_dice(Meta.DICE_USED[1], (1500, 760), 1)
                 else:
                     draw_dice(D6, (1628, 330), 2)
                     draw_dice(D6_2, (1732, 330), 2)
@@ -521,7 +553,7 @@ def draw_window():
                             Meta.DISPLAYING_CARD = False
                             Meta.CARDS_TO_DRAW.pop(0)
                             if len(Meta.CARDS_TO_DRAW) == 0:
-                                Meta.TURN_STAGE = TurnStage.ROLL_DICE
+                                Meta.TURN_STAGE = TurnStage.START_TURN
                                 BOARD_SQUARES[current_player.currentSquare].hasBarrier = False
                                 if Meta.CURRENT_PLAYER == Meta.PLAYER_COUNT - 1:
                                     Meta.CURRENT_PLAYER = 0
@@ -545,7 +577,7 @@ def draw_window():
                             Meta.DISPLAYING_CARD = False
                             Meta.CARDS_TO_DRAW.pop(0)
                             if len(Meta.CARDS_TO_DRAW) == 0:
-                                Meta.TURN_STAGE = TurnStage.ROLL_DICE
+                                Meta.TURN_STAGE = TurnStage.START_TURN
                                 BOARD_SQUARES[current_player.currentSquare].hasBarrier = False
                                 if Meta.CURRENT_PLAYER == Meta.PLAYER_COUNT - 1:
                                     Meta.CURRENT_PLAYER = 0
@@ -557,12 +589,13 @@ def draw_window():
         elif Meta.TURN_STAGE == TurnStage.END_TURN:
             if not Meta.ROLLING_DOUBLE:
                 draw_dice(Meta.DICE_USED[0], (1680, 330), 2)
+                draw_dice(Meta.DICE_USED[1], (1500, 760), 1)
             else:
                 draw_dice(D6, (1628, 330), 2)
                 draw_dice(D6_2, (1732, 330), 2)
             continue_button = Button("End Turn", 1680, 600, 60)
             if continue_button.check_click():
-                Meta.TURN_STAGE = TurnStage.ROLL_DICE
+                Meta.TURN_STAGE = TurnStage.START_TURN
                 BOARD_SQUARES[current_player.currentSquare].hasBarrier = False
                 if Meta.CURRENT_PLAYER == Meta.PLAYER_COUNT - 1:
                     Meta.CURRENT_PLAYER = 0
@@ -598,7 +631,7 @@ def draw_text_input(location = (960, 400), max_length = 300):  # Creates Text In
         Meta.CAN_TEXT_INPUT = True
     input_rect_width = max(text_surface.get_width() + 10, 200)
     input_rect = pygame.Rect(location[0] - (input_rect_width / 2), location[1], input_rect_width, 60)
-    pygame.draw.rect(WINDOW, BLUE, input_rect, 2)
+    pygame.draw.rect(WINDOW, BLUE, input_rect, 5, 5)
     WINDOW.blit(text_surface, ((input_rect.x + (input_rect.width / 2)) - (text_surface.get_width() / 2), (input_rect.y + (input_rect.height / 2)) -
     text_surface.get_height() / 2))
 
@@ -888,6 +921,7 @@ def main():  # Game Loop
             Meta.DEBUG_INFO.append((str(Meta.TURN_STAGE), BLACK))
             Meta.DEBUG_INFO.append(("Rolling with Advantage: " + str(Meta.ROLLING_WITH_ADVANTAGE), BLACK))
             Meta.DEBUG_INFO.append(("Rolling with Disadvantage: " + str(Meta.ROLLING_WITH_DISADVANTAGE), BLACK))
+            Meta.DEBUG_INFO.append(("Rolling Double: " + str(Meta.ROLLING_DOUBLE), BLACK))
             Meta.DEBUG_INFO.append(("D6 One: " + str(D6.enabled), BLACK))
             Meta.DEBUG_INFO.append(("D6 Two: " + str(D6_2.enabled), BLACK))
             Meta.DEBUG_INFO.append(("Dice Rolled: " + str(Meta.DICE_ROLLED), BLACK))
