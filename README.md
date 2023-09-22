@@ -6,3 +6,4 @@ Link to Trello board: https://trello.com/invite/b/1fD4yVEb/ATTI8914c3537a0a61b44
 Don't change things unless you are adding to the "Ideas" list
 ---
 Credit for the Card Assets go to https://yuidust.itch.io/deck-of-cards?download
+Credit for the Monster Icon goes to https://pixabay.com/vectors/dragon-beast-silhouette-monster-3708746

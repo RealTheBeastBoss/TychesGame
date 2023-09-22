@@ -23,6 +23,7 @@ class TurnStage(Enum):
     SQUARE_ACTION = 3
     DRAW_CARDS = 4
     ATTACK_MONSTER = 5
+    MONSTER_ATTACK = 6
     END_TURN = 42
     GAME_WON = 69
 
@@ -44,6 +45,10 @@ PLAYER_TWO = pygame.image.load(os.path.join("Assets", "player_two.png"))
 PLAYER_THREE = pygame.image.load(os.path.join("Assets", "player_three.png"))
 PLAYER_FOUR = pygame.image.load(os.path.join("Assets", "player_four.png"))
 PLAYER_FIVE = pygame.image.load(os.path.join("Assets", "player_five.png"))
+D4_ONE = (pygame.image.load(os.path.join("Assets", "Dice", "d4_one.png")), (43, 39))
+D4_TWO = (pygame.image.load(os.path.join("Assets", "Dice", "d4_two.png")), (43, 39))
+D4_THREE = (pygame.image.load(os.path.join("Assets", "Dice", "d4_three.png")), (43, 39))
+D4_FOUR = (pygame.image.load(os.path.join("Assets", "Dice", "d4_four.png")), (43, 39))
 D6_ONE = (pygame.image.load(os.path.join("Assets", "Dice", "d6_one.png")), (42, 42))
 D6_TWO = (pygame.image.load(os.path.join("Assets", "Dice", "d6_two.png")), (42, 42))
 D6_THREE = (pygame.image.load(os.path.join("Assets", "Dice", "d6_three.png")), (42, 42))
@@ -62,6 +67,26 @@ D12_NINE = (pygame.image.load(os.path.join("Assets", "Dice", "d12_nine.png")), (
 D12_TEN = (pygame.image.load(os.path.join("Assets", "Dice", "d12_ten.png")), (41, 43))
 D12_ELEVEN = (pygame.image.load(os.path.join("Assets", "Dice", "d12_eleven.png")), (41, 43))
 D12_TWELVE = (pygame.image.load(os.path.join("Assets", "Dice", "d12_twelve.png")), (41, 43))
+D20_ONE = (pygame.image.load(os.path.join("Assets", "Dice", "d20_one.png")), (46, 52))
+D20_TWO = (pygame.image.load(os.path.join("Assets", "Dice", "d20_two.png")), (46, 52))
+D20_THREE = (pygame.image.load(os.path.join("Assets", "Dice", "d20_three.png")), (46, 52))
+D20_FOUR = (pygame.image.load(os.path.join("Assets", "Dice", "d20_four.png")), (46, 52))
+D20_FIVE = (pygame.image.load(os.path.join("Assets", "Dice", "d20_five.png")), (46, 52))
+D20_SIX = (pygame.image.load(os.path.join("Assets", "Dice", "d20_six.png")), (46, 52))
+D20_SEVEN = (pygame.image.load(os.path.join("Assets", "Dice", "d20_seven.png")), (46, 52))
+D20_EIGHT = (pygame.image.load(os.path.join("Assets", "Dice", "d20_eight.png")), (46, 52))
+D20_NINE = (pygame.image.load(os.path.join("Assets", "Dice", "d20_nine.png")), (46, 52))
+D20_TEN = (pygame.image.load(os.path.join("Assets", "Dice", "d20_ten.png")), (46, 52))
+D20_ELEVEN = (pygame.image.load(os.path.join("Assets", "Dice", "d20_eleven.png")), (46, 52))
+D20_TWELVE = (pygame.image.load(os.path.join("Assets", "Dice", "d20_twelve.png")), (46, 52))
+D20_THIRTEEN = (pygame.image.load(os.path.join("Assets", "Dice", "d20_thirteen.png")), (46, 52))
+D20_FOURTEEN = (pygame.image.load(os.path.join("Assets", "Dice", "d20_fourteen.png")), (46, 52))
+D20_FIFTEEN = (pygame.image.load(os.path.join("Assets", "Dice", "d20_fifteen.png")), (46, 52))
+D20_SIXTEEN = (pygame.image.load(os.path.join("Assets", "Dice", "d20_sixteen.png")), (46, 52))
+D20_SEVENTEEN = (pygame.image.load(os.path.join("Assets", "Dice", "d20_seventeen.png")), (46, 52))
+D20_EIGHTEEN = (pygame.image.load(os.path.join("Assets", "Dice", "d20_eighteen.png")), (46, 52))
+D20_NINETEEN = (pygame.image.load(os.path.join("Assets", "Dice", "d20_nineteen.png")), (46, 52))
+D20_TWENTY = (pygame.image.load(os.path.join("Assets", "Dice", "d20_twenty.png")), (46, 52))
 BLUE_CARD_SYMBOL = (pygame.image.load(os.path.join("Assets", "Cards", "blue_back.png")), (68, 100))
 RED_CARD_SYMBOL = (pygame.image.load(os.path.join("Assets", "Cards", "red_back.png")), (68, 100))
 GAME_TITLE = (pygame.image.load(os.path.join("Assets", "Text", "title.png")), (617, 95))
@@ -85,12 +110,12 @@ BLUE_FIVE_OF_HEARTS = Card("Blue Five of Hearts", CardType.BLUE, CardSuit.HEARTS
                            "You can choose the value of", "someone's next d6 Roll")
 BLUE_SIX_OF_HEARTS = Card("Blue Six of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.SIX, "6_hearts.png")
 BLUE_SEVEN_OF_HEARTS = Card("Blue Seven of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.SEVEN, "7_hearts.png")
-BLUE_EIGHT_OF_HEARTS = Card("Blue Eight of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.EIGHT, "8_hearts.png", (425, 70),
-                            "Use this card as a shield against a Monster")
+BLUE_EIGHT_OF_HEARTS = Card("Blue Eight of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.EIGHT, "8_hearts.png", (425, 92),
+                            "Use this card as a shield against a Monster", "(Used Automatically when Failed Defence)")
 BLUE_NINE_OF_HEARTS = Card("Blue Nine of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.NINE, "9_hearts.png", (250, 92),
                            "Place a Magic Barrier on", "any square you choose")
-BLUE_TEN_OF_HEARTS = Card("Blue Ten of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.TEN, "10_hearts.png", (295, 92),
-                          "Sneak through the next Magic", "Barrier you come across")
+BLUE_TEN_OF_HEARTS = Card("Blue Ten of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.TEN, "10_hearts.png", (295, 114),
+                          "Sneak through the next Magic", "Barrier you come across", "(Used Automatically)")
 BLUE_JACK_OF_HEARTS = Card("Blue Jack of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.JACK, "jack_hearts.png", (392, 70),
                                      "Make your next Movement Roll with 2 d6")
 BLUE_KING_OF_HEARTS = Card("Blue King of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.KING, "king_hearts.png")
@@ -108,12 +133,12 @@ BLUE_FIVE_OF_DIAMONDS = Card("Blue Five of Diamonds", CardType.BLUE, CardSuit.DI
                            "You can choose the value of", "someone's next d6 Roll")
 BLUE_SIX_OF_DIAMONDS = Card("Blue Six of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.SIX, "6_diamonds.png")
 BLUE_SEVEN_OF_DIAMONDS = Card("Blue Seven of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.SEVEN, "7_diamonds.png")
-BLUE_EIGHT_OF_DIAMONDS = Card("Blue Eight of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.EIGHT, "8_diamonds.png", (425, 70),
-                            "Use this card as a shield against a Monster")
+BLUE_EIGHT_OF_DIAMONDS = Card("Blue Eight of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.EIGHT, "8_diamonds.png", (425, 92),
+                            "Use this card as a shield against a Monster", "(Used Automatically when Failed Defence)")
 BLUE_NINE_OF_DIAMONDS = Card("Blue Nine of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.NINE, "9_diamonds.png", (250, 92),
                            "Place a Magic Barrier on", "any square you choose")
-BLUE_TEN_OF_DIAMONDS = Card("Blue Ten of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.TEN, "10_diamonds.png", (295, 92),
-                          "Sneak through the next Magic", "Barrier you come across")
+BLUE_TEN_OF_DIAMONDS = Card("Blue Ten of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.TEN, "10_diamonds.png", (295, 114),
+                          "Sneak through the next Magic", "Barrier you come across", "(Used Automatically)")
 BLUE_JACK_OF_DIAMONDS = Card("Blue Jack of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.JACK, "jack_diamonds.png", (392, 70),
                                      "Make your next Movement Roll with 2 d6")
 BLUE_KING_OF_DIAMONDS = Card("Blue King of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.KING, "king_diamonds.png")
@@ -131,12 +156,12 @@ BLUE_FIVE_OF_CLUBS = Card("Blue Five of Clubs", CardType.BLUE, CardSuit.CLUBS, C
                            "You can choose the value of", "someone's next d6 Roll")
 BLUE_SIX_OF_CLUBS = Card("Blue Six of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.SIX, "6_clubs.png")
 BLUE_SEVEN_OF_CLUBS = Card("Blue Seven of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.SEVEN, "7_clubs.png")
-BLUE_EIGHT_OF_CLUBS = Card("Blue Eight of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.EIGHT, "8_clubs.png", (425, 70),
-                            "Use this card as a shield against a Monster")
+BLUE_EIGHT_OF_CLUBS = Card("Blue Eight of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.EIGHT, "8_clubs.png", (425, 92),
+                            "Use this card as a shield against a Monster", "(Used Automatically when Failed Defence)")
 BLUE_NINE_OF_CLUBS = Card("Blue Nine of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.NINE, "9_clubs.png", (250, 92),
                            "Place a Magic Barrier on", "any square you choose")
-BLUE_TEN_OF_CLUBS = Card("Blue Ten of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.TEN, "10_clubs.png", (295, 92),
-                          "Sneak through the next Magic", "Barrier you come across")
+BLUE_TEN_OF_CLUBS = Card("Blue Ten of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.TEN, "10_clubs.png", (295, 114),
+                          "Sneak through the next Magic", "Barrier you come across", "(Used Automatically)")
 BLUE_JACK_OF_CLUBS = Card("Blue Jack of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.JACK, "jack_clubs.png", (392, 70),
                                      "Make your next Movement Roll with 2 d6")
 BLUE_KING_OF_CLUBS = Card("Blue King of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.KING, "king_clubs.png")
@@ -154,12 +179,12 @@ BLUE_FIVE_OF_SPADES = Card("Blue Five of Spades", CardType.BLUE, CardSuit.SPADES
                            "You can choose the value of", "someone's next d6 Roll")
 BLUE_SIX_OF_SPADES = Card("Blue Six of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.SIX, "6_spades.png")
 BLUE_SEVEN_OF_SPADES = Card("Blue Seven of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.SEVEN, "7_spades.png")
-BLUE_EIGHT_OF_SPADES = Card("Blue Eight of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.EIGHT, "8_spades.png", (425, 70),
-                            "Use this card as a shield against a Monster")
+BLUE_EIGHT_OF_SPADES = Card("Blue Eight of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.EIGHT, "8_spades.png", (425, 92),
+                            "Use this card as a shield against a Monster", "(Used Automatically when Failed Defence)")
 BLUE_NINE_OF_SPADES = Card("Blue Nine of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.NINE, "9_spades.png", (250, 92),
                            "Place a Magic Barrier on", "any square you choose")
-BLUE_TEN_OF_SPADES = Card("Blue Ten of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.TEN, "10_spades.png", (295, 92),
-                          "Sneak through the next Magic", "Barrier you come across")
+BLUE_TEN_OF_SPADES = Card("Blue Ten of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.TEN, "10_spades.png", (295, 114),
+                          "Sneak through the next Magic", "Barrier you come across", "(Used Automatically)")
 BLUE_JACK_OF_SPADES = Card("Blue Jack of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.JACK, "jack_spades.png", (392, 70),
                                      "Make your next Movement Roll with 2 d6")
 BLUE_KING_OF_SPADES = Card("Blue King of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.KING, "king_spades.png")
@@ -322,6 +347,12 @@ CARD_TO_POSITION = {
     13: (1280, 810),
     14: (1600, 810)
 }
+D4_IMAGES = {
+    1: D4_ONE,
+    2: D4_TWO,
+    3: D4_THREE,
+    4: D4_FOUR
+}
 D6_IMAGES = {
     1: D6_ONE,
     2: D6_TWO,
@@ -343,6 +374,28 @@ D12_IMAGES = {
     10: D12_TEN,
     11: D12_ELEVEN,
     12: D12_TWELVE
+}
+D20_IMAGES = {
+    1: D20_ONE,
+    2: D20_TWO,
+    3: D20_THREE,
+    4: D20_FOUR,
+    5: D20_FIVE,
+    6: D20_SIX,
+    7: D20_SEVEN,
+    8: D20_EIGHT,
+    9: D20_NINE,
+    10: D20_TEN,
+    11: D20_ELEVEN,
+    12: D20_TWELVE,
+    13: D20_THIRTEEN,
+    14: D20_FOURTEEN,
+    15: D20_FIFTEEN,
+    16: D20_SIXTEEN,
+    17: D20_SEVENTEEN,
+    18: D20_EIGHTEEN,
+    19: D20_NINETEEN,
+    20: D20_TWENTY,
 }
 BOARD_SQUARES = [Square(None, (534, 965)), Square(ONE_RED, (628, 965)), Square(ONE_BLUE, (722, 965)),
                  Square(None, (816, 965)), Square(ONE_BLUE, (910, 965)), Square(None, (1009, 965)),
@@ -388,7 +441,7 @@ class Meta:  # Changeable Global Variables
     DEBUG_INFO = []
     PLAYER_COUNT = None
     CURRENT_STATE = ScreenState.START
-    TURN_STAGE = TurnStage.ROLL_DICE
+    TURN_STAGE = TurnStage.START_TURN
     PLAYERS = []
     CURRENT_PLAYER = 0
     CAN_TEXT_INPUT = False
@@ -402,13 +455,21 @@ class Meta:  # Changeable Global Variables
     ROLLING_DOUBLE = False
     DICE_ROLLED = 0
     SQUARES_TO_MOVE = 0
-    DICE_USED = None
+    TOP_DICE = []
+    BOTTOM_DICE = []
     CHOOSE_PLAYERS = None
     CHOSEN_PLAYER = None
     CHOOSE_DICE = None
     CHOOSE_SQUARE = None
     CARDS_TO_DRAW = []
     DISPLAYING_CARD = False
+    SUCCEEDED_DEFENCE = None
+    FORCED_CARD = None
+    ADDING_FOUR = False
+    TAKING_FOUR = False
+    TAKEN_FOUR = False
+    SHIELD_ACTIVE = False
+    ROLLING_WITH_FOUR = False
     # Global Events
     TEXT_CONFIRMED = False
     BUTTONS_ENABLED = True

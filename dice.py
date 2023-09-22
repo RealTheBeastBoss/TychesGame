@@ -15,7 +15,6 @@ class Dice:
         mouse_pos = pygame.mouse.get_pos()
         if Meta.LEFT_MOUSE_RELEASED and self.currentRect.collidepoint(mouse_pos) and self.enabled:
             self.enabled = False
-            print("Dice Pressed!")
             if roll_dice:
                 if Meta.PLAYERS[Meta.CURRENT_PLAYER].setNextRoll is None:
                     self.sideFacing = random.randrange(1, self.sides + 1)
