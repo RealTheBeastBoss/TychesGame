@@ -201,6 +201,16 @@ def draw_window():
                         "Miss a Turn", "", "Landing here traps you for a turn")
         draw_game_image((MONSTER, (89, 89)), (1280, 270), 2, True, WHITE, (330, 80),
                         "Monster", "", "This square contains a Monster")
+        draw_game_image((GO_BACK, (89, 89)), (1600, 270), 2, True, WHITE, (260, 80),
+                        "From Whence You Came", "", "Sends you backwards")
+        draw_game_image((TWO_BLUE, (89, 89)), (320, 540), 2, True, WHITE, (330, 80),
+                        "Two Blue Cards", "", "Draw 2 from the Blue Draw Deck")
+        draw_game_image((TWO_RED, (89, 89)), (640, 540), 2, True, WHITE, (330, 80),
+                        "Two Red Cards", "", "Draw 2 from the Red Draw Deck")
+        draw_game_image((BLUE_RED, (89, 89)), (960, 540), 2, True, WHITE, (330, 80),
+                        "Blue Card, Red Card", "", "Draw 1 from each Draw Deck")
+        draw_game_image((REDO, (89, 89)), (1600, 540), 2, True, WHITE, (260, 80),
+                        "Double Up", "", "Sends you forwards again")
         check_hover_boxes()
     elif Meta.CURRENT_STATE == ScreenState.PLAYING_GAME:
         WINDOW.fill(WHITE)
@@ -709,6 +719,8 @@ def draw_window():
             BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
             Meta.TURN_STAGE = TurnStage.SQUARE_ACTION
             Meta.CAN_PROGRESS = False
+            if BOARD_SQUARES[current_player.currentSquare].symbol == GO_BACK: Meta.FORCED_MOVEMENT = True
+            elif BOARD_SQUARES[current_player.currentSquare].symbol == REDO: Meta.BONUS_MOVEMENT = True
         elif Meta.TURN_STAGE == TurnStage.SQUARE_ACTION:  # Doing what the Square wants
             draw_dice_sets()
             current_square = BOARD_SQUARES[current_player.currentSquare]
@@ -721,6 +733,50 @@ def draw_window():
                 elif current_square.symbol == ONE_RED:
                     Meta.TURN_STAGE = TurnStage.DRAW_CARDS
                     Meta.CARDS_TO_DRAW.append(CardType.RED)
+                elif current_square.symbol == TWO_RED:
+                    Meta.TURN_STAGE = TurnStage.DRAW_CARDS
+                    Meta.CARDS_TO_DRAW.append(CardType.RED)
+                    Meta.CARDS_TO_DRAW.append(CardType.RED)
+                elif current_square.symbol == TWO_BLUE:
+                    Meta.TURN_STAGE = TurnStage.DRAW_CARDS
+                    Meta.CARDS_TO_DRAW.append(CardType.BLUE)
+                    Meta.CARDS_TO_DRAW.append(CardType.BLUE)
+                elif current_square.symbol == BLUE_RED:
+                    Meta.TURN_STAGE = TurnStage.DRAW_CARDS
+                    Meta.CARDS_TO_DRAW.append(CardType.BLUE)
+                    Meta.CARDS_TO_DRAW.append(CardType.RED)
+                elif current_square.symbol == GO_BACK:
+                    if not Meta.FORCED_MOVEMENT:
+                        draw_text("You beat fate this time", SMALL_FONT, BLACK, (1680, 240))
+                        continue_button = Button("End Turn", 1680, 600, 60)
+                        if continue_button.check_click(): end_turn()
+                    else:
+                        draw_text("You are going back", SMALL_FONT, BLACK, (1680, 230))
+                        draw_text("from whence you came", SMALL_FONT, BLACK, (1680, 260))
+                        continue_button = Button("Continue", 1680, 600, 60)
+                        if continue_button.check_click():
+                            current_square.players.remove(current_player)
+                            current_player.currentSquare -= Meta.SQUARES_TO_MOVE
+                            BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                elif current_square.symbol == REDO:
+                    if Meta.FORCED_CARD is None and Meta.BONUS_MOVEMENT:
+                        for card in current_player.redDeck:
+                            if card.cardValue == CardValue.SIX:
+                                Meta.FORCED_CARD = CardValue.SIX
+                    if Meta.FORCED_CARD == CardValue.SIX:
+                        draw_text("Use your Red Six!", SMALL_FONT, BLACK, (1680, 240))
+                    else:
+                        if not Meta.BONUS_MOVEMENT:
+                            draw_text("You don't get to move", SMALL_FONT, BLACK, (1680, 240))
+                            continue_button = Button("End Turn", 1680, 600, 60)
+                            if continue_button.check_click(): end_turn()
+                        else:
+                            draw_text("You get Double Movement", SMALL_FONT, BLACK, (1680, 240))
+                            continue_button = Button("Continue", 1680, 600, 60)
+                            if continue_button.check_click():
+                                current_square.players.remove(current_player)
+                                current_player.currentSquare += Meta.SQUARES_TO_MOVE
+                                BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
                 elif current_square.symbol == MISS_TURN:
                     draw_text("You Miss your Next Turn", SMALL_FONT, BLACK, (1680, 240))
                     current_player.missNextTurn = True
@@ -743,7 +799,6 @@ def draw_window():
                             draw_text("You join a Monster fight!", SMALL_FONT, BLACK, (1680, 240))
                             continue_button = Button("Fight!", 1680, 600, 60)
                             if continue_button.check_click():
-                                current_square.monsterAwake = True
                                 D12.enabled = True
                                 D12_2.enabled = True
                                 Meta.TOP_DICE = [D12]
@@ -936,8 +991,8 @@ def check_card_usable(card):
                     return True
             case CardValue.FIVE:  # Always True
                 return True
-            case CardValue.SIX:
-                return True
+            case CardValue.SIX:  # True when about to force movement
+                return Meta.FORCED_MOVEMENT
             case CardValue.SEVEN:
                 return True
             case CardValue.EIGHT:  # Never True, Uses Automatically
@@ -971,7 +1026,7 @@ def check_card_usable(card):
             case CardValue.FIVE:
                 return Meta.FORCED_CARD == CardValue.FIVE
             case CardValue.SIX:
-                return True
+                return Meta.FORCED_CARD == CardValue.SIX
             case CardValue.SEVEN:
                 return True
             case CardValue.EIGHT:
@@ -1022,6 +1077,7 @@ def perform_card_action(card):
                 Meta.CHOOSE_PLAYERS = "Blue Five"
                 print("Card Used: " + card.displayName)
             case CardValue.SIX:
+                Meta.FORCED_MOVEMENT = False
                 print("Card Used: " + card.displayName)
             case CardValue.SEVEN:
                 print("Card Used: " + card.displayName)
@@ -1071,6 +1127,8 @@ def perform_card_action(card):
                 Meta.CHOOSE_PLAYERS = "Red Five"
                 print("Card Used: " + card.displayName)
             case CardValue.SIX:
+                Meta.FORCED_CARD = None
+                Meta.BONUS_MOVEMENT = False
                 print("Card Used: " + card.displayName)
             case CardValue.SEVEN:
                 print("Card Used: " + card.displayName)

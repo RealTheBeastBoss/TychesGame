@@ -95,6 +95,11 @@ ONE_BLUE = pygame.image.load(os.path.join("Assets", "Symbols", "one_blue.png"))
 ONE_RED = pygame.image.load(os.path.join("Assets", "Symbols", "one_red.png"))
 MISS_TURN = pygame.image.load(os.path.join("Assets", "Symbols", "miss_turn.png"))
 MONSTER = pygame.image.load(os.path.join("Assets", "Symbols", "monster.png"))
+TWO_BLUE = pygame.image.load(os.path.join("Assets", "Symbols", "two_blue.png"))
+TWO_RED = pygame.image.load(os.path.join("Assets", "Symbols", "two_red.png"))
+GO_BACK = pygame.image.load(os.path.join("Assets", "Symbols", "go_back.png"))
+REDO = pygame.image.load(os.path.join("Assets", "Symbols", "redo.png"))
+BLUE_RED = pygame.image.load(os.path.join("Assets", "Symbols", "blue_red.png"))
 
 # Game Cards
 # region
@@ -108,7 +113,8 @@ BLUE_FOUR_OF_HEARTS = Card("Blue Four of Hearts", CardType.BLUE, CardSuit.HEARTS
                            "Add a d4 Elemental Damage to your", "next Attack Roll")
 BLUE_FIVE_OF_HEARTS = Card("Blue Five of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.FIVE, "5_hearts.png", (280, 92),
                            "You can choose the value of", "someone's next d6 Roll")
-BLUE_SIX_OF_HEARTS = Card("Blue Six of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.SIX, "6_hearts.png")
+BLUE_SIX_OF_HEARTS = Card("Blue Six of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.SIX, "6_hearts.png", (365, 70),
+                          "Blocks Forced Backwards Movement")
 BLUE_SEVEN_OF_HEARTS = Card("Blue Seven of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.SEVEN, "7_hearts.png")
 BLUE_EIGHT_OF_HEARTS = Card("Blue Eight of Hearts", CardType.BLUE, CardSuit.HEARTS, CardValue.EIGHT, "8_hearts.png", (425, 92),
                             "Use this card as a shield against a Monster", "(Used Automatically when Failed Defence)")
@@ -131,7 +137,8 @@ BLUE_FOUR_OF_DIAMONDS = Card("Blue Four of Diamonds", CardType.BLUE, CardSuit.DI
                            "Add a d4 Elemental Damage to your", "next Attack Roll")
 BLUE_FIVE_OF_DIAMONDS = Card("Blue Five of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.FIVE, "5_diamonds.png", (280, 92),
                            "You can choose the value of", "someone's next d6 Roll")
-BLUE_SIX_OF_DIAMONDS = Card("Blue Six of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.SIX, "6_diamonds.png")
+BLUE_SIX_OF_DIAMONDS = Card("Blue Six of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.SIX, "6_diamonds.png", (365, 70),
+                          "Blocks Forced Backwards Movement")
 BLUE_SEVEN_OF_DIAMONDS = Card("Blue Seven of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.SEVEN, "7_diamonds.png")
 BLUE_EIGHT_OF_DIAMONDS = Card("Blue Eight of Diamonds", CardType.BLUE, CardSuit.DIAMONDS, CardValue.EIGHT, "8_diamonds.png", (425, 92),
                             "Use this card as a shield against a Monster", "(Used Automatically when Failed Defence)")
@@ -154,7 +161,8 @@ BLUE_FOUR_OF_CLUBS = Card("Blue Four of Clubs", CardType.BLUE, CardSuit.CLUBS, C
                            "Add a d4 Elemental Damage to your", "next Attack Roll")
 BLUE_FIVE_OF_CLUBS = Card("Blue Five of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.FIVE, "5_clubs.png", (280, 92),
                            "You can choose the value of", "someone's next d6 Roll")
-BLUE_SIX_OF_CLUBS = Card("Blue Six of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.SIX, "6_clubs.png")
+BLUE_SIX_OF_CLUBS = Card("Blue Six of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.SIX, "6_clubs.png", (365, 70),
+                          "Blocks Forced Backwards Movement")
 BLUE_SEVEN_OF_CLUBS = Card("Blue Seven of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.SEVEN, "7_clubs.png")
 BLUE_EIGHT_OF_CLUBS = Card("Blue Eight of Clubs", CardType.BLUE, CardSuit.CLUBS, CardValue.EIGHT, "8_clubs.png", (425, 92),
                             "Use this card as a shield against a Monster", "(Used Automatically when Failed Defence)")
@@ -177,7 +185,8 @@ BLUE_FOUR_OF_SPADES = Card("Blue Four of Spades", CardType.BLUE, CardSuit.SPADES
                            "Add a d4 Elemental Damage to your", "next Attack Roll")
 BLUE_FIVE_OF_SPADES = Card("Blue Five of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.FIVE, "5_spades.png", (280, 92),
                            "You can choose the value of", "someone's next d6 Roll")
-BLUE_SIX_OF_SPADES = Card("Blue Six of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.SIX, "6_spades.png")
+BLUE_SIX_OF_SPADES = Card("Blue Six of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.SIX, "6_spades.png", (365, 70),
+                          "Blocks Forced Backwards Movement")
 BLUE_SEVEN_OF_SPADES = Card("Blue Seven of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.SEVEN, "7_spades.png")
 BLUE_EIGHT_OF_SPADES = Card("Blue Eight of Spades", CardType.BLUE, CardSuit.SPADES, CardValue.EIGHT, "8_spades.png", (425, 92),
                             "Use this card as a shield against a Monster", "(Used Automatically when Failed Defence)")
@@ -211,7 +220,8 @@ RED_FOUR_OF_HEARTS = Card("Red Four of Hearts", CardType.RED, CardSuit.HEARTS, C
                            "Subtract a d4 from your next Attack", "Roll, you've been poisoned")
 RED_FIVE_OF_HEARTS = Card("Red Five of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.FIVE, "5_hearts.png", (280, 92),
                            "Someone chooses the value", "of your next d6 Roll")
-RED_SIX_OF_HEARTS = Card("Red Six of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.SIX, "6_hearts.png")
+RED_SIX_OF_HEARTS = Card("Red Six of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.SIX, "6_hearts.png", (290, 70),
+                         "Blocks next Bonus Movement")
 RED_SEVEN_OF_HEARTS = Card("Red Seven of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.SEVEN, "7_hearts.png")
 RED_EIGHT_OF_HEARTS = Card("Red Eight of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.EIGHT, "8_hearts.png", (335, 70),
                            "Lowers a successful defence to 2")
@@ -232,7 +242,8 @@ RED_FOUR_OF_DIAMONDS = Card("Red Four of Diamonds", CardType.RED, CardSuit.DIAMO
                            "Subtract a d4 from your next Attack", "Roll, you've been poisoned")
 RED_FIVE_OF_DIAMONDS = Card("Red Five of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.FIVE, "5_diamonds.png", (280, 92),
                            "Someone chooses the value", "of your next d6 Roll")
-RED_SIX_OF_DIAMONDS = Card("Red Six of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.SIX, "6_diamonds.png")
+RED_SIX_OF_DIAMONDS = Card("Red Six of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.SIX, "6_diamonds.png", (290, 70),
+                         "Blocks next Bonus Movement")
 RED_SEVEN_OF_DIAMONDS = Card("Red Seven of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.SEVEN, "7_diamonds.png")
 RED_EIGHT_OF_DIAMONDS = Card("Red Eight of Diamonds", CardType.RED, CardSuit.DIAMONDS, CardValue.EIGHT, "8_diamonds.png", (335, 70),
                            "Lowers a successful defence to 2")
@@ -253,7 +264,8 @@ RED_FOUR_OF_CLUBS = Card("Red Four of Clubs", CardType.RED, CardSuit.CLUBS, Card
                            "Subtract a d4 from your next Attack", "Roll, you've been poisoned")
 RED_FIVE_OF_CLUBS = Card("Red Five of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.FIVE, "5_clubs.png", (280, 92),
                            "Someone chooses the value", "of your next d6 Roll")
-RED_SIX_OF_CLUBS = Card("Red Six of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.SIX, "6_clubs.png")
+RED_SIX_OF_CLUBS = Card("Red Six of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.SIX, "6_clubs.png", (290, 70),
+                         "Blocks next Bonus Movement")
 RED_SEVEN_OF_CLUBS = Card("Red Seven of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.SEVEN, "7_clubs.png")
 RED_EIGHT_OF_CLUBS = Card("Red Eight of Clubs", CardType.RED, CardSuit.CLUBS, CardValue.EIGHT, "8_clubs.png", (335, 70),
                            "Lowers a successful defence to 2")
@@ -274,7 +286,8 @@ RED_FOUR_OF_SPADES = Card("Red Four of Spades", CardType.RED, CardSuit.SPADES, C
                            "Subtract a d4 from your next Attack", "Roll, you've been poisoned")
 RED_FIVE_OF_SPADES = Card("Red Five of Spades", CardType.RED, CardSuit.SPADES, CardValue.FIVE, "5_spades.png", (280, 92),
                            "Someone chooses the value", "of your next d6 Roll")
-RED_SIX_OF_SPADES = Card("Red Six of Spades", CardType.RED, CardSuit.SPADES, CardValue.SIX, "6_spades.png")
+RED_SIX_OF_SPADES = Card("Red Six of Spades", CardType.RED, CardSuit.SPADES, CardValue.SIX, "6_spades.png", (290, 70),
+                         "Blocks next Bonus Movement")
 RED_SEVEN_OF_SPADES = Card("Red Seven of Spades", CardType.RED, CardSuit.SPADES, CardValue.SEVEN, "7_spades.png")
 RED_EIGHT_OF_SPADES = Card("Red Eight of Spades", CardType.RED, CardSuit.SPADES, CardValue.EIGHT, "8_spades.png", (335, 70),
                            "Lowers a successful defence to 2")
@@ -401,10 +414,10 @@ BOARD_SQUARES = [Square(None, (534, 965)), Square(ONE_RED, (628, 965)), Square(O
                  Square(None, (816, 965)), Square(ONE_BLUE, (910, 965)), Square(None, (1009, 965)),
                  Square(ONE_BLUE, (1103, 965)), Square(ONE_BLUE, (1197, 965)), Square(None, (1291, 965)),
                  Square(ONE_RED, (1385, 965)), Square(MISS_TURN, (1385, 871)), Square(MONSTER, (1291, 871), False, 6),
-                 Square(None, (1197, 871)), Square(None, (1103, 871)), Square(None, (1009, 871)),
-                 Square(None, (910, 871)), Square(None, (816, 871)), Square(None, (722, 871)),
-                 Square(None, (628, 871)), Square(None, (534, 871)), Square(None, (534, 777)),
-                 Square(None, (628, 777)), Square(None, (722, 777)), Square(None, (816, 777)),
+                 Square(None, (1197, 871)), Square(TWO_RED, (1103, 871)), Square(None, (1009, 871)),
+                 Square(None, (910, 871)), Square(GO_BACK, (816, 871)), Square(REDO, (722, 871)),
+                 Square(None, (628, 871)), Square(TWO_BLUE, (534, 871)), Square(None, (534, 777)),
+                 Square(MONSTER, (628, 777), False, 12), Square(None, (722, 777)), Square(BLUE_RED, (816, 777)),
                  Square(None, (910, 777)), Square(None, (1009, 777)), Square(None, (1103, 777)),
                  Square(None, (1197, 777)), Square(None, (1291, 777)), Square(None, (1385, 777)),
                  Square(None, (1385, 683)), Square(None, (1291, 683)), Square(None, (1197, 683)),
@@ -470,6 +483,8 @@ class Meta:  # Changeable Global Variables
     TAKEN_FOUR = False
     SHIELD_ACTIVE = False
     ROLLING_WITH_FOUR = False
+    FORCED_MOVEMENT = False
+    BONUS_MOVEMENT = False
     # Global Events
     TEXT_CONFIRMED = False
     BUTTONS_ENABLED = True
