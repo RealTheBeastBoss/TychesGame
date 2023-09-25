@@ -100,6 +100,8 @@ TWO_RED = pygame.image.load(os.path.join("Assets", "Symbols", "two_red.png"))
 GO_BACK = pygame.image.load(os.path.join("Assets", "Symbols", "go_back.png"))
 REDO = pygame.image.load(os.path.join("Assets", "Symbols", "redo.png"))
 BLUE_RED = pygame.image.load(os.path.join("Assets", "Symbols", "blue_red.png"))
+DOWN_KEY = pygame.image.load(os.path.join("Assets", "Symbols", "down_key.png"))
+UP_KEY = pygame.image.load(os.path.join("Assets", "Symbols", "up_key.png"))
 
 # Game Cards
 # region
@@ -413,12 +415,13 @@ D20_IMAGES = {
 BOARD_SQUARES = [Square(None, (534, 965)), Square(ONE_RED, (628, 965)), Square(ONE_BLUE, (722, 965)),
                  Square(None, (816, 965)), Square(ONE_BLUE, (910, 965)), Square(None, (1009, 965)),
                  Square(ONE_BLUE, (1103, 965)), Square(ONE_BLUE, (1197, 965)), Square(None, (1291, 965)),
-                 Square(ONE_RED, (1385, 965)), Square(MISS_TURN, (1385, 871)), Square(MONSTER, (1291, 871), False, 6),
+                 Square(ONE_RED, (1385, 965)), Square(MONSTER, (1385, 871), False, 6), Square(MISS_TURN, (1291, 871)),
                  Square(None, (1197, 871)), Square(TWO_RED, (1103, 871)), Square(None, (1009, 871)),
                  Square(None, (910, 871)), Square(GO_BACK, (816, 871)), Square(REDO, (722, 871)),
                  Square(None, (628, 871)), Square(TWO_BLUE, (534, 871)), Square(None, (534, 777)),
                  Square(MONSTER, (628, 777), False, 12), Square(None, (722, 777)), Square(BLUE_RED, (816, 777)),
-                 Square(None, (910, 777)), Square(None, (1009, 777)), Square(None, (1103, 777)),
+                 Square(DOWN_KEY, (910, 777), False, 0, 15), Square(UP_KEY, (1009, 777), False, 0, 34),
+                 Square(None, (1103, 777)),
                  Square(None, (1197, 777)), Square(None, (1291, 777)), Square(None, (1385, 777)),
                  Square(None, (1385, 683)), Square(None, (1291, 683)), Square(None, (1197, 683)),
                  Square(None, (1103, 683)), Square(None, (1009, 683)), Square(None, (910, 683)),

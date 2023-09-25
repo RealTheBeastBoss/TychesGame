@@ -209,6 +209,10 @@ def draw_window():
                         "Two Red Cards", "", "Draw 2 from the Red Draw Deck")
         draw_game_image((BLUE_RED, (89, 89)), (960, 540), 2, True, WHITE, (330, 80),
                         "Blue Card, Red Card", "", "Draw 1 from each Draw Deck")
+        draw_game_image((UP_KEY, (89, 89)), (320, 810), 2, True, WHITE, (240, 80),
+                        "Up Key", "", "Move up a row")
+        draw_game_image((DOWN_KEY, (89, 89)), (640, 810), 2, True, WHITE, (240, 80),
+                        "Down Key", "", "Move down a row")
         draw_game_image((REDO, (89, 89)), (1600, 540), 2, True, WHITE, (260, 80),
                         "Double Up", "", "Sends you forwards again")
         check_hover_boxes()
@@ -277,7 +281,7 @@ def draw_window():
             elif x == 99:  # Finish Square
                 draw_text("FINISH", TINY_FONT, BLUE, square.center)
             else:
-                draw_text(str(x + 1), TINY_FONT, BLUE, (square.center[0] - 30, square.center[1] + 35))
+                draw_text(str(x), TINY_FONT, BLUE, (square.center[0] - 30, square.center[1] + 35))
             for i in range(len(square.players)):
                 player_image = square.players[i].playerPiece
                 WINDOW.blit(player_image, ((square.center[0] + PLAYER_TO_POSITION[i][0]) - 14, (square.center[1] + PLAYER_TO_POSITION[i][1]) - 14))
@@ -396,7 +400,7 @@ def draw_window():
                 elif x == 99:  # Finish Square
                     draw_text("FINISH", TINY_FONT, BLUE, square.center)
                 else:
-                    draw_text(str(x + 1), TINY_FONT, BLUE, (square.center[0] - 30, square.center[1] + 35))
+                    draw_text(str(x), TINY_FONT, BLUE, (square.center[0] - 30, square.center[1] + 35))
                 for i in range(len(square.players)):
                     player_image = square.players[i].playerPiece
                     WINDOW.blit(player_image, ((square.center[0] + PLAYER_TO_POSITION[i][0]) - 14,
@@ -719,8 +723,10 @@ def draw_window():
             BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
             Meta.TURN_STAGE = TurnStage.SQUARE_ACTION
             Meta.CAN_PROGRESS = False
-            if BOARD_SQUARES[current_player.currentSquare].symbol == GO_BACK: Meta.FORCED_MOVEMENT = True
-            elif BOARD_SQUARES[current_player.currentSquare].symbol == REDO: Meta.BONUS_MOVEMENT = True
+            if BOARD_SQUARES[current_player.currentSquare].symbol == GO_BACK or BOARD_SQUARES[current_player.currentSquare].symbol == DOWN_KEY:
+                Meta.FORCED_MOVEMENT = True
+            elif BOARD_SQUARES[current_player.currentSquare].symbol == REDO or BOARD_SQUARES[current_player.currentSquare].symbol == UP_KEY:
+                Meta.BONUS_MOVEMENT = True
         elif Meta.TURN_STAGE == TurnStage.SQUARE_ACTION:  # Doing what the Square wants
             draw_dice_sets()
             current_square = BOARD_SQUARES[current_player.currentSquare]
@@ -745,6 +751,19 @@ def draw_window():
                     Meta.TURN_STAGE = TurnStage.DRAW_CARDS
                     Meta.CARDS_TO_DRAW.append(CardType.BLUE)
                     Meta.CARDS_TO_DRAW.append(CardType.RED)
+                elif current_square.symbol == DOWN_KEY:
+                    if not Meta.FORCED_MOVEMENT:
+                        draw_text("You gain common sense", SMALL_FONT, BLACK, (1680, 240))
+                        continue_button = Button("End Turn", 1680, 600, 60)
+                        if continue_button.check_click(): end_turn()
+                    else:
+                        draw_text("The key unlocks a door", SMALL_FONT, BLACK, (1680, 230))
+                        draw_text("Use the door to go South", SMALL_FONT, BLACK, (1680, 260))
+                        continue_button = Button("Continue", 1680, 600, 60)
+                        if continue_button.check_click():
+                            current_square.players.remove(current_player)
+                            current_player.currentSquare = current_square.keyLocation
+                            BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
                 elif current_square.symbol == GO_BACK:
                     if not Meta.FORCED_MOVEMENT:
                         draw_text("You beat fate this time", SMALL_FONT, BLACK, (1680, 240))
@@ -758,6 +777,26 @@ def draw_window():
                             current_square.players.remove(current_player)
                             current_player.currentSquare -= Meta.SQUARES_TO_MOVE
                             BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                elif current_square.symbol == UP_KEY:
+                    if Meta.FORCED_CARD is None and Meta.BONUS_MOVEMENT:
+                        for card in current_player.redDeck:
+                            if card.cardValue == CardValue.SIX:
+                                Meta.FORCED_CARD = CardValue.SIX
+                    if Meta.FORCED_CARD == CardValue.SIX:
+                        draw_text("Use your Red Six!", SMALL_FONT, BLACK, (1680, 240))
+                    else:
+                        if not Meta.BONUS_MOVEMENT:
+                            draw_text("You don't get to move", SMALL_FONT, BLACK, (1680, 240))
+                            continue_button = Button("End Turn", 1680, 600, 60)
+                            if continue_button.check_click(): end_turn()
+                        else:
+                            draw_text("You find a key", SMALL_FONT, BLACK, (1680, 230))
+                            draw_text("Use the key to go North", SMALL_FONT, BLACK, (1680, 260))
+                            continue_button = Button("Continue", 1680, 600, 60)
+                            if continue_button.check_click():
+                                current_square.players.remove(current_player)
+                                current_player.currentSquare = current_square.keyLocation
+                                BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
                 elif current_square.symbol == REDO:
                     if Meta.FORCED_CARD is None and Meta.BONUS_MOVEMENT:
                         for card in current_player.redDeck:
