@@ -55,6 +55,14 @@ D6_THREE = (pygame.image.load(os.path.join("Assets", "Dice", "d6_three.png")), (
 D6_FOUR = (pygame.image.load(os.path.join("Assets", "Dice", "d6_four.png")), (42, 42))
 D6_FIVE = (pygame.image.load(os.path.join("Assets", "Dice", "d6_five.png")), (42, 42))
 D6_SIX = (pygame.image.load(os.path.join("Assets", "Dice", "d6_six.png")), (42, 42))
+D8_ONE = (pygame.image.load(os.path.join("Assets", "Dice", "d8_one.png")), (44, 51))
+D8_TWO = (pygame.image.load(os.path.join("Assets", "Dice", "d8_two.png")), (44, 51))
+D8_THREE = (pygame.image.load(os.path.join("Assets", "Dice", "d8_three.png")), (44, 51))
+D8_FOUR = (pygame.image.load(os.path.join("Assets", "Dice", "d8_four.png")), (44, 51))
+D8_FIVE = (pygame.image.load(os.path.join("Assets", "Dice", "d8_five.png")), (44, 51))
+D8_SIX = (pygame.image.load(os.path.join("Assets", "Dice", "d8_six.png")), (44, 51))
+D8_SEVEN = (pygame.image.load(os.path.join("Assets", "Dice", "d8_seven.png")), (44, 51))
+D8_EIGHT = (pygame.image.load(os.path.join("Assets", "Dice", "d8_eight.png")), (44, 51))
 D12_ONE = (pygame.image.load(os.path.join("Assets", "Dice", "d12_one.png")), (41, 43))
 D12_TWO = (pygame.image.load(os.path.join("Assets", "Dice", "d12_two.png")), (41, 43))
 D12_THREE = (pygame.image.load(os.path.join("Assets", "Dice", "d12_three.png")), (41, 43))
@@ -67,6 +75,16 @@ D12_NINE = (pygame.image.load(os.path.join("Assets", "Dice", "d12_nine.png")), (
 D12_TEN = (pygame.image.load(os.path.join("Assets", "Dice", "d12_ten.png")), (41, 43))
 D12_ELEVEN = (pygame.image.load(os.path.join("Assets", "Dice", "d12_eleven.png")), (41, 43))
 D12_TWELVE = (pygame.image.load(os.path.join("Assets", "Dice", "d12_twelve.png")), (41, 43))
+D10_ONE = (pygame.image.load(os.path.join("Assets", "Dice", "d10_one.png")), (55, 54))
+D10_TWO = (pygame.image.load(os.path.join("Assets", "Dice", "d10_two.png")), (55, 54))
+D10_THREE = (pygame.image.load(os.path.join("Assets", "Dice", "d10_three.png")), (55, 54))
+D10_FOUR = (pygame.image.load(os.path.join("Assets", "Dice", "d10_four.png")), (55, 54))
+D10_FIVE = (pygame.image.load(os.path.join("Assets", "Dice", "d10_five.png")), (55, 54))
+D10_SIX = (pygame.image.load(os.path.join("Assets", "Dice", "d10_six.png")), (55, 54))
+D10_SEVEN = (pygame.image.load(os.path.join("Assets", "Dice", "d10_seven.png")), (55, 54))
+D10_EIGHT = (pygame.image.load(os.path.join("Assets", "Dice", "d10_eight.png")), (55, 54))
+D10_NINE = (pygame.image.load(os.path.join("Assets", "Dice", "d10_nine.png")), (55, 54))
+D10_TEN = (pygame.image.load(os.path.join("Assets", "Dice", "d10_ten.png")), (55, 54))
 D20_ONE = (pygame.image.load(os.path.join("Assets", "Dice", "d20_one.png")), (46, 52))
 D20_TWO = (pygame.image.load(os.path.join("Assets", "Dice", "d20_two.png")), (46, 52))
 D20_THREE = (pygame.image.load(os.path.join("Assets", "Dice", "d20_three.png")), (46, 52))
@@ -102,6 +120,8 @@ REDO = pygame.image.load(os.path.join("Assets", "Symbols", "redo.png"))
 BLUE_RED = pygame.image.load(os.path.join("Assets", "Symbols", "blue_red.png"))
 DOWN_KEY = pygame.image.load(os.path.join("Assets", "Symbols", "down_key.png"))
 UP_KEY = pygame.image.load(os.path.join("Assets", "Symbols", "up_key.png"))
+BACK_8 = pygame.image.load(os.path.join("Assets", "Symbols", "back_8.png"))
+ROLL_8 = pygame.image.load(os.path.join("Assets", "Symbols", "roll_8.png"))
 
 # Game Cards
 # region
@@ -390,6 +410,28 @@ D12_IMAGES = {
     11: D12_ELEVEN,
     12: D12_TWELVE
 }
+D10_IMAGES = {
+    1: D10_ONE,
+    2: D10_TWO,
+    3: D10_THREE,
+    4: D10_FOUR,
+    5: D10_FIVE,
+    6: D10_SIX,
+    7: D10_SEVEN,
+    8: D10_EIGHT,
+    9: D10_NINE,
+    10: D10_TEN
+}
+D8_IMAGES = {
+    1: D8_ONE,
+    2: D8_TWO,
+    3: D8_THREE,
+    4: D8_FOUR,
+    5: D8_FIVE,
+    6: D8_SIX,
+    7: D8_SEVEN,
+    8: D8_EIGHT
+}
 D20_IMAGES = {
     1: D20_ONE,
     2: D20_TWO,
@@ -422,7 +464,7 @@ BOARD_SQUARES = [Square(None, (534, 965)), Square(ONE_RED, (628, 965)), Square(O
                  Square(MONSTER, (628, 777), False, 12), Square(None, (722, 777)), Square(BLUE_RED, (816, 777)),
                  Square(DOWN_KEY, (910, 777), False, 0, 15), Square(UP_KEY, (1009, 777), False, 0, 34),
                  Square(None, (1103, 777)),
-                 Square(None, (1197, 777)), Square(None, (1291, 777)), Square(None, (1385, 777)),
+                 Square(BACK_8, (1197, 777)), Square(ROLL_8, (1291, 777)), Square(None, (1385, 777)),
                  Square(None, (1385, 683)), Square(None, (1291, 683)), Square(None, (1197, 683)),
                  Square(None, (1103, 683)), Square(None, (1009, 683)), Square(None, (910, 683)),
                  Square(None, (816, 683)), Square(None, (722, 683)), Square(None, (628, 683)),
@@ -472,6 +514,7 @@ class Meta:  # Changeable Global Variables
     DICE_ROLLED = 0
     SQUARES_TO_MOVE = 0
     TOP_DICE = []
+    MIDDLE_DICE = []
     BOTTOM_DICE = []
     CHOOSE_PLAYERS = None
     CHOSEN_PLAYER = None
