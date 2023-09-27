@@ -16,7 +16,7 @@ class Dice:
         if Meta.LEFT_MOUSE_RELEASED and self.currentRect.collidepoint(mouse_pos) and self.enabled:
             self.enabled = False
             if roll_dice:
-                if Meta.PLAYERS[Meta.CURRENT_PLAYER].setNextRoll is None:
+                if Meta.PLAYERS[Meta.CURRENT_PLAYER].setNextRoll is None or self.sides != 6:
                     self.sideFacing = random.randrange(1, self.sides + 1)
                 else:
                     self.sideFacing = Meta.PLAYERS[Meta.CURRENT_PLAYER].setNextRoll

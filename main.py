@@ -821,18 +821,17 @@ def draw_window():
                                     D8_2.check_click()
                                     if not D8.enabled and not D8_2.enabled:
                                         Meta.BONUS_MOVEMENT = False
-                                        current_square.players.remove(current_player)
                                         if D8.sideFacing >= D8_2.sideFacing:
                                             Meta.TOP_DICE = [D8]
                                             Meta.MIDDLE_DICE = [D6, D6_2, D8_2, D10, D10_2]
                                             Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
-                                            current_player.currentSquare += D8.sideFacing
+                                            Meta.SQUARES_TO_MOVE = D8.sideFacing
                                         else:
                                             Meta.TOP_DICE = [D8_2]
                                             Meta.MIDDLE_DICE = [D6, D6_2, D8, D10, D10_2]
                                             Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
-                                            current_player.currentSquare += D8_2.sideFacing
-                                        BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                                            Meta.SQUARES_TO_MOVE = D8_2.sideFacing
+                                        Meta.TURN_STAGE = TurnStage.MOVEMENT
                                 elif Meta.ROLLING_WITH_DISADVANTAGE:
                                     Meta.TOP_DICE = [D8, D8_2]
                                     Meta.MIDDLE_DICE = [D6, D6_2, D10, D10_2]
@@ -842,18 +841,17 @@ def draw_window():
                                     D8_2.check_click()
                                     if not D8.enabled and not D8_2.enabled:
                                         Meta.BONUS_MOVEMENT = False
-                                        current_square.players.remove(current_player)
                                         if D8.sideFacing <= D8_2.sideFacing:
                                             Meta.TOP_DICE = [D8]
                                             Meta.MIDDLE_DICE = [D6, D6_2, D8_2, D10, D10_2]
                                             Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
-                                            current_player.currentSquare += D8.sideFacing
+                                            Meta.SQUARES_TO_MOVE = D8.sideFacing
                                         else:
                                             Meta.TOP_DICE = [D8_2]
                                             Meta.MIDDLE_DICE = [D6, D6_2, D8, D10, D10_2]
                                             Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
-                                            current_player.currentSquare += D8_2.sideFacing
-                                        BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                                            Meta.SQUARES_TO_MOVE = D8_2.sideFacing
+                                        Meta.TURN_STAGE = TurnStage.MOVEMENT
                                 else:
                                     Meta.TOP_DICE = [D8]
                                     Meta.MIDDLE_DICE = [D6, D6_2, D8_2, D10, D10_2]
@@ -861,12 +859,11 @@ def draw_window():
                                     draw_dice_sets()
                                     if D8.check_click():
                                         Meta.BONUS_MOVEMENT = False
-                                        current_square.players.remove(current_player)
                                         Meta.TOP_DICE = [D8]
                                         Meta.MIDDLE_DICE = [D6, D6_2, D8_2, D10, D10_2]
                                         Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
-                                        current_player.currentSquare += D8.sideFacing
-                                        BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                                        Meta.SQUARES_TO_MOVE = D8.sideFacing
+                                        Meta.TURN_STAGE = TurnStage.MOVEMENT
                 elif current_square.symbol == BACK_8:
                     if Meta.FORCED_CARD is None and not Meta.ROLLING_WITH_DISADVANTAGE:
                         for card in current_player.redDeck:
@@ -902,6 +899,10 @@ def draw_window():
                                         Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
                                         current_player.currentSquare -= D8_2.sideFacing
                                     BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                                    if BOARD_SQUARES[current_player.currentSquare].symbol == GO_BACK or BOARD_SQUARES[current_player.currentSquare].symbol == DOWN_KEY or BOARD_SQUARES[current_player.currentSquare].symbol == BACK_8:
+                                        Meta.FORCED_MOVEMENT = True
+                                    elif BOARD_SQUARES[current_player.currentSquare].symbol == REDO or BOARD_SQUARES[current_player.currentSquare].symbol == UP_KEY or BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_8:
+                                        Meta.BONUS_MOVEMENT = True
                             elif Meta.ROLLING_WITH_DISADVANTAGE:
                                 Meta.TOP_DICE = [D8, D8_2]
                                 Meta.MIDDLE_DICE = [D6, D6_2, D10, D10_2]
@@ -923,6 +924,10 @@ def draw_window():
                                         Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
                                         current_player.currentSquare -= D8_2.sideFacing
                                     BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                                    if BOARD_SQUARES[current_player.currentSquare].symbol == GO_BACK or BOARD_SQUARES[current_player.currentSquare].symbol == DOWN_KEY or BOARD_SQUARES[current_player.currentSquare].symbol == BACK_8:
+                                        Meta.FORCED_MOVEMENT = True
+                                    elif BOARD_SQUARES[current_player.currentSquare].symbol == REDO or BOARD_SQUARES[current_player.currentSquare].symbol == UP_KEY or BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_8:
+                                        Meta.BONUS_MOVEMENT = True
                             else:
                                 Meta.TOP_DICE = [D8]
                                 Meta.MIDDLE_DICE = [D6, D6_2, D8_2, D10, D10_2]
@@ -936,6 +941,10 @@ def draw_window():
                                     Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
                                     current_player.currentSquare -= D8.sideFacing
                                     BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                                    if BOARD_SQUARES[current_player.currentSquare].symbol == GO_BACK or BOARD_SQUARES[current_player.currentSquare].symbol == DOWN_KEY or BOARD_SQUARES[current_player.currentSquare].symbol == BACK_8:
+                                        Meta.FORCED_MOVEMENT = True
+                                    elif BOARD_SQUARES[current_player.currentSquare].symbol == REDO or BOARD_SQUARES[current_player.currentSquare].symbol == UP_KEY or BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_8:
+                                        Meta.BONUS_MOVEMENT = True
                 elif current_square.symbol == DOWN_KEY:
                     if not Meta.FORCED_MOVEMENT:
                         draw_text("You gain common sense", SMALL_FONT, BLACK, (1680, 240))
@@ -964,6 +973,10 @@ def draw_window():
                             current_square.players.remove(current_player)
                             current_player.currentSquare -= Meta.SQUARES_TO_MOVE
                             BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                            if BOARD_SQUARES[current_player.currentSquare].symbol == GO_BACK or BOARD_SQUARES[current_player.currentSquare].symbol == DOWN_KEY or BOARD_SQUARES[current_player.currentSquare].symbol == BACK_8:
+                                Meta.FORCED_MOVEMENT = True
+                            elif BOARD_SQUARES[current_player.currentSquare].symbol == REDO or BOARD_SQUARES[current_player.currentSquare].symbol == UP_KEY or BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_8:
+                                Meta.BONUS_MOVEMENT = True
                 elif current_square.symbol == UP_KEY:
                     if Meta.FORCED_CARD is None and Meta.BONUS_MOVEMENT:
                         for card in current_player.redDeck:
@@ -1002,9 +1015,7 @@ def draw_window():
                             continue_button = Button("Continue", 1680, 600, 60)
                             if continue_button.check_click():
                                 Meta.BONUS_MOVEMENT = False
-                                current_square.players.remove(current_player)
-                                current_player.currentSquare += Meta.SQUARES_TO_MOVE
-                                BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                                Meta.TURN_STAGE = TurnStage.MOVEMENT
                 elif current_square.symbol == MISS_TURN:
                     draw_text("You Miss your Next Turn", SMALL_FONT, BLACK, (1680, 240))
                     current_player.missNextTurn = True
@@ -1328,9 +1339,8 @@ def perform_card_action(card):
             case CardValue.KING:
                 print("Card Used: " + card.displayName)
             case CardValue.QUEEN:  # Removes the need to draw any Red Cards
-                for card_type in Meta.CARDS_TO_DRAW:
-                    if card_type == CardType.RED:
-                        Meta.CARDS_TO_DRAW.remove(card_type)
+                while CardType.RED in Meta.CARDS_TO_DRAW:
+                    Meta.CARDS_TO_DRAW.remove(CardType.RED)
                 print("Card Used: " + card.displayName)
             case CardValue.JOKER:
                 print("Card Used: " + card.displayName)
@@ -1385,9 +1395,8 @@ def perform_card_action(card):
                 print("Card Used: " + card.displayName)
             case CardValue.QUEEN:
                 Meta.FORCED_CARD = None
-                for card_type in Meta.CARDS_TO_DRAW:
-                    if card_type == CardType.BLUE:
-                        Meta.CARDS_TO_DRAW.remove(card_type)
+                while CardType.BLUE in Meta.CARDS_TO_DRAW:
+                    Meta.CARDS_TO_DRAW.remove(CardType.BLUE)
                 print("Card Used: " + card.displayName)
             case CardValue.JOKER:
                 print("Card Used: " + card.displayName)
