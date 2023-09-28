@@ -122,6 +122,8 @@ DOWN_KEY = pygame.image.load(os.path.join("Assets", "Symbols", "down_key.png"))
 UP_KEY = pygame.image.load(os.path.join("Assets", "Symbols", "up_key.png"))
 BACK_8 = pygame.image.load(os.path.join("Assets", "Symbols", "back_8.png"))
 ROLL_8 = pygame.image.load(os.path.join("Assets", "Symbols", "roll_8.png"))
+BACK_10 = pygame.image.load(os.path.join("Assets", "Symbols", "back_10.png"))
+ROLL_10 = pygame.image.load(os.path.join("Assets", "Symbols", "roll_10.png"))
 
 # Game Cards
 # region
@@ -467,8 +469,8 @@ BOARD_SQUARES = [Square(None, (534, 965)), Square(ONE_RED, (628, 965)), Square(O
                  Square(BACK_8, (1197, 777)), Square(ROLL_8, (1291, 777)), Square(None, (1385, 777)),
                  Square(None, (1385, 683)), Square(None, (1291, 683)), Square(None, (1197, 683)),
                  Square(None, (1103, 683)), Square(None, (1009, 683)), Square(None, (910, 683)),
-                 Square(None, (816, 683)), Square(None, (722, 683)), Square(None, (628, 683)),
-                 Square(None, (534, 683)), Square(None, (534, 589)), Square(None, (628, 589)),
+                 Square(None, (816, 683)), Square(None, (722, 683)), Square(BACK_10, (628, 683)),
+                 Square(ROLL_10, (534, 683)), Square(None, (534, 589)), Square(None, (628, 589)),
                  Square(None, (722, 589)), Square(None, (816, 589)), Square(None, (910, 589)),
                  Square(None, (1009, 589)), Square(None, (1103, 589)), Square(None, (1197, 589)),
                  Square(None, (1291, 589)), Square(None, (1385, 589)), Square(None, (1385, 490)),
