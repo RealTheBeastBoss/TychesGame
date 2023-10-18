@@ -14,6 +14,9 @@ class ScreenState(Enum):
     RED_CARD_GUIDE = 7
     BOARD_SYMBOLS_GUIDE = 8
     PLAYING_GAME = 9
+    JOIN_LOCAL_GAME = 10
+    NAME_LOCAL_PLAYER = 11
+    CREATE_SERVER = 12
 
 
 class TurnStage(Enum):
@@ -360,6 +363,13 @@ PLAYER_TO_POSITION = {
     3: (-25, 25),
     4: (0, 0)
 }
+PLAYER_TO_PIECE = {
+    0: PLAYER_ONE,
+    1: PLAYER_TWO,
+    2: PLAYER_THREE,
+    3: PLAYER_FOUR,
+    4: PLAYER_FIVE
+}
 PLAYER_TO_COLOUR = {
     0: BLUE,
     1: ORANGE,
@@ -494,10 +504,14 @@ BOARD_SQUARES = [Square(None, (534, 965)), Square(ONE_RED, (628, 965)), Square(O
 ALLOWED_KEYS = [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9, pygame.K_a, pygame.K_b,
                 pygame.K_c, pygame.K_d, pygame.K_e, pygame.K_f, pygame.K_g, pygame.K_h, pygame.K_i, pygame.K_j, pygame.K_k, pygame.K_l, pygame.K_m, pygame.K_n,
                 pygame.K_o, pygame.K_p, pygame.K_q, pygame.K_r, pygame.K_s, pygame.K_t, pygame.K_u, pygame.K_v, pygame.K_w, pygame.K_x, pygame.K_y, pygame.K_z,
-                pygame.K_BACKSLASH, pygame.K_BACKSPACE, pygame.K_COMMA, pygame.K_QUESTION, pygame.K_SPACE, pygame.K_RETURN]
+                pygame.K_BACKSLASH, pygame.K_BACKSPACE, pygame.K_COMMA, pygame.K_QUESTION, pygame.K_SPACE, pygame.K_RETURN, pygame.K_PERIOD]
 
 
 class Meta:  # Changeable Global Variables
+    IS_MULTIPLAYER = False
+    NETWORK = None
+    HAS_SERVER = False
+    LOCAL_PLAYER = None
     DEBUG_INFO = []
     PLAYER_COUNT = None
     CURRENT_STATE = ScreenState.START

@@ -1,5 +1,6 @@
 from meta import *
 
+
 class Button:
     def __init__(self, text, x_pos, y_pos, height, colour_one = BLUE, colour_two = ORANGE, font = SMALL_FONT, width = 0):
         self.text = text

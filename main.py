@@ -1,9 +1,12 @@
 import pygame.draw
 
+from _thread import *
 from meta import *
 from button import Button
 from player import Player
 from dice import Dice
+from server import start_server, check_server
+from network import Network
 
 
 D4 = Dice(4, D4_IMAGES)
@@ -30,9 +33,80 @@ def draw_window():
         quit_button = Button("Quit", 960, 610, 60)
         if quit_button.check_click():
             pygame.quit()
-        new_game_button = Button("New Game", 960, 470, 60)
+        new_game_button = Button("Single Device", 960, 470, 60)
         if new_game_button.check_click():
             Meta.CURRENT_STATE = ScreenState.NEW_MENU
+        local_multiplayer_button = Button("Local Multiplayer", 960, 540, 60)
+        if local_multiplayer_button.check_click():
+            Meta.IS_MULTIPLAYER = True
+            Meta.CURRENT_STATE = ScreenState.JOIN_LOCAL_GAME
+    elif Meta.CURRENT_STATE == ScreenState.JOIN_LOCAL_GAME:  # Join/Create a Local Game
+        WINDOW.fill(GREEN)
+        if Meta.HAS_SERVER:
+            draw_text("Server Active", SMALL_FONT, ORANGE, (960, 200))
+        draw_text("Enter Server IP Address:", SMALL_FONT, ORANGE, (960, 350))
+        draw_text_input()
+        join_server_button = Button("Join Server", 960, 500, 60)
+        if join_server_button.check_click():
+            Meta.NETWORK = Network(Meta.USER_TEXT)
+            Meta.USER_TEXT = ""
+            if Meta.NETWORK.success:
+                Meta.CURRENT_STATE = ScreenState.NAME_LOCAL_PLAYER
+        create_server_button = Button("Create Server", 960, 590, 60)
+        if create_server_button.check_click():
+            Meta.CURRENT_STATE = ScreenState.CREATE_SERVER
+            Meta.CAN_TEXT_INPUT = False
+        quit_button = Button("Quit", 960, 690, 60)
+        if quit_button.check_click():
+            pygame.quit()
+    elif Meta.CURRENT_STATE == ScreenState.CREATE_SERVER:  # Sets Player Count for the Server
+        WINDOW.fill(GREEN)
+        draw_text("How many players?", BIG_FONT, ORANGE, (960, 100))
+        quit_button = Button("Quit", 1060, 600, 60)
+        if quit_button.check_click():
+            pygame.quit()
+        back_button = Button("Back", 860, 600, 60)
+        if back_button.check_click():
+            Meta.CURRENT_STATE = ScreenState.JOIN_LOCAL_GAME
+        two_player_button = Button("Two Players", 820, 300, 60, BLUE, ORANGE, SMALL_FONT, 220)
+        three_player_button = Button("Three Players", 1100, 300, 60, BLUE, ORANGE, SMALL_FONT, 220)
+        four_player_button = Button("Four Players", 820, 400, 60, BLUE, ORANGE, SMALL_FONT, 220)
+        five_player_button = Button("Five Players", 1100, 400, 60, BLUE, ORANGE, SMALL_FONT, 220)
+        if two_player_button.check_click():
+            if check_server(Meta.USER_TEXT):
+                Meta.HAS_SERVER = True
+                start_new_thread(start_server, (2,))
+                Meta.CURRENT_STATE = ScreenState.JOIN_LOCAL_GAME
+        elif three_player_button.check_click():
+            if check_server(Meta.USER_TEXT):
+                Meta.HAS_SERVER = True
+                start_new_thread(start_server, (3,))
+                Meta.CURRENT_STATE = ScreenState.JOIN_LOCAL_GAME
+        elif four_player_button.check_click():
+            if check_server(Meta.USER_TEXT):
+                Meta.HAS_SERVER = True
+                start_new_thread(start_server, (4,))
+                Meta.CURRENT_STATE = ScreenState.JOIN_LOCAL_GAME
+        elif five_player_button.check_click():
+            if check_server(Meta.USER_TEXT):
+                Meta.HAS_SERVER = True
+                start_new_thread(start_server, (5,))
+                Meta.CURRENT_STATE = ScreenState.JOIN_LOCAL_GAME
+    elif Meta.CURRENT_STATE == ScreenState.NAME_LOCAL_PLAYER:  # Names the Player in a Local Game
+        WINDOW.fill(GREEN)
+        quit_button = Button("Quit", 960, 600, 60)
+        if quit_button.check_click():
+            pygame.quit()
+        draw_text("Enter your Player Name", MEDIUM_FONT, ORANGE, (960, 69))
+        draw_text_input()
+        if Meta.TEXT_CONFIRMED:
+            data = ("Name", Meta.USER_TEXT)
+            Meta.LOCAL_PLAYER = Meta.NETWORK.send(data)
+            Meta.USER_TEXT = ""
+            Meta.TEXT_CONFIRMED = False
+        if Meta.LOCAL_PLAYER is not None:
+            if Meta.NETWORK.send("?"):
+                Meta.CURRENT_STATE = ScreenState.PLAYING_GAME
     elif Meta.CURRENT_STATE == ScreenState.NEW_MENU:  # New Game Menu
         WINDOW.fill(GREEN)
         draw_text("How many players?", BIG_FONT, ORANGE, (960, 100))
@@ -295,7 +369,7 @@ def draw_window():
             else:
                 draw_text(str(x), TINY_FONT, BLUE, (square.center[0] - 30, square.center[1] + 35))
             for i in range(len(square.players)):
-                player_image = square.players[i].playerPiece
+                player_image = PLAYER_TO_PIECE[i]
                 WINDOW.blit(player_image, ((square.center[0] + PLAYER_TO_POSITION[i][0]) - 14, (square.center[1] + PLAYER_TO_POSITION[i][1]) - 14))
         if Meta.SHOW_HAND == CardType.BLUE:
             Meta.HOVER_BOXES.clear()
@@ -425,7 +499,7 @@ def draw_window():
                 else:
                     draw_text(str(x), TINY_FONT, BLUE, (square.center[0] - 30, square.center[1] + 35))
                 for i in range(len(square.players)):
-                    player_image = square.players[i].playerPiece
+                    player_image = PLAYER_TO_PIECE[i]
                     WINDOW.blit(player_image, ((square.center[0] + PLAYER_TO_POSITION[i][0]) - 14,
                                                (square.center[1] + PLAYER_TO_POSITION[i][1]) - 14))
             square_clicked = check_squares_clicked()
