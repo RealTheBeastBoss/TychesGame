@@ -1748,6 +1748,7 @@ def main():  # Game Loop
         Meta.LEFT_MOUSE_RELEASED = False
         Meta.LEFT_ARROW_DOWN = False
         Meta.RIGHT_ARROW_DOWN = False
+        Meta.TEXT_CONFIRMED = False
         for event in pygame.event.get():  # Event Handler
             if event.type == pygame.QUIT:
                 pygame.quit()
