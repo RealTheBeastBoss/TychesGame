@@ -10,7 +10,6 @@ class Dice:
         self.currentRect = None
         self.enabled = True
 
-
     def check_click(self, roll_dice = True):
         mouse_pos = pygame.mouse.get_pos()
         if Meta.LEFT_MOUSE_RELEASED and self.currentRect.collidepoint(mouse_pos) and self.enabled:

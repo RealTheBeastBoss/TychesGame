@@ -2,7 +2,6 @@ import socket
 from _thread import *
 import pickle
 from player import Player
-import random
 
 port = 5555
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -13,6 +12,14 @@ class Server:
     player_count = 0
     players = []
     current_player = 0
+    current_player_to_update = 0
+    players_to_update = 0
+    board_to_update = 0
+    card_piles_to_update = 0
+    board_squares = []
+    discard_pile = []
+    red_cards = []
+    blue_cards = []
 
 
 def threaded_client(conn, ip):
@@ -29,6 +36,24 @@ def threaded_client(conn, ip):
                         print("Sending " + str(data) + " to " + ip[0])
                     else:
                         data = False
+                elif data == "!":  # Check for Updates
+                    data = {}
+                    if Server.current_player_to_update > 0:
+                        data["curr_player"] = Server.current_player
+                        Server.current_player_to_update -= 1
+                    if Server.players_to_update > 0:
+                        data["players"] = Server.players
+                        Server.players_to_update -= 1
+                    if Server.board_to_update > 0:
+                        data["board"] = Server.board_squares
+                        Server.board_to_update -= 1
+                    if Server.card_piles_to_update > 0:
+                        data["discard"] = Server.discard_pile
+                        data["red"] = Server.red_cards
+                        data["blue"] = Server.blue_cards
+                        Server.card_piles_to_update -= 1
+                    if data:
+                        print("Sending " + str(data) + " to " + ip[0])
                 elif data[0] == "Name":  # Creates a Player
                     print("From " + str(ip[0]) + ", Received Player Name: " + str(data[1]))
                     Server.players.append(Player(Server.added_players, data[1]))
@@ -50,8 +75,12 @@ def check_server(server):
         return False
 
 
-def start_server(count, server):
+def start_server(count, server, game_board, red_cards, blue_cards):
     Server.player_count = count
+    Server.board_squares = game_board
+    Server.red_cards = red_cards
+    Server.blue_cards = blue_cards
+    Server.card_piles_to_update = count
     sock.listen(Server.player_count)
     print("Waiting for Connection, Server Started at " + server)
     while True:

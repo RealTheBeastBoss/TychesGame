@@ -17,6 +17,7 @@ class ScreenState(Enum):
     JOIN_LOCAL_GAME = 10
     NAME_LOCAL_PLAYER = 11
     CREATE_SERVER = 12
+    PLAYING_LOCAL_GAME = 13
 
 
 class TurnStage(Enum):
@@ -228,16 +229,6 @@ BLUE_QUEEN_OF_SPADES = Card("Blue Queen of Spades", CardType.BLUE, CardSuit.SPAD
                             "Use this card to not draw a set of Red Cards")
 BLUE_RED_JOKER = Card("Blue Coloured Joker", CardType.BLUE, CardSuit.RED, CardValue.JOKER, "red_joker.png")
 BLUE_BLACK_JOKER = Card("Blue Gray Joker", CardType.BLUE, CardSuit.BLACK, CardValue.JOKER, "black_joker.png")
-BLUE_DRAW_DECK = [BLUE_ACE_OF_HEARTS, BLUE_TWO_OF_HEARTS, BLUE_THREE_OF_HEARTS, BLUE_FOUR_OF_HEARTS, BLUE_FIVE_OF_HEARTS, BLUE_SIX_OF_HEARTS,
-                  BLUE_SEVEN_OF_HEARTS, BLUE_EIGHT_OF_HEARTS, BLUE_NINE_OF_HEARTS, BLUE_TEN_OF_HEARTS, BLUE_JACK_OF_HEARTS, BLUE_KING_OF_HEARTS,
-                  BLUE_QUEEN_OF_HEARTS, BLUE_ACE_OF_DIAMONDS, BLUE_TWO_OF_DIAMONDS, BLUE_THREE_OF_DIAMONDS, BLUE_FOUR_OF_DIAMONDS, BLUE_FIVE_OF_DIAMONDS,
-                  BLUE_SIX_OF_DIAMONDS, BLUE_SEVEN_OF_DIAMONDS, BLUE_EIGHT_OF_DIAMONDS, BLUE_NINE_OF_DIAMONDS, BLUE_TEN_OF_DIAMONDS, BLUE_JACK_OF_DIAMONDS,
-                  BLUE_KING_OF_DIAMONDS, BLUE_QUEEN_OF_DIAMONDS, BLUE_ACE_OF_CLUBS, BLUE_TWO_OF_CLUBS, BLUE_THREE_OF_CLUBS, BLUE_FOUR_OF_CLUBS,
-                  BLUE_FIVE_OF_CLUBS, BLUE_SIX_OF_CLUBS, BLUE_SEVEN_OF_CLUBS, BLUE_EIGHT_OF_CLUBS, BLUE_NINE_OF_CLUBS, BLUE_TEN_OF_CLUBS,
-                  BLUE_JACK_OF_CLUBS, BLUE_KING_OF_CLUBS, BLUE_QUEEN_OF_CLUBS, BLUE_ACE_OF_SPADES, BLUE_TWO_OF_SPADES, BLUE_THREE_OF_SPADES,
-                  BLUE_FOUR_OF_SPADES, BLUE_FIVE_OF_SPADES, BLUE_SIX_OF_SPADES, BLUE_SEVEN_OF_SPADES, BLUE_EIGHT_OF_SPADES, BLUE_NINE_OF_SPADES,
-                  BLUE_TEN_OF_SPADES, BLUE_JACK_OF_SPADES, BLUE_KING_OF_SPADES, BLUE_QUEEN_OF_SPADES, BLUE_BLACK_JOKER, BLUE_RED_JOKER]
-random.shuffle(BLUE_DRAW_DECK)
 RED_ACE_OF_HEARTS = Card("Red Ace of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.ACE, "ace_hearts.png")
 RED_TWO_OF_HEARTS = Card("Red Two of Hearts", CardType.RED, CardSuit.HEARTS, CardValue.TWO, "2_hearts.png", (368, 70),
                           "Roll your next dice with disadvantage")
@@ -328,17 +319,6 @@ RED_QUEEN_OF_SPADES = Card("Red Queen of Spades", CardType.RED, CardSuit.SPADES,
                            "Blocks you from drawing", "next set of Blue Cards")
 RED_RED_JOKER = Card("Red Coloured Joker", CardType.RED, CardSuit.RED, CardValue.JOKER, "red_joker.png")
 RED_BLACK_JOKER = Card("Red Gray Joker", CardType.RED, CardSuit.BLACK, CardValue.JOKER, "black_joker.png")
-RED_DRAW_DECK = [RED_ACE_OF_HEARTS, RED_TWO_OF_HEARTS, RED_THREE_OF_HEARTS, RED_FOUR_OF_HEARTS, RED_FIVE_OF_HEARTS, RED_SIX_OF_HEARTS,
-                  RED_SEVEN_OF_HEARTS, RED_EIGHT_OF_HEARTS, RED_NINE_OF_HEARTS, RED_TEN_OF_HEARTS, RED_JACK_OF_HEARTS, RED_KING_OF_HEARTS,
-                  RED_QUEEN_OF_HEARTS, RED_ACE_OF_DIAMONDS, RED_TWO_OF_DIAMONDS, RED_THREE_OF_DIAMONDS, RED_FOUR_OF_DIAMONDS, RED_FIVE_OF_DIAMONDS,
-                  RED_SIX_OF_DIAMONDS, RED_SEVEN_OF_DIAMONDS, RED_EIGHT_OF_DIAMONDS, RED_NINE_OF_DIAMONDS, RED_TEN_OF_DIAMONDS, RED_JACK_OF_DIAMONDS,
-                  RED_KING_OF_DIAMONDS, RED_QUEEN_OF_DIAMONDS, RED_ACE_OF_CLUBS, RED_TWO_OF_CLUBS, RED_THREE_OF_CLUBS, RED_FOUR_OF_CLUBS,
-                  RED_FIVE_OF_CLUBS, RED_SIX_OF_CLUBS, RED_SEVEN_OF_CLUBS, RED_EIGHT_OF_CLUBS, RED_NINE_OF_CLUBS, RED_TEN_OF_CLUBS,
-                  RED_JACK_OF_CLUBS, RED_KING_OF_CLUBS, RED_QUEEN_OF_CLUBS, RED_ACE_OF_SPADES, RED_TWO_OF_SPADES, RED_THREE_OF_SPADES,
-                  RED_FOUR_OF_SPADES, RED_FIVE_OF_SPADES, RED_SIX_OF_SPADES, RED_SEVEN_OF_SPADES, RED_EIGHT_OF_SPADES, RED_NINE_OF_SPADES,
-                  RED_TEN_OF_SPADES, RED_JACK_OF_SPADES, RED_KING_OF_SPADES, RED_QUEEN_OF_SPADES, RED_BLACK_JOKER, RED_RED_JOKER]
-random.shuffle(RED_DRAW_DECK)
-DISCARD_PILE = []
 # endregion
 
 pygame.font.init()
@@ -466,41 +446,6 @@ D20_IMAGES = {
     19: D20_NINETEEN,
     20: D20_TWENTY,
 }
-BOARD_SQUARES = [Square(None, (534, 965)), Square(ONE_RED, (628, 965)), Square(ONE_BLUE, (722, 965)),
-                 Square(None, (816, 965)), Square(ONE_BLUE, (910, 965)), Square(None, (1009, 965)),
-                 Square(ONE_BLUE, (1103, 965)), Square(ONE_BLUE, (1197, 965)), Square(None, (1291, 965)),
-                 Square(ONE_RED, (1385, 965)), Square(MONSTER, (1385, 871), False, 6), Square(MISS_TURN, (1291, 871)),
-                 Square(None, (1197, 871)), Square(TWO_RED, (1103, 871)), Square(None, (1009, 871)),
-                 Square(None, (910, 871)), Square(GO_BACK, (816, 871)), Square(REDO, (722, 871)),
-                 Square(None, (628, 871)), Square(TWO_BLUE, (534, 871)), Square(None, (534, 777)),
-                 Square(MONSTER, (628, 777), False, 12), Square(None, (722, 777)), Square(BLUE_RED, (816, 777)),
-                 Square(DOWN_KEY, (910, 777), False, 0, 15), Square(UP_KEY, (1009, 777), False, 0, 34),
-                 Square(None, (1103, 777)),
-                 Square(BACK_8, (1197, 777)), Square(ROLL_8, (1291, 777)), Square(None, (1385, 777)),
-                 Square(None, (1385, 683)), Square(None, (1291, 683)), Square(None, (1197, 683)),
-                 Square(None, (1103, 683)), Square(None, (1009, 683)), Square(None, (910, 683)),
-                 Square(None, (816, 683)), Square(None, (722, 683)), Square(BACK_10, (628, 683)),
-                 Square(ROLL_10, (534, 683)), Square(None, (534, 589)), Square(None, (628, 589)),
-                 Square(None, (722, 589)), Square(None, (816, 589)), Square(None, (910, 589)),
-                 Square(None, (1009, 589)), Square(None, (1103, 589)), Square(None, (1197, 589)),
-                 Square(None, (1291, 589)), Square(None, (1385, 589)), Square(None, (1385, 490)),
-                 Square(None, (1291, 490)), Square(None, (1197, 490)), Square(None, (1103, 490)),
-                 Square(None, (1009, 490)), Square(None, (910, 490)), Square(None, (816, 490)),
-                 Square(None, (722, 490)), Square(None, (628, 490)), Square(None, (534, 490)),
-                 Square(None, (534, 396)), Square(None, (628, 396)), Square(None, (722, 396)),
-                 Square(None, (816, 396)), Square(None, (910, 396)), Square(None, (1009, 396)),
-                 Square(None, (1103, 396)), Square(None, (1197, 396)), Square(None, (1291, 396)),
-                 Square(None, (1385, 396)), Square(None, (1385, 302)), Square(None, (1291, 302)),
-                 Square(None, (1197, 302)), Square(None, (1103, 302)), Square(None, (1009, 302)),
-                 Square(None, (910, 302)), Square(None, (816, 302)), Square(None, (722, 302)),
-                 Square(None, (628, 302)), Square(None, (534, 302)), Square(None, (534, 208)),
-                 Square(None, (628, 208)), Square(None, (722, 208)), Square(None, (816, 208)),
-                 Square(None, (910, 208)), Square(None, (1009, 208)), Square(None, (1103, 208)),
-                 Square(None, (1197, 208)), Square(None, (1291, 208)), Square(None, (1385, 208)),
-                 Square(None, (1385, 114)), Square(None, (1291, 114)), Square(None, (1197, 114)),
-                 Square(None, (1103, 114)), Square(None, (1009, 114)), Square(None, (910, 114)),
-                 Square(None, (816, 114)), Square(None, (722, 114)), Square(None, (628, 114)),
-                 Square(None, (534, 114))]
 ALLOWED_KEYS = [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9, pygame.K_a, pygame.K_b,
                 pygame.K_c, pygame.K_d, pygame.K_e, pygame.K_f, pygame.K_g, pygame.K_h, pygame.K_i, pygame.K_j, pygame.K_k, pygame.K_l, pygame.K_m, pygame.K_n,
                 pygame.K_o, pygame.K_p, pygame.K_q, pygame.K_r, pygame.K_s, pygame.K_t, pygame.K_u, pygame.K_v, pygame.K_w, pygame.K_x, pygame.K_y, pygame.K_z,
@@ -553,3 +498,79 @@ class Meta:  # Changeable Global Variables
     LEFT_MOUSE_RELEASED = False
     LEFT_ARROW_DOWN = False
     RIGHT_ARROW_DOWN = False
+    # Big Lists
+    DISCARD_PILE = []
+    RED_DRAW_DECK = [RED_ACE_OF_HEARTS, RED_TWO_OF_HEARTS, RED_THREE_OF_HEARTS, RED_FOUR_OF_HEARTS, RED_FIVE_OF_HEARTS,
+                     RED_SIX_OF_HEARTS,
+                     RED_SEVEN_OF_HEARTS, RED_EIGHT_OF_HEARTS, RED_NINE_OF_HEARTS, RED_TEN_OF_HEARTS,
+                     RED_JACK_OF_HEARTS, RED_KING_OF_HEARTS,
+                     RED_QUEEN_OF_HEARTS, RED_ACE_OF_DIAMONDS, RED_TWO_OF_DIAMONDS, RED_THREE_OF_DIAMONDS,
+                     RED_FOUR_OF_DIAMONDS, RED_FIVE_OF_DIAMONDS,
+                     RED_SIX_OF_DIAMONDS, RED_SEVEN_OF_DIAMONDS, RED_EIGHT_OF_DIAMONDS, RED_NINE_OF_DIAMONDS,
+                     RED_TEN_OF_DIAMONDS, RED_JACK_OF_DIAMONDS,
+                     RED_KING_OF_DIAMONDS, RED_QUEEN_OF_DIAMONDS, RED_ACE_OF_CLUBS, RED_TWO_OF_CLUBS,
+                     RED_THREE_OF_CLUBS, RED_FOUR_OF_CLUBS,
+                     RED_FIVE_OF_CLUBS, RED_SIX_OF_CLUBS, RED_SEVEN_OF_CLUBS, RED_EIGHT_OF_CLUBS, RED_NINE_OF_CLUBS,
+                     RED_TEN_OF_CLUBS,
+                     RED_JACK_OF_CLUBS, RED_KING_OF_CLUBS, RED_QUEEN_OF_CLUBS, RED_ACE_OF_SPADES, RED_TWO_OF_SPADES,
+                     RED_THREE_OF_SPADES,
+                     RED_FOUR_OF_SPADES, RED_FIVE_OF_SPADES, RED_SIX_OF_SPADES, RED_SEVEN_OF_SPADES,
+                     RED_EIGHT_OF_SPADES, RED_NINE_OF_SPADES,
+                     RED_TEN_OF_SPADES, RED_JACK_OF_SPADES, RED_KING_OF_SPADES, RED_QUEEN_OF_SPADES, RED_BLACK_JOKER,
+                     RED_RED_JOKER]
+    random.shuffle(RED_DRAW_DECK)
+    BLUE_DRAW_DECK = [BLUE_ACE_OF_HEARTS, BLUE_TWO_OF_HEARTS, BLUE_THREE_OF_HEARTS, BLUE_FOUR_OF_HEARTS,
+                      BLUE_FIVE_OF_HEARTS, BLUE_SIX_OF_HEARTS,
+                      BLUE_SEVEN_OF_HEARTS, BLUE_EIGHT_OF_HEARTS, BLUE_NINE_OF_HEARTS, BLUE_TEN_OF_HEARTS,
+                      BLUE_JACK_OF_HEARTS, BLUE_KING_OF_HEARTS,
+                      BLUE_QUEEN_OF_HEARTS, BLUE_ACE_OF_DIAMONDS, BLUE_TWO_OF_DIAMONDS, BLUE_THREE_OF_DIAMONDS,
+                      BLUE_FOUR_OF_DIAMONDS, BLUE_FIVE_OF_DIAMONDS,
+                      BLUE_SIX_OF_DIAMONDS, BLUE_SEVEN_OF_DIAMONDS, BLUE_EIGHT_OF_DIAMONDS, BLUE_NINE_OF_DIAMONDS,
+                      BLUE_TEN_OF_DIAMONDS, BLUE_JACK_OF_DIAMONDS,
+                      BLUE_KING_OF_DIAMONDS, BLUE_QUEEN_OF_DIAMONDS, BLUE_ACE_OF_CLUBS, BLUE_TWO_OF_CLUBS,
+                      BLUE_THREE_OF_CLUBS, BLUE_FOUR_OF_CLUBS,
+                      BLUE_FIVE_OF_CLUBS, BLUE_SIX_OF_CLUBS, BLUE_SEVEN_OF_CLUBS, BLUE_EIGHT_OF_CLUBS,
+                      BLUE_NINE_OF_CLUBS, BLUE_TEN_OF_CLUBS,
+                      BLUE_JACK_OF_CLUBS, BLUE_KING_OF_CLUBS, BLUE_QUEEN_OF_CLUBS, BLUE_ACE_OF_SPADES,
+                      BLUE_TWO_OF_SPADES, BLUE_THREE_OF_SPADES,
+                      BLUE_FOUR_OF_SPADES, BLUE_FIVE_OF_SPADES, BLUE_SIX_OF_SPADES, BLUE_SEVEN_OF_SPADES,
+                      BLUE_EIGHT_OF_SPADES, BLUE_NINE_OF_SPADES,
+                      BLUE_TEN_OF_SPADES, BLUE_JACK_OF_SPADES, BLUE_KING_OF_SPADES, BLUE_QUEEN_OF_SPADES,
+                      BLUE_BLACK_JOKER, BLUE_RED_JOKER]
+    random.shuffle(BLUE_DRAW_DECK)
+    BOARD_SQUARES = [Square(None, (534, 965)), Square(ONE_RED, (628, 965)), Square(ONE_BLUE, (722, 965)),
+                     Square(None, (816, 965)), Square(ONE_BLUE, (910, 965)), Square(None, (1009, 965)),
+                     Square(ONE_BLUE, (1103, 965)), Square(ONE_BLUE, (1197, 965)), Square(None, (1291, 965)),
+                     Square(ONE_RED, (1385, 965)), Square(MONSTER, (1385, 871), False, 6),
+                     Square(MISS_TURN, (1291, 871)),
+                     Square(None, (1197, 871)), Square(TWO_RED, (1103, 871)), Square(None, (1009, 871)),
+                     Square(None, (910, 871)), Square(GO_BACK, (816, 871)), Square(REDO, (722, 871)),
+                     Square(None, (628, 871)), Square(TWO_BLUE, (534, 871)), Square(None, (534, 777)),
+                     Square(MONSTER, (628, 777), False, 12), Square(None, (722, 777)), Square(BLUE_RED, (816, 777)),
+                     Square(DOWN_KEY, (910, 777), False, 0, 15), Square(UP_KEY, (1009, 777), False, 0, 34),
+                     Square(None, (1103, 777)),
+                     Square(BACK_8, (1197, 777)), Square(ROLL_8, (1291, 777)), Square(None, (1385, 777)),
+                     Square(None, (1385, 683)), Square(None, (1291, 683)), Square(None, (1197, 683)),
+                     Square(None, (1103, 683)), Square(None, (1009, 683)), Square(None, (910, 683)),
+                     Square(None, (816, 683)), Square(None, (722, 683)), Square(BACK_10, (628, 683)),
+                     Square(ROLL_10, (534, 683)), Square(None, (534, 589)), Square(None, (628, 589)),
+                     Square(None, (722, 589)), Square(None, (816, 589)), Square(None, (910, 589)),
+                     Square(None, (1009, 589)), Square(None, (1103, 589)), Square(None, (1197, 589)),
+                     Square(None, (1291, 589)), Square(None, (1385, 589)), Square(None, (1385, 490)),
+                     Square(None, (1291, 490)), Square(None, (1197, 490)), Square(None, (1103, 490)),
+                     Square(None, (1009, 490)), Square(None, (910, 490)), Square(None, (816, 490)),
+                     Square(None, (722, 490)), Square(None, (628, 490)), Square(None, (534, 490)),
+                     Square(None, (534, 396)), Square(None, (628, 396)), Square(None, (722, 396)),
+                     Square(None, (816, 396)), Square(None, (910, 396)), Square(None, (1009, 396)),
+                     Square(None, (1103, 396)), Square(None, (1197, 396)), Square(None, (1291, 396)),
+                     Square(None, (1385, 396)), Square(None, (1385, 302)), Square(None, (1291, 302)),
+                     Square(None, (1197, 302)), Square(None, (1103, 302)), Square(None, (1009, 302)),
+                     Square(None, (910, 302)), Square(None, (816, 302)), Square(None, (722, 302)),
+                     Square(None, (628, 302)), Square(None, (534, 302)), Square(None, (534, 208)),
+                     Square(None, (628, 208)), Square(None, (722, 208)), Square(None, (816, 208)),
+                     Square(None, (910, 208)), Square(None, (1009, 208)), Square(None, (1103, 208)),
+                     Square(None, (1197, 208)), Square(None, (1291, 208)), Square(None, (1385, 208)),
+                     Square(None, (1385, 114)), Square(None, (1291, 114)), Square(None, (1197, 114)),
+                     Square(None, (1103, 114)), Square(None, (1009, 114)), Square(None, (910, 114)),
+                     Square(None, (816, 114)), Square(None, (722, 114)), Square(None, (628, 114)),
+                     Square(None, (534, 114))]
