@@ -1,6 +1,8 @@
 import pygame.draw
 
 from _thread import *
+
+import meta
 from meta import *
 from button import Button
 from player import Player
@@ -104,8 +106,11 @@ def draw_window():
             Meta.LOCAL_PLAYER = Meta.NETWORK.send(data)
             Meta.USER_TEXT = ""
             Meta.TEXT_CONFIRMED = False
+            Meta.CAN_TEXT_INPUT = False
         if Meta.LOCAL_PLAYER is not None:
-            if Meta.NETWORK.send("?"):
+            network_response = Meta.NETWORK.send("?")
+            if network_response is not False:
+                Meta.PLAYERS = network_response
                 Meta.CURRENT_STATE = ScreenState.PLAYING_GAME
     elif Meta.CURRENT_STATE == ScreenState.NEW_MENU:  # New Game Menu
         WINDOW.fill(GREEN)
