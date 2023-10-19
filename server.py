@@ -25,7 +25,7 @@ class Server:
 def threaded_client(conn, ip):
     while True:  # Send and Receive Data
         try:
-            data = pickle.loads(conn.recv(2048*4))
+            data = pickle.loads(conn.recv(2048*10))
             if not data:
                 print(ip[0] + " Disconnected")
                 break
