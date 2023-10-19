@@ -8,14 +8,17 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
 class Server:
+    client_addresses = []
     added_players = 0
     player_count = 0
     players = []
     current_player = 0
-    current_player_to_update = 0
-    players_to_update = 0
-    board_to_update = 0
-    card_piles_to_update = 0
+    current_player_to_update = []
+    players_to_update = []
+    board_to_update = []
+    red_cards_to_update = []
+    blue_cards_to_update = []
+    discards_to_update = []
     board_squares = []
     discard_pile = []
     red_cards = []
@@ -39,22 +42,41 @@ def threaded_client(conn, ip):
                         data = False
                 elif data == "!":  # Check for Updates
                     data = {}
-                    if Server.current_player_to_update > 0:
+                    if ip in Server.current_player_to_update:
                         data["curr_player"] = Server.current_player
-                        Server.current_player_to_update -= 1
-                    if Server.players_to_update > 0:
+                        Server.current_player_to_update.remove(ip)
+                    if ip in Server.players_to_update:
                         data["players"] = Server.players
-                        Server.players_to_update -= 1
-                    if Server.board_to_update > 0:
+                        Server.players_to_update.remove(ip)
+                    if ip in Server.board_to_update:
                         data["board"] = Server.board_squares
-                        Server.board_to_update -= 1
-                    if Server.card_piles_to_update > 0:
+                        Server.board_to_update.remove(ip)
+                    if ip in Server.discards_to_update:
                         data["discard"] = Server.discard_pile
+                        Server.discards_to_update.remove(ip)
+                    if ip in Server.red_cards_to_update:
                         data["red"] = Server.red_cards
+                        Server.red_cards_to_update.remove(ip)
+                    if ip in Server.blue_cards_to_update:
                         data["blue"] = Server.blue_cards
-                        Server.card_piles_to_update -= 1
+                        Server.blue_cards_to_update.remove(ip)
+                    if ip in Server.event_to_send[1]:
+                        data["events"] = Server.event_to_send[0]
+                        Server.event_to_send[1].remove(ip)
                     if data:
                         print("Sending " + str(data) + " to " + ip[0])
+                elif data == "End Turn":  # Ends the Player's Turn
+                    if Server.current_player == Server.player_count - 1:
+                        Server.current_player = 0
+                    else:
+                        Server.current_player += 1
+                    Server.current_player_to_update = Server.client_addresses
+                elif data[0] == "PlayersRedEvents":
+                    Server.players = data[1]
+                    Server.players_to_update = Server.client_addresses
+                    Server.red_cards = data[2]
+                    Server.red_cards_to_update = Server.client_addresses
+                    Server.event_to_send = [data[3], Server.client_addresses]
                 elif data[0] == "Name":  # Creates a Player
                     print("From " + str(ip[0]) + ", Received Player Name: " + str(data[1]))
                     Server.players.append(Player(Server.added_players, data[1]))
@@ -87,4 +109,5 @@ def start_server(count, server, game_board, red_cards, blue_cards):
     while True:
         connect, addr = sock.accept()
         print(addr[0] + " has Connected")
+        Server.client_addresses.append(addr)
         start_new_thread(threaded_client, (connect, addr))
