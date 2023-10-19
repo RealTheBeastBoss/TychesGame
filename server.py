@@ -25,6 +25,7 @@ def threaded_client(conn, ip):
                 if data == "?":  # Check if Game is Starting
                     if Server.added_players == Server.player_count:
                         data = Server.players
+                        print("Sending " + str(data) + " to " + ip[0])
                     else:
                         data = False
                 elif data[0] == "Name":  # Creates a Player

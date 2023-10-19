@@ -101,13 +101,13 @@ def draw_window():
             pygame.quit()
         draw_text("Enter your Player Name", MEDIUM_FONT, ORANGE, (960, 69))
         draw_text_input()
-        if Meta.TEXT_CONFIRMED:
-            data = ("Name", Meta.USER_TEXT)
-            Meta.LOCAL_PLAYER = Meta.NETWORK.send(data)
-            Meta.USER_TEXT = ""
-            Meta.TEXT_CONFIRMED = False
-            Meta.CAN_TEXT_INPUT = False
-        if Meta.LOCAL_PLAYER is not None:
+        if Meta.LOCAL_PLAYER is None:
+            if Meta.TEXT_CONFIRMED:
+                data = ("Name", Meta.USER_TEXT)
+                Meta.LOCAL_PLAYER = Meta.NETWORK.send(data)
+                Meta.TEXT_CONFIRMED = False
+                Meta.CAN_TEXT_INPUT = False
+        else:
             network_response = Meta.NETWORK.send("?")
             if network_response is not False:
                 Meta.PLAYERS = network_response
