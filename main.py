@@ -75,22 +75,22 @@ def draw_window():
         if two_player_button.check_click():
             if check_server(Meta.USER_TEXT):
                 Meta.HAS_SERVER = True
-                start_new_thread(start_server, (2,))
+                start_new_thread(start_server, (2, Meta.USER_TEXT))
                 Meta.CURRENT_STATE = ScreenState.JOIN_LOCAL_GAME
         elif three_player_button.check_click():
             if check_server(Meta.USER_TEXT):
                 Meta.HAS_SERVER = True
-                start_new_thread(start_server, (3,))
+                start_new_thread(start_server, (3, Meta.USER_TEXT))
                 Meta.CURRENT_STATE = ScreenState.JOIN_LOCAL_GAME
         elif four_player_button.check_click():
             if check_server(Meta.USER_TEXT):
                 Meta.HAS_SERVER = True
-                start_new_thread(start_server, (4,))
+                start_new_thread(start_server, (4, Meta.USER_TEXT))
                 Meta.CURRENT_STATE = ScreenState.JOIN_LOCAL_GAME
         elif five_player_button.check_click():
             if check_server(Meta.USER_TEXT):
                 Meta.HAS_SERVER = True
-                start_new_thread(start_server, (5,))
+                start_new_thread(start_server, (5, Meta.USER_TEXT))
                 Meta.CURRENT_STATE = ScreenState.JOIN_LOCAL_GAME
     elif Meta.CURRENT_STATE == ScreenState.NAME_LOCAL_PLAYER:  # Names the Player in a Local Game
         WINDOW.fill(GREEN)

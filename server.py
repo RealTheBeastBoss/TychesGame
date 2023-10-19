@@ -21,14 +21,14 @@ def threaded_client(conn, ip):
                 print(ip[0] + " Disconnected")
                 break
             else:  # Update Players, Update Card Piles, Update Board Squares, Card Actions
-                print("From " + str(ip[0]) + ", Received: " + str(data))
-                if data == "?":
+                if data == "?": # Check if Game is Starting
                     data = Server.added_players == Server.player_count - 1
-                elif data[0] == "Name":
+                elif data[0] == "Name":  # Creates a Player
+                    print("From " + str(ip[0]) + ", Received Player Name: " + str(data[1]))
                     Server.players.append(Player(Server.player_count + 1, data[1]))
                     Server.player_count += 1
                     data = Server.players[-1]
-                print("Sending " + str(data) + " to " + ip[0])
+                    print("Sending " + str(data) + " to " + ip[0])
                 conn.sendall(pickle.dumps(data))
         except error:
             break
@@ -44,10 +44,10 @@ def check_server(server):
         return False
 
 
-def start_server(count):
+def start_server(count, server):
     Server.player_count = count
     sock.listen(Server.player_count)
-    print("Waiting for Connection, Server Started")
+    print("Waiting for Connection, Server Started at " + server)
     while True:
         connect, addr = sock.accept()
         print(addr[0] + " has Connected")
