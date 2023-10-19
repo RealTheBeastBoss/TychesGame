@@ -511,7 +511,7 @@ class Meta:  # Changeable Global Variables
     IS_MULTIPLAYER = False
     NETWORK = None
     HAS_SERVER = False
-    LOCAL_PLAYER = None
+    PLAYER_NUMBER = 69
     DEBUG_INFO = []
     PLAYER_COUNT = None
     CURRENT_STATE = ScreenState.START

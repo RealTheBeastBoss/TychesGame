@@ -2,7 +2,6 @@ import pygame.draw
 
 from _thread import *
 
-import meta
 from meta import *
 from button import Button
 from player import Player
@@ -101,10 +100,10 @@ def draw_window():
             pygame.quit()
         draw_text("Enter your Player Name", MEDIUM_FONT, ORANGE, (960, 69))
         draw_text_input()
-        if Meta.LOCAL_PLAYER is None:
+        if Meta.PLAYER_NUMBER == 69:
             if Meta.TEXT_CONFIRMED:
                 data = ("Name", Meta.USER_TEXT)
-                Meta.LOCAL_PLAYER = Meta.NETWORK.send(data)
+                Meta.PLAYER_NUMBER = Meta.NETWORK.send(data)
                 Meta.TEXT_CONFIRMED = False
                 Meta.CAN_TEXT_INPUT = False
         else:
@@ -313,7 +312,13 @@ def draw_window():
         WINDOW.fill(WHITE)
         Meta.BUTTONS_ENABLED = True
         current_player = Meta.PLAYERS[Meta.CURRENT_PLAYER]
-        draw_text(current_player.playerName + "'s Turn", SMALL_FONT, PLAYER_TO_COLOUR[current_player.playerNumber], (960, 30))
+        if Meta.IS_MULTIPLAYER:
+            if Meta.CURRENT_PLAYER == Meta.PLAYER_NUMBER:
+                draw_text("Your Turn", SMALL_FONT, PLAYER_TO_COLOUR[current_player.playerNumber], (960, 30))
+            else:
+                draw_text(current_player.playerName + "'s Turn", SMALL_FONT, PLAYER_TO_COLOUR[current_player.playerNumber], (960, 30))
+        else:
+            draw_text(current_player.playerName + "'s Turn", SMALL_FONT, PLAYER_TO_COLOUR[current_player.playerNumber], (960, 30))
         game_board = pygame.Rect((480, 60), (960, 960))
         pygame.draw.rect(WINDOW, BLUE, game_board)
         roll_background = pygame.Rect((1460, 100), (440, 700))
