@@ -311,10 +311,62 @@ def draw_window():
     elif Meta.CURRENT_STATE == ScreenState.PLAYING_LOCAL_GAME:
         WINDOW.fill(WHITE)
         Meta.BUTTONS_ENABLED = True
+        if Meta.SHOW_HAND is None and Meta.CHOOSE_DICE is None and Meta.CHOOSE_PLAYERS is None and Meta.CHOOSE_SQUARE is None:
+            quit_button = Button("Quit", 360, 450, 60)
+            if quit_button.check_click():
+                pygame.quit()
         check_server_updates()
         current_player = Meta.PLAYERS[Meta.CURRENT_PLAYER]
         is_your_turn = Meta.CURRENT_PLAYER == Meta.PLAYER_NUMBER
-
+        if is_your_turn:
+            draw_text("Your Turn", SMALL_FONT, PLAYER_TO_COLOUR[current_player.playerNumber], (960, 30))
+        else:
+            draw_text(current_player.playerName + "'s Turn", SMALL_FONT, PLAYER_TO_COLOUR[current_player.playerNumber], (960, 30))
+        game_board = pygame.Rect((480, 60), (960, 960))
+        pygame.draw.rect(WINDOW, BLUE, game_board)
+        roll_background = pygame.Rect((1460, 100), (440, 700))
+        pygame.draw.rect(WINDOW, PASTEL_GREEN, roll_background, 0, 20)
+        draw_game_image(BLUE_CARD_SYMBOL, (360, 250), 3, True, PASTEL_GREEN, (170, 75),
+                        "Blue Draw Pile", "", "Current Size: " + str(len(Meta.BLUE_DRAW_DECK)))
+        draw_game_image(RED_CARD_SYMBOL, (360, 650), 3, True, PASTEL_GREEN, (170, 75),
+                        "Red Draw Pile", "", "Current Size: " + str(len(Meta.RED_DRAW_DECK)))
+        if is_your_turn:
+            if len(current_player.blueDeck) != 0:
+                turned_blue_deck_image = pygame.transform.rotate(BLUE_CARD_SYMBOL[0], -90)
+                turned_blue_deck_image = pygame.transform.scale(turned_blue_deck_image, (
+                BLUE_CARD_SYMBOL[1][1] * 3, BLUE_CARD_SYMBOL[1][0] * 3))
+                WINDOW.blit(turned_blue_deck_image, (95, 835))
+                if Meta.CARD_HANDS_ACTIVE: Meta.HOVER_BOXES.append(("board symbol", ["Your Blue Card Hand"],
+                                                                    turned_blue_deck_image, (95, 835), (215, 35),
+                                                                    PASTEL_GREEN))
+                blue_hand_rect = turned_blue_deck_image.get_rect()
+                blue_hand_rect.topleft = (95, 835)
+                if blue_hand_rect.collidepoint(
+                        pygame.mouse.get_pos()) and Meta.LEFT_MOUSE_RELEASED and Meta.CARD_HANDS_ACTIVE:
+                    Meta.SHOW_HAND = CardType.BLUE
+                    Meta.CARD_HANDS_ACTIVE = False
+                    if Meta.TURN_STAGE == TurnStage.DRAW_CARDS:
+                        if Meta.DISPLAYING_CARD:
+                            Meta.CARDS_TO_DRAW.pop(0)
+                            Meta.DISPLAYING_CARD = False
+            if len(current_player.redDeck) != 0:
+                turned_red_deck_image = pygame.transform.rotate(RED_CARD_SYMBOL[0], 90)
+                turned_red_deck_image = pygame.transform.scale(turned_red_deck_image,
+                                                               (RED_CARD_SYMBOL[1][1] * 3, RED_CARD_SYMBOL[1][0] * 3))
+                WINDOW.blit(turned_red_deck_image, (1530, 835))
+                if Meta.CARD_HANDS_ACTIVE: Meta.HOVER_BOXES.append(("board symbol", ["Your Red Card Hand"],
+                                                                    turned_red_deck_image, (1530, 835), (215, 35),
+                                                                    PASTEL_GREEN))
+                red_hand_rect = turned_red_deck_image.get_rect()
+                red_hand_rect.topleft = (1530, 835)
+                if red_hand_rect.collidepoint(
+                        pygame.mouse.get_pos()) and Meta.LEFT_MOUSE_RELEASED and Meta.CARD_HANDS_ACTIVE:
+                    Meta.SHOW_HAND = CardType.RED
+                    Meta.CARD_HANDS_ACTIVE = False
+                    if Meta.TURN_STAGE == TurnStage.DRAW_CARDS:
+                        if Meta.DISPLAYING_CARD:
+                            Meta.CARDS_TO_DRAW.pop(0)
+                            Meta.DISPLAYING_CARD = False
     elif Meta.CURRENT_STATE == ScreenState.PLAYING_GAME:
         WINDOW.fill(WHITE)
         Meta.BUTTONS_ENABLED = True
@@ -1359,18 +1411,19 @@ def draw_window():
 
 def check_server_updates():
     network_response = Meta.NETWORK.send("!")
-    if "curr_player" in network_response:
-        Meta.CURRENT_PLAYER = network_response["curr_player"]
-    if "players" in network_response:
-        Meta.PLAYERS = network_response["players"]
-    if "board" in network_response:
-        Meta.BOARD_SQUARES = network_response["curr_player"]
-    if "discard" in network_response:
-        Meta.DISCARD_PILE = network_response["discard"]
-    if "red" in network_response:
-        Meta.RED_DRAW_DECK = network_response["red"]
-    if "blue" in network_response:
-        Meta.BLUE_DRAW_DECK = network_response["blue"]
+    if network_response:
+        if "curr_player" in network_response:
+            Meta.CURRENT_PLAYER = network_response["curr_player"]
+        if "players" in network_response:
+            Meta.PLAYERS = network_response["players"]
+        if "board" in network_response:
+            Meta.BOARD_SQUARES = network_response["curr_player"]
+        if "discard" in network_response:
+            Meta.DISCARD_PILE = network_response["discard"]
+        if "red" in network_response:
+            Meta.RED_DRAW_DECK = network_response["red"]
+        if "blue" in network_response:
+            Meta.BLUE_DRAW_DECK = network_response["blue"]
 
 
 def draw_dice_sets(top_height = 330):
