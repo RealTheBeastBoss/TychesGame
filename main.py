@@ -367,6 +367,60 @@ def draw_window():
                         if Meta.DISPLAYING_CARD:
                             Meta.CARDS_TO_DRAW.pop(0)
                             Meta.DISPLAYING_CARD = False
+        for x in range(len(Meta.BOARD_SQUARES)):  # Draw Squares
+            square = Meta.BOARD_SQUARES[x]
+            square_rect = pygame.Rect((square.center[0] - 44, square.center[1] - 44), (89, 89))
+            pygame.draw.rect(WINDOW, WHITE, square_rect)
+            if square.symbol is not None:
+                if square.symbol == MONSTER:
+                    if square.monsterHealth > 0:
+                        draw_game_image((square.symbol, (89, 89)), square.center, 1)
+                        draw_text(str(square.monsterHealth) + "hp", TINY_FONT, BLUE, (square.center[0] - 10, square.center[1] + 20), False)
+                else:
+                    draw_game_image((square.symbol, (89, 89)), square.center, 1)
+            if square.hasBarrier:
+                if Meta.BOARD_SQUARES[x + 1].center[0] > square.center[0]:
+                    barrier_rect = pygame.Rect((square.center[0] + 34, square.center[1] - 39), (5, 79))
+                elif Meta.BOARD_SQUARES[x + 1].center[0] < square.center[0]:
+                    barrier_rect = pygame.Rect((square.center[0] - 39, square.center[1] - 39), (5, 79))
+                else:
+                    barrier_rect = pygame.Rect((square.center[0] - 39, square.center[1] - 39), (79, 5))
+                pygame.draw.rect(WINDOW, PASTEL_GREEN, barrier_rect)
+            if x == 0:  # Start Square
+                draw_text("START", TINY_FONT, BLUE, square.center)
+            elif x == 99:  # Finish Square
+                draw_text("FINISH", TINY_FONT, BLUE, square.center)
+            else:
+                draw_text(str(x), TINY_FONT, BLUE, (square.center[0] - 30, square.center[1] + 35))
+            for i in range(len(square.players)):
+                player_image = PLAYER_TO_PIECE[i]
+                WINDOW.blit(player_image, ((square.center[0] + PLAYER_TO_POSITION[i][0]) - 14, (square.center[1] + PLAYER_TO_POSITION[i][1]) - 14))
+        if is_your_turn:
+            if Meta.SHOW_HAND == CardType.BLUE:
+                Meta.HOVER_BOXES.clear()
+                WINDOW.fill(PASTEL_GREEN)
+                draw_text(current_player.playerName + "'s Blue Card Hand", MEDIUM_FONT, ORANGE, (960, 69))
+                back_button = Button("Back", 960, 950, 60)
+                if back_button.check_click():
+                    Meta.SHOW_HAND = None
+                    Meta.CARD_HANDS_ACTIVE = True
+                for x in range(len(current_player.blueDeck)):
+                    draw_card(current_player.blueDeck[x], CARD_TO_POSITION[x], 2)
+                Meta.BUTTONS_ENABLED = False
+                check_hover_boxes()
+            elif Meta.SHOW_HAND == CardType.RED:
+                Meta.HOVER_BOXES.clear()
+                WINDOW.fill(PASTEL_GREEN)
+                draw_text(current_player.playerName + "'s Red Card Hand", MEDIUM_FONT, ORANGE, (960, 69))
+                back_button = Button("Back", 960, 950, 60)
+                if back_button.check_click():
+                    Meta.SHOW_HAND = None
+                    Meta.CARD_HANDS_ACTIVE = True
+                for x in range(len(current_player.redDeck)):
+                    draw_card(current_player.redDeck[x], CARD_TO_POSITION[x], 2)
+                Meta.BUTTONS_ENABLED = False
+                check_hover_boxes()
+        check_hover_boxes()
     elif Meta.CURRENT_STATE == ScreenState.PLAYING_GAME:
         WINDOW.fill(WHITE)
         Meta.BUTTONS_ENABLED = True
