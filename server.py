@@ -20,6 +20,7 @@ class Server:
     discard_pile = []
     red_cards = []
     blue_cards = []
+    event_to_send = []
 
 
 def threaded_client(conn, ip):

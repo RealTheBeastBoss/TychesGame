@@ -420,6 +420,12 @@ def draw_window():
                     draw_card(current_player.redDeck[x], CARD_TO_POSITION[x], 2)
                 Meta.BUTTONS_ENABLED = False
                 check_hover_boxes()
+        if Meta.TURN_STAGE == TurnStage.START_TURN:
+            if not is_your_turn:
+                draw_text("Waiting for", SMALL_FONT, BLACK, (1680, 230))
+                draw_text("your Turn", SMALL_FONT, BLACK, (1680, 260))
+                for event in range(len(Meta.EVENT_LIST)):
+                    draw_text(Meta.EVENT_LIST[event], SMALL_FONT, BLACK, (10, 10 + (20 * event)))
         check_hover_boxes()
     elif Meta.CURRENT_STATE == ScreenState.PLAYING_GAME:
         WINDOW.fill(WHITE)

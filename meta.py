@@ -453,10 +453,13 @@ ALLOWED_KEYS = [pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pyga
 
 
 class Meta:  # Changeable Global Variables
+    # Local Game Things
     IS_MULTIPLAYER = False
     NETWORK = None
     HAS_SERVER = False
     PLAYER_NUMBER = 69
+    EVENT_LIST = []
+    # Regular Variables
     DEBUG_INFO = []
     PLAYER_COUNT = None
     CURRENT_STATE = ScreenState.START
