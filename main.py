@@ -846,7 +846,11 @@ def draw_window():
                 elif Meta.BOARD_SQUARES[current_player.currentSquare + x].monsterAwake:
                     Meta.SQUARES_TO_MOVE = x
                     break
-            Meta.BOARD_SQUARES[current_player.currentSquare].players.remove(current_player)
+            player_to_remove = None
+            for player in Meta.BOARD_SQUARES[current_player.currentSquare].players:
+                if player.playerNumber == current_player.playerNumber:
+                    player_to_remove = player
+            Meta.BOARD_SQUARES[current_player.currentSquare].players.remove(player_to_remove)
             updated_squares = [(current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare])]
             current_player.currentSquare = min(99, current_player.currentSquare + Meta.SQUARES_TO_MOVE)
             Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)

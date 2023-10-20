@@ -21,6 +21,6 @@ class Dice:
                     self.sideFacing = Meta.PLAYERS[Meta.CURRENT_PLAYER].setNextRoll
                     Meta.PLAYERS[Meta.CURRENT_PLAYER].setNextRoll = None
                     if Meta.IS_MULTIPLAYER:
-                        Meta.NETWORK.send("Player", Meta.PLAYERS[Meta.CURRENT_PLAYER])
+                        Meta.NETWORK.send(("Player", Meta.PLAYERS[Meta.CURRENT_PLAYER]))
             return True
         return False
