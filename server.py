@@ -206,7 +206,7 @@ def threaded_client(conn, ip):
                 elif data[0] == "Name":  # Creates a Player
                     print("From " + str(ip[0]) + ", Received Player Name: " + str(data[1]))
                     Server.players.append(Player(Server.added_players, data[1]))
-                    data = Server.added_players  # Sends Player Number
+                    data = (Server.added_players, Server.player_count)  # Sends Player Number and Player Count
                     Server.added_players += 1
                 if data:
                     print("Sending " + str(data) + " to " + ip[0])
