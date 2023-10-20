@@ -128,6 +128,23 @@ BACK_8 = pygame.image.load(os.path.join("Assets", "Symbols", "back_8.png"))
 ROLL_8 = pygame.image.load(os.path.join("Assets", "Symbols", "roll_8.png"))
 BACK_10 = pygame.image.load(os.path.join("Assets", "Symbols", "back_10.png"))
 ROLL_10 = pygame.image.load(os.path.join("Assets", "Symbols", "roll_10.png"))
+ID_TO_SYMBOLS = {
+    "OneBlue": ONE_BLUE,
+    "OneRed": ONE_RED,
+    "MissTurn": MISS_TURN,
+    "Monster": MONSTER,
+    "TwoBlue": TWO_BLUE,
+    "TwoRed": TWO_RED,
+    "GoBack": GO_BACK,
+    "Redo": REDO,
+    "BlueRed": BLUE_RED,
+    "DownKey": DOWN_KEY,
+    "UpKey": UP_KEY,
+    "Back8": BACK_8,
+    "Roll8": ROLL_8,
+    "Back10": BACK_10,
+    "Roll10": ROLL_10
+}
 
 # Game Cards
 # region
@@ -541,22 +558,22 @@ class Meta:  # Changeable Global Variables
                       BLUE_TEN_OF_SPADES, BLUE_JACK_OF_SPADES, BLUE_KING_OF_SPADES, BLUE_QUEEN_OF_SPADES,
                       BLUE_BLACK_JOKER, BLUE_RED_JOKER]
     random.shuffle(BLUE_DRAW_DECK)
-    BOARD_SQUARES = [Square(None, (534, 965)), Square(ONE_RED, (628, 965)), Square(ONE_BLUE, (722, 965)),
-                     Square(None, (816, 965)), Square(ONE_BLUE, (910, 965)), Square(None, (1009, 965)),
-                     Square(ONE_BLUE, (1103, 965)), Square(ONE_BLUE, (1197, 965)), Square(None, (1291, 965)),
-                     Square(ONE_RED, (1385, 965)), Square(MONSTER, (1385, 871), False, 6),
-                     Square(MISS_TURN, (1291, 871)),
-                     Square(None, (1197, 871)), Square(TWO_RED, (1103, 871)), Square(None, (1009, 871)),
-                     Square(None, (910, 871)), Square(GO_BACK, (816, 871)), Square(REDO, (722, 871)),
-                     Square(None, (628, 871)), Square(TWO_BLUE, (534, 871)), Square(None, (534, 777)),
-                     Square(MONSTER, (628, 777), False, 12), Square(None, (722, 777)), Square(BLUE_RED, (816, 777)),
-                     Square(DOWN_KEY, (910, 777), False, 0, 15), Square(UP_KEY, (1009, 777), False, 0, 34),
+    BOARD_SQUARES = [Square(None, (534, 965)), Square("OneRed", (628, 965)), Square("OneBlue", (722, 965)),
+                     Square(None, (816, 965)), Square("OneBlue", (910, 965)), Square(None, (1009, 965)),
+                     Square("OneBlue", (1103, 965)), Square("OneBlue", (1197, 965)), Square(None, (1291, 965)),
+                     Square("OneRed", (1385, 965)), Square("Monster", (1385, 871), False, 6),
+                     Square("MissTurn", (1291, 871)),
+                     Square(None, (1197, 871)), Square("TwoRed", (1103, 871)), Square(None, (1009, 871)),
+                     Square(None, (910, 871)), Square("GoBack", (816, 871)), Square("Redo", (722, 871)),
+                     Square(None, (628, 871)), Square("TwoBlue", (534, 871)), Square(None, (534, 777)),
+                     Square("Monster", (628, 777), False, 12), Square(None, (722, 777)), Square("BlueRed", (816, 777)),
+                     Square("DownKey", (910, 777), False, 0, 15), Square("UpKey", (1009, 777), False, 0, 34),
                      Square(None, (1103, 777)),
-                     Square(BACK_8, (1197, 777)), Square(ROLL_8, (1291, 777)), Square(None, (1385, 777)),
+                     Square("Back8", (1197, 777)), Square("Roll8", (1291, 777)), Square(None, (1385, 777)),
                      Square(None, (1385, 683)), Square(None, (1291, 683)), Square(None, (1197, 683)),
                      Square(None, (1103, 683)), Square(None, (1009, 683)), Square(None, (910, 683)),
-                     Square(None, (816, 683)), Square(None, (722, 683)), Square(BACK_10, (628, 683)),
-                     Square(ROLL_10, (534, 683)), Square(None, (534, 589)), Square(None, (628, 589)),
+                     Square(None, (816, 683)), Square(None, (722, 683)), Square("Back10", (628, 683)),
+                     Square("Roll10", (534, 683)), Square(None, (534, 589)), Square(None, (628, 589)),
                      Square(None, (722, 589)), Square(None, (816, 589)), Square(None, (910, 589)),
                      Square(None, (1009, 589)), Square(None, (1103, 589)), Square(None, (1197, 589)),
                      Square(None, (1291, 589)), Square(None, (1385, 589)), Square(None, (1385, 490)),

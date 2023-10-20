@@ -59,9 +59,10 @@ def threaded_client(conn, ip):
                     if ip in Server.blue_cards_to_update:
                         data["blue"] = Server.blue_cards
                         Server.blue_cards_to_update.remove(ip)
-                    if ip in Server.event_to_send[1]:
-                        data["events"] = Server.event_to_send[0]
-                        Server.event_to_send[1].remove(ip)
+                    if Server.event_to_send:
+                        if ip in Server.event_to_send[1]:
+                            data["events"] = Server.event_to_send[0]
+                            Server.event_to_send[1].remove(ip)
                 elif data == "End Turn":  # Ends the Player's Turn
                     if Server.current_player == Server.player_count - 1:
                         Server.current_player = 0
