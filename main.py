@@ -858,6 +858,474 @@ def draw_window():
                 Meta.FORCED_MOVEMENT = True
             elif Meta.BOARD_SQUARES[current_player.currentSquare].symbol == REDO or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == UP_KEY or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_8 or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_10:
                 Meta.BONUS_MOVEMENT = True
+        elif Meta.TURN_STAGE == TurnStage.SQUARE_ACTION:  # Doing what the Square wants
+            draw_dice_sets()
+            current_square = Meta.BOARD_SQUARES[current_player.currentSquare]
+            if current_player.currentSquare == 99:
+                Meta.TURN_STAGE = TurnStage.GAME_WON
+            else:
+                if current_square.symbol == ONE_BLUE:
+                    Meta.TURN_STAGE = TurnStage.DRAW_CARDS
+                    Meta.CARDS_TO_DRAW.append(CardType.BLUE)
+                elif current_square.symbol == ONE_RED:
+                    Meta.TURN_STAGE = TurnStage.DRAW_CARDS
+                    Meta.CARDS_TO_DRAW.append(CardType.RED)
+                elif current_square.symbol == TWO_RED:
+                    Meta.TURN_STAGE = TurnStage.DRAW_CARDS
+                    Meta.CARDS_TO_DRAW.append(CardType.RED)
+                    Meta.CARDS_TO_DRAW.append(CardType.RED)
+                elif current_square.symbol == TWO_BLUE:
+                    Meta.TURN_STAGE = TurnStage.DRAW_CARDS
+                    Meta.CARDS_TO_DRAW.append(CardType.BLUE)
+                    Meta.CARDS_TO_DRAW.append(CardType.BLUE)
+                elif current_square.symbol == BLUE_RED:
+                    Meta.TURN_STAGE = TurnStage.DRAW_CARDS
+                    Meta.CARDS_TO_DRAW.append(CardType.BLUE)
+                    Meta.CARDS_TO_DRAW.append(CardType.RED)
+                elif current_square.symbol == ROLL_10:
+                    if Meta.FORCED_CARD is None and Meta.BONUS_MOVEMENT:
+                        for card in current_player.redDeck:
+                            if card.cardValue == CardValue.SIX:
+                                Meta.FORCED_CARD = CardValue.SIX
+                    if Meta.FORCED_CARD == CardValue.SIX:
+                        draw_text("Use your Red Six Card!", SMALL_FONT, BLACK, (1680, 240))
+                    else:
+                        if not Meta.BONUS_MOVEMENT:
+                            draw_text("You don't get this benefit", SMALL_FONT, BLACK, (1680, 240))
+                            continue_button = Button("End Turn", 1680, 600, 60)
+                            if continue_button.check_click(): end_turn()
+                        else:
+                            if Meta.FORCED_CARD is None and not Meta.ROLLING_WITH_DISADVANTAGE:
+                                for card in current_player.redDeck:
+                                    if card.cardValue == CardValue.TWO:
+                                        Meta.FORCED_CARD = CardValue.TWO
+                            if Meta.FORCED_CARD == CardValue.TWO:
+                                draw_text("Use your Red Two Card!", SMALL_FONT, BLACK, (1680, 240))
+                            else:
+                                draw_text("Roll d10 to Move:", SMALL_FONT, BLACK, (1680, 240))
+                                if Meta.ROLLING_WITH_ADVANTAGE:
+                                    Meta.TOP_DICE = [D10, D10_2]
+                                    Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2]
+                                    Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                    draw_dice_sets()
+                                    D10.check_click()
+                                    D10_2.check_click()
+                                    if not D10.enabled and not D10_2.enabled:
+                                        Meta.BONUS_MOVEMENT = False
+                                        if D10.sideFacing >= D10_2.sideFacing:
+                                            Meta.TOP_DICE = [D10]
+                                            Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10_2]
+                                            Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                            Meta.SQUARES_TO_MOVE = D10.sideFacing
+                                        else:
+                                            Meta.TOP_DICE = [D10_2]
+                                            Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10]
+                                            Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                            Meta.SQUARES_TO_MOVE = D10_2.sideFacing
+                                        Meta.TURN_STAGE = TurnStage.MOVEMENT
+                                elif Meta.ROLLING_WITH_DISADVANTAGE:
+                                    Meta.TOP_DICE = [D10, D10_2]
+                                    Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2]
+                                    Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                    draw_dice_sets()
+                                    D10.check_click()
+                                    D10_2.check_click()
+                                    if not D10.enabled and not D10_2.enabled:
+                                        Meta.BONUS_MOVEMENT = False
+                                        if D10.sideFacing <= D10_2.sideFacing:
+                                            Meta.TOP_DICE = [D10]
+                                            Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10_2]
+                                            Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                            Meta.SQUARES_TO_MOVE = D10.sideFacing
+                                        else:
+                                            Meta.TOP_DICE = [D10_2]
+                                            Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10]
+                                            Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                            Meta.SQUARES_TO_MOVE = D10_2.sideFacing
+                                        Meta.TURN_STAGE = TurnStage.MOVEMENT
+                                else:
+                                    Meta.TOP_DICE = [D10]
+                                    Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10_2]
+                                    Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                    draw_dice_sets()
+                                    if D10.check_click():
+                                        Meta.BONUS_MOVEMENT = False
+                                        Meta.TOP_DICE = [D10]
+                                        Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10_2]
+                                        Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                        Meta.SQUARES_TO_MOVE = D10.sideFacing
+                                        Meta.TURN_STAGE = TurnStage.MOVEMENT
+                elif current_square.symbol == ROLL_8:
+                    if Meta.FORCED_CARD is None and Meta.BONUS_MOVEMENT:
+                        for card in current_player.redDeck:
+                            if card.cardValue == CardValue.SIX:
+                                Meta.FORCED_CARD = CardValue.SIX
+                    if Meta.FORCED_CARD == CardValue.SIX:
+                        draw_text("Use your Red Six Card!", SMALL_FONT, BLACK, (1680, 240))
+                    else:
+                        if not Meta.BONUS_MOVEMENT:
+                            draw_text("You don't get this benefit", SMALL_FONT, BLACK, (1680, 240))
+                            continue_button = Button("End Turn", 1680, 600, 60)
+                            if continue_button.check_click(): end_turn()
+                        else:
+                            if Meta.FORCED_CARD is None and not Meta.ROLLING_WITH_DISADVANTAGE:
+                                for card in current_player.redDeck:
+                                    if card.cardValue == CardValue.TWO:
+                                        Meta.FORCED_CARD = CardValue.TWO
+                            if Meta.FORCED_CARD == CardValue.TWO:
+                                draw_text("Use your Red Two Card!", SMALL_FONT, BLACK, (1680, 240))
+                            else:
+                                draw_text("Roll d8 to Move:", SMALL_FONT, BLACK, (1680, 240))
+                                if Meta.ROLLING_WITH_ADVANTAGE:
+                                    Meta.TOP_DICE = [D8, D8_2]
+                                    Meta.MIDDLE_DICE = [D6, D6_2, D10, D10_2]
+                                    Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                    draw_dice_sets()
+                                    D8.check_click()
+                                    D8_2.check_click()
+                                    if not D8.enabled and not D8_2.enabled:
+                                        Meta.BONUS_MOVEMENT = False
+                                        if D8.sideFacing >= D8_2.sideFacing:
+                                            Meta.TOP_DICE = [D8]
+                                            Meta.MIDDLE_DICE = [D6, D6_2, D8_2, D10, D10_2]
+                                            Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                            Meta.SQUARES_TO_MOVE = D8.sideFacing
+                                        else:
+                                            Meta.TOP_DICE = [D8_2]
+                                            Meta.MIDDLE_DICE = [D6, D6_2, D8, D10, D10_2]
+                                            Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                            Meta.SQUARES_TO_MOVE = D8_2.sideFacing
+                                        Meta.TURN_STAGE = TurnStage.MOVEMENT
+                                elif Meta.ROLLING_WITH_DISADVANTAGE:
+                                    Meta.TOP_DICE = [D8, D8_2]
+                                    Meta.MIDDLE_DICE = [D6, D6_2, D10, D10_2]
+                                    Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                    draw_dice_sets()
+                                    D8.check_click()
+                                    D8_2.check_click()
+                                    if not D8.enabled and not D8_2.enabled:
+                                        Meta.BONUS_MOVEMENT = False
+                                        if D8.sideFacing <= D8_2.sideFacing:
+                                            Meta.TOP_DICE = [D8]
+                                            Meta.MIDDLE_DICE = [D6, D6_2, D8_2, D10, D10_2]
+                                            Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                            Meta.SQUARES_TO_MOVE = D8.sideFacing
+                                        else:
+                                            Meta.TOP_DICE = [D8_2]
+                                            Meta.MIDDLE_DICE = [D6, D6_2, D8, D10, D10_2]
+                                            Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                            Meta.SQUARES_TO_MOVE = D8_2.sideFacing
+                                        Meta.TURN_STAGE = TurnStage.MOVEMENT
+                                else:
+                                    Meta.TOP_DICE = [D8]
+                                    Meta.MIDDLE_DICE = [D6, D6_2, D8_2, D10, D10_2]
+                                    Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                    draw_dice_sets()
+                                    if D8.check_click():
+                                        Meta.BONUS_MOVEMENT = False
+                                        Meta.TOP_DICE = [D8]
+                                        Meta.MIDDLE_DICE = [D6, D6_2, D8_2, D10, D10_2]
+                                        Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                        Meta.SQUARES_TO_MOVE = D8.sideFacing
+                                        Meta.TURN_STAGE = TurnStage.MOVEMENT
+                elif current_square.symbol == BACK_10:
+                    if Meta.FORCED_CARD is None and not Meta.ROLLING_WITH_DISADVANTAGE:
+                        for card in current_player.redDeck:
+                            if card.cardValue == CardValue.TWO:
+                                Meta.FORCED_CARD = CardValue.TWO
+                    if Meta.FORCED_CARD == CardValue.TWO:
+                        draw_text("Use your Red Two Card!", SMALL_FONT, BLACK, (1680, 240))
+                    else:
+                        if not Meta.FORCED_MOVEMENT:
+                            draw_text("You are safe for now", SMALL_FONT, BLACK, (1680, 240))
+                            continue_button = Button("End Turn", 1680, 600, 60)
+                            if continue_button.check_click(): end_turn()
+                        else:
+                            draw_text("Roll d10 to go Back:", SMALL_FONT, BLACK, (1680, 240))
+                            if Meta.ROLLING_WITH_ADVANTAGE:
+                                Meta.TOP_DICE = [D10, D10_2]
+                                Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2]
+                                Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                draw_dice_sets()
+                                D10.check_click()
+                                D10_2.check_click()
+                                if not D10.enabled and not D10_2.enabled:
+                                    Meta.FORCED_MOVEMENT = False
+                                    current_square.players.remove(current_player)
+                                    updated_squares = [(current_player.currentSquare, current_square)]
+                                    if D10.sideFacing <= D10_2.sideFacing:
+                                        Meta.TOP_DICE = [D10]
+                                        Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10_2]
+                                        Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                        current_player.currentSquare -= D10.sideFacing
+                                    else:
+                                        Meta.TOP_DICE = [D10_2]
+                                        Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10]
+                                        Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                        current_player.currentSquare -= D10_2.sideFacing
+                                    Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                                    updated_squares.append((current_player.current_square, Meta.BOARD_SQUARES[current_player.currentSquare]))
+                                    Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved backward"]))
+                                    if Meta.BOARD_SQUARES[current_player.currentSquare].symbol == GO_BACK or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == DOWN_KEY or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == BACK_8 or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == BACK_10:
+                                        Meta.FORCED_MOVEMENT = True
+                                    elif Meta.BOARD_SQUARES[current_player.currentSquare].symbol == REDO or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == UP_KEY or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_8 or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_10:
+                                        Meta.BONUS_MOVEMENT = True
+                            elif Meta.ROLLING_WITH_DISADVANTAGE:
+                                Meta.TOP_DICE = [D10, D10_2]
+                                Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2]
+                                Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                draw_dice_sets()
+                                D10.check_click()
+                                D10_2.check_click()
+                                if not D10.enabled and not D10_2.enabled:
+                                    Meta.FORCED_MOVEMENT = False
+                                    current_square.players.remove(current_player)
+                                    updated_squares = [(current_player.currentSquare, current_square)]
+                                    if D10.sideFacing >= D10_2.sideFacing:
+                                        Meta.TOP_DICE = [D10]
+                                        Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10_2]
+                                        Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                        current_player.currentSquare -= D10.sideFacing
+                                    else:
+                                        Meta.TOP_DICE = [D10_2]
+                                        Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10]
+                                        Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                        current_player.currentSquare -= D10_2.sideFacing
+                                    Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                                    updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
+                                    Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved backward"]))
+                                    if Meta.BOARD_SQUARES[current_player.currentSquare].symbol == GO_BACK or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == DOWN_KEY or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == BACK_8 or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == BACK_10:
+                                        Meta.FORCED_MOVEMENT = True
+                                    elif Meta.BOARD_SQUARES[current_player.currentSquare].symbol == REDO or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == UP_KEY or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_8 or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_10:
+                                        Meta.BONUS_MOVEMENT = True
+                            else:
+                                Meta.TOP_DICE = [D10]
+                                Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10_2]
+                                Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                draw_dice_sets()
+                                if D10.check_click():
+                                    Meta.FORCED_MOVEMENT = False
+                                    current_square.players.remove(current_player)
+                                    updated_squares = [(current_player.currentSquare, current_square)]
+                                    Meta.TOP_DICE = [D10]
+                                    Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10_2]
+                                    Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                    current_player.currentSquare -= D10.sideFacing
+                                    Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                                    updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
+                                    Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved backward"]))
+                                    if Meta.BOARD_SQUARES[current_player.currentSquare].symbol == GO_BACK or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == DOWN_KEY or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == BACK_8 or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == BACK_10:
+                                        Meta.FORCED_MOVEMENT = True
+                                    elif Meta.BOARD_SQUARES[current_player.currentSquare].symbol == REDO or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == UP_KEY or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_8 or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_10:
+                                        Meta.BONUS_MOVEMENT = True
+                elif current_square.symbol == BACK_8:
+                    if Meta.FORCED_CARD is None and not Meta.ROLLING_WITH_DISADVANTAGE:
+                        for card in current_player.redDeck:
+                            if card.cardValue == CardValue.TWO:
+                                Meta.FORCED_CARD = CardValue.TWO
+                    if Meta.FORCED_CARD == CardValue.TWO:
+                        draw_text("Use your Red Two Card!", SMALL_FONT, BLACK, (1680, 240))
+                    else:
+                        if not Meta.FORCED_MOVEMENT:
+                            draw_text("You are safe for now", SMALL_FONT, BLACK, (1680, 240))
+                            continue_button = Button("End Turn", 1680, 600, 60)
+                            if continue_button.check_click(): end_turn()
+                        else:
+                            draw_text("Roll d8 to go Back:", SMALL_FONT, BLACK, (1680, 240))
+                            if Meta.ROLLING_WITH_ADVANTAGE:
+                                Meta.TOP_DICE = [D8, D8_2]
+                                Meta.MIDDLE_DICE = [D6, D6_2, D10, D10_2]
+                                Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                draw_dice_sets()
+                                D8.check_click()
+                                D8_2.check_click()
+                                if not D8.enabled and not D8_2.enabled:
+                                    Meta.FORCED_MOVEMENT = False
+                                    current_square.players.remove(current_player)
+                                    updated_squares = [(current_player.currentSquare, current_square)]
+                                    if D8.sideFacing <= D8_2.sideFacing:
+                                        Meta.TOP_DICE = [D8]
+                                        Meta.MIDDLE_DICE = [D6, D6_2, D8_2, D10, D10_2]
+                                        Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                        current_player.currentSquare -= D8.sideFacing
+                                    else:
+                                        Meta.TOP_DICE = [D8_2]
+                                        Meta.MIDDLE_DICE = [D6, D6_2, D8, D10, D10_2]
+                                        Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                        current_player.currentSquare -= D8_2.sideFacing
+                                    Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                                    updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
+                                    Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved backward"]))
+                                    if Meta.BOARD_SQUARES[current_player.currentSquare].symbol == GO_BACK or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == DOWN_KEY or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == BACK_8 or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == BACK_10:
+                                        Meta.FORCED_MOVEMENT = True
+                                    elif Meta.BOARD_SQUARES[current_player.currentSquare].symbol == REDO or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == UP_KEY or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_8 or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_10:
+                                        Meta.BONUS_MOVEMENT = True
+                            elif Meta.ROLLING_WITH_DISADVANTAGE:
+                                Meta.TOP_DICE = [D8, D8_2]
+                                Meta.MIDDLE_DICE = [D6, D6_2, D10, D10_2]
+                                Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                draw_dice_sets()
+                                D8.check_click()
+                                D8_2.check_click()
+                                if not D8.enabled and not D8_2.enabled:
+                                    Meta.FORCED_MOVEMENT = False
+                                    current_square.players.remove(current_player)
+                                    updated_squares = [(current_player.currentSquare, current_square)]
+                                    if D8.sideFacing >= D8_2.sideFacing:
+                                        Meta.TOP_DICE = [D8]
+                                        Meta.MIDDLE_DICE = [D6, D6_2, D8_2, D10, D10_2]
+                                        Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                        current_player.currentSquare -= D8.sideFacing
+                                    else:
+                                        Meta.TOP_DICE = [D8_2]
+                                        Meta.MIDDLE_DICE = [D6, D6_2, D8, D10, D10_2]
+                                        Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                        current_player.currentSquare -= D8_2.sideFacing
+                                    Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                                    updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
+                                    Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved backward"]))
+                                    if Meta.BOARD_SQUARES[current_player.currentSquare].symbol == GO_BACK or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == DOWN_KEY or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == BACK_8 or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == BACK_10:
+                                        Meta.FORCED_MOVEMENT = True
+                                    elif Meta.BOARD_SQUARES[current_player.currentSquare].symbol == REDO or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == UP_KEY or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_8 or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_10:
+                                        Meta.BONUS_MOVEMENT = True
+                            else:
+                                Meta.TOP_DICE = [D8]
+                                Meta.MIDDLE_DICE = [D6, D6_2, D8_2, D10, D10_2]
+                                Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                draw_dice_sets()
+                                if D8.check_click():
+                                    Meta.FORCED_MOVEMENT = False
+                                    current_square.players.remove(current_player)
+                                    updated_squares = [(current_player.currentSquare, current_square)]
+                                    Meta.TOP_DICE = [D8]
+                                    Meta.MIDDLE_DICE = [D6, D6_2, D8_2, D10, D10_2]
+                                    Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                                    current_player.currentSquare -= D8.sideFacing
+                                    Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                                    updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
+                                    Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved backward"]))
+                                    if Meta.BOARD_SQUARES[current_player.currentSquare].symbol == GO_BACK or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == DOWN_KEY or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == BACK_8 or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == BACK_10:
+                                        Meta.FORCED_MOVEMENT = True
+                                    elif Meta.BOARD_SQUARES[current_player.currentSquare].symbol == REDO or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == UP_KEY or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_8 or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_10:
+                                        Meta.BONUS_MOVEMENT = True
+                elif current_square.symbol == DOWN_KEY:
+                    if not Meta.FORCED_MOVEMENT:
+                        draw_text("You gain common sense", SMALL_FONT, BLACK, (1680, 240))
+                        continue_button = Button("End Turn", 1680, 600, 60)
+                        if continue_button.check_click(): end_turn()
+                    else:
+                        draw_text("The key unlocks a door", SMALL_FONT, BLACK, (1680, 230))
+                        draw_text("Use the door to go South", SMALL_FONT, BLACK, (1680, 260))
+                        continue_button = Button("Continue", 1680, 600, 60)
+                        if continue_button.check_click():
+                            Meta.FORCED_MOVEMENT = False
+                            current_square.players.remove(current_player)
+                            updated_squares = [(current_player.currentSquare, current_square)]
+                            current_player.currentSquare = current_square.keyLocation
+                            Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                            updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
+                            Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved down"]))
+                elif current_square.symbol == GO_BACK:
+                    if not Meta.FORCED_MOVEMENT:
+                        draw_text("You beat fate this time", SMALL_FONT, BLACK, (1680, 240))
+                        continue_button = Button("End Turn", 1680, 600, 60)
+                        if continue_button.check_click(): end_turn()
+                    else:
+                        draw_text("You are going back", SMALL_FONT, BLACK, (1680, 230))
+                        draw_text("from whence you came", SMALL_FONT, BLACK, (1680, 260))
+                        continue_button = Button("Continue", 1680, 600, 60)
+                        if continue_button.check_click():
+                            Meta.FORCED_MOVEMENT = False
+                            current_square.players.remove(current_player)
+                            updated_squares = [(current_player.currentSquare, current_square)]
+                            current_player.currentSquare -= Meta.SQUARES_TO_MOVE
+                            Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                            updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
+                            Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved back from whence they came"]))
+                            if Meta.BOARD_SQUARES[current_player.currentSquare].symbol == GO_BACK or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == DOWN_KEY or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == BACK_8 or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == BACK_10:
+                                Meta.FORCED_MOVEMENT = True
+                            elif Meta.BOARD_SQUARES[current_player.currentSquare].symbol == REDO or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == UP_KEY or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_8 or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_10:
+                                Meta.BONUS_MOVEMENT = True
+                elif current_square.symbol == UP_KEY:
+                    if Meta.FORCED_CARD is None and Meta.BONUS_MOVEMENT:
+                        for card in current_player.redDeck:
+                            if card.cardValue == CardValue.SIX:
+                                Meta.FORCED_CARD = CardValue.SIX
+                    if Meta.FORCED_CARD == CardValue.SIX:
+                        draw_text("Use your Red Six!", SMALL_FONT, BLACK, (1680, 240))
+                    else:
+                        if not Meta.BONUS_MOVEMENT:
+                            draw_text("You don't get to move", SMALL_FONT, BLACK, (1680, 240))
+                            continue_button = Button("End Turn", 1680, 600, 60)
+                            if continue_button.check_click(): end_turn()
+                        else:
+                            draw_text("You find a key", SMALL_FONT, BLACK, (1680, 230))
+                            draw_text("Use the key to go North", SMALL_FONT, BLACK, (1680, 260))
+                            continue_button = Button("Continue", 1680, 600, 60)
+                            if continue_button.check_click():
+                                Meta.BONUS_MOVEMENT = False
+                                current_square.players.remove(current_player)
+                                updated_squares = [(current_player.currentSquare, current_square)]
+                                current_player.currentSquare = current_square.keyLocation
+                                Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                                updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
+                                Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved up"]))
+                elif current_square.symbol == REDO:
+                    if Meta.FORCED_CARD is None and Meta.BONUS_MOVEMENT:
+                        for card in current_player.redDeck:
+                            if card.cardValue == CardValue.SIX:
+                                Meta.FORCED_CARD = CardValue.SIX
+                    if Meta.FORCED_CARD == CardValue.SIX:
+                        draw_text("Use your Red Six!", SMALL_FONT, BLACK, (1680, 240))
+                    else:
+                        if not Meta.BONUS_MOVEMENT:
+                            draw_text("You don't get to move", SMALL_FONT, BLACK, (1680, 240))
+                            continue_button = Button("End Turn", 1680, 600, 60)
+                            if continue_button.check_click(): end_turn()
+                        else:
+                            draw_text("You get Double Movement", SMALL_FONT, BLACK, (1680, 240))
+                            continue_button = Button("Continue", 1680, 600, 60)
+                            if continue_button.check_click():
+                                Meta.BONUS_MOVEMENT = False
+                                Meta.TURN_STAGE = TurnStage.MOVEMENT
+                elif current_square.symbol == MISS_TURN:
+                    draw_text("You Miss your Next Turn", SMALL_FONT, BLACK, (1680, 240))
+                    current_player.missNextTurn = True
+                    Meta.NETWORK.send(("Player", current_player))
+                    continue_button = Button("End Turn", 1680, 600, 60)
+                    if continue_button.check_click():
+                        end_turn()
+                elif current_square.symbol == MONSTER:
+                    if current_square.monsterHealth > 0:
+                        if not current_square.monsterAwake:
+                            draw_text("You have awoken a Monster!", SMALL_FONT, BLACK, (1680, 240))
+                            continue_button = Button("Fight!", 1680, 600, 60)
+                            if continue_button.check_click():
+                                current_square.monsterAwake = True
+                                Meta.NETWORK.send(("SquareEvents", current_square, [current_player.playerName + " woke a Monster"]))
+                                D12.enabled = True
+                                D12_2.enabled = True
+                                Meta.TOP_DICE = [D12]
+                                Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10]
+                                Meta.BOTTOM_DICE = [D10_2, D12_2, D20, D20_2, D4]
+                                Meta.TURN_STAGE = TurnStage.ATTACK_MONSTER
+                        else:
+                            draw_text("You join a Monster fight!", SMALL_FONT, BLACK, (1680, 240))
+                            continue_button = Button("Fight!", 1680, 600, 60)
+                            if continue_button.check_click():
+                                Meta.NETWORK.send(("Events", [current_player.playerName + " joined a Monster Fight"]))
+                                D12.enabled = True
+                                D12_2.enabled = True
+                                Meta.TOP_DICE = [D12]
+                                Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10]
+                                Meta.BOTTOM_DICE = [D10_2, D12_2, D20, D20_2, D4]
+                                Meta.TURN_STAGE = TurnStage.ATTACK_MONSTER
+                    else:
+                        Meta.CAN_PROGRESS = True
+                elif current_square.symbol is None:
+                    Meta.CAN_PROGRESS = True
+                if Meta.CAN_PROGRESS:
+                    Meta.TURN_STAGE = TurnStage.END_TURN
         check_hover_boxes()
     elif Meta.CURRENT_STATE == ScreenState.PLAYING_GAME:
         WINDOW.fill(WHITE)
@@ -1918,7 +2386,7 @@ def draw_squares():
         else:
             draw_text(str(x), TINY_FONT, BLUE, (square.center[0] - 30, square.center[1] + 35))
         for i in range(len(square.players)):
-            player_image = PLAYER_TO_PIECE[i]
+            player_image = PLAYER_TO_PIECE[square.players[i].playerNumber]
             WINDOW.blit(player_image, ((square.center[0] + PLAYER_TO_POSITION[i][0]) - 14,
                                        (square.center[1] + PLAYER_TO_POSITION[i][1]) - 14))
 

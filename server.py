@@ -135,6 +135,9 @@ def threaded_client(conn, ip):
                     Server.discards_to_update.remove(ip)
                     Server.event_to_send = [data[2], Server.client_addresses.copy()]
                     Server.event_to_send[1].remove(ip)
+                elif data[0] == "Events":
+                    Server.event_to_send = [data[1], Server.client_addresses.copy()]
+                    Server.event_to_send[1].remove(ip)
                 elif data[0] == "Name":  # Creates a Player
                     print("From " + str(ip[0]) + ", Received Player Name: " + str(data[1]))
                     Server.players.append(Player(Server.added_players, data[1]))
