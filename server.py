@@ -37,7 +37,6 @@ def threaded_client(conn, ip):
                 if data == "?":  # Check if Game is Starting
                     if Server.added_players == Server.player_count:
                         data = [Server.players, Server.red_cards, Server.blue_cards]  # Sends the Players and Card Piles
-                        print(Server.client_addresses)
                     else:
                         data = False
                 elif data == "!":  # Check for Updates
@@ -69,72 +68,72 @@ def threaded_client(conn, ip):
                         Server.current_player = 0
                     else:
                         Server.current_player += 1
-                    Server.current_player_to_update = Server.client_addresses
+                    Server.current_player_to_update = Server.client_addresses.copy()
                     Server.current_player_to_update.remove(ip)
                     data = Server.current_player
                 elif data[0] == "PlayersRedEvents":
                     Server.players = data[1]
-                    Server.players_to_update = Server.client_addresses
+                    Server.players_to_update = Server.client_addresses.copy()
                     Server.players_to_update.remove(ip)
                     Server.red_cards = data[2]
-                    Server.red_cards_to_update = Server.client_addresses
+                    Server.red_cards_to_update = Server.client_addresses.copy()
                     Server.red_cards_to_update.remove(ip)
-                    Server.event_to_send = [data[3], Server.client_addresses]
+                    Server.event_to_send = [data[3], Server.client_addresses.copy()]
                     Server.event_to_send[1].remove(ip)
                     data = False
                 elif data[0] == "PlayersBlueEvents":
                     Server.players = data[1]
-                    Server.players_to_update = Server.client_addresses
+                    Server.players_to_update = Server.client_addresses.copy()
                     Server.players_to_update.remove(ip)
                     Server.blue_cards = data[2]
-                    Server.blue_cards_to_update = Server.client_addresses
+                    Server.blue_cards_to_update = Server.client_addresses.copy()
                     Server.blue_cards_to_update.remove(ip)
-                    Server.event_to_send = [data[3], Server.client_addresses]
+                    Server.event_to_send = [data[3], Server.client_addresses.copy()]
                     Server.event_to_send[1].remove(ip)
                     data = False
                 elif data[0] == "PlayerEvents":
                     player = data[1]
                     player_num = player.playerNumber
                     Server.players[player_num] = player
-                    Server.players_to_update = Server.client_addresses
+                    Server.players_to_update = Server.client_addresses.copy()
                     Server.players_to_update.remove(ip)
-                    Server.event_to_send = [data[2], Server.client_addresses]
+                    Server.event_to_send = [data[2], Server.client_addresses.copy()]
                     Server.event_to_send[1].remove(ip)
                     data = False
                 elif data[0] == "SquareEvents":
                     square = data[1][1]
                     square_num = data[1][0]
                     Server.board_squares[square_num] = square
-                    Server.board_to_update = Server.client_addresses
+                    Server.board_to_update = Server.client_addresses.copy()
                     Server.board_to_update.remove(ip)
-                    Server.event_to_send = [data[2], Server.client_addresses]
+                    Server.event_to_send = [data[2], Server.client_addresses.copy()]
                     Server.event_to_send[1].remove(ip)
                     data = False
                 elif data[0] == "Player":
                     player = data[1]
                     player_num = player.playerNumber
                     Server.players[player_num] = player
-                    Server.players_to_update = Server.client_addresses
+                    Server.players_to_update = Server.client_addresses.copy()
                     Server.players_to_update.remove(ip)
                     data = False
                 elif data[0] == "PlayerSquaresEvents":
                     player = data[1]
                     player_num = player.playerNumber
                     Server.players[player_num] = player
-                    Server.players_to_update = Server.client_addresses
+                    Server.players_to_update = Server.client_addresses.copy()
                     Server.players_to_update.remove(ip)
                     for square in data[2]:
                         Server.board_squares[square[0]] = square[1]
-                    Server.board_to_update = Server.client_addresses
+                    Server.board_to_update = Server.client_addresses.copy()
                     Server.board_to_update.remove(ip)
-                    Server.event_to_send = [data[3], Server.client_addresses]
+                    Server.event_to_send = [data[3], Server.client_addresses.copy()]
                     Server.event_to_send[1].remove(ip)
                     data = False
                 elif data[0] == "DiscardEvents":
                     Server.discard_pile = data[1]
-                    Server.discards_to_update = Server.client_addresses
+                    Server.discards_to_update = Server.client_addresses.copy()
                     Server.discards_to_update.remove(ip)
-                    Server.event_to_send = [data[2], Server.client_addresses]
+                    Server.event_to_send = [data[2], Server.client_addresses.copy()]
                     Server.event_to_send[1].remove(ip)
                 elif data[0] == "Name":  # Creates a Player
                     print("From " + str(ip[0]) + ", Received Player Name: " + str(data[1]))

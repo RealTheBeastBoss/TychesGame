@@ -1854,7 +1854,7 @@ def check_server_updates():
         if "players" in network_response:
             Meta.PLAYERS = network_response["players"]
         if "board" in network_response:
-            Meta.BOARD_SQUARES = network_response["curr_player"]
+            Meta.BOARD_SQUARES = network_response["board"]
         if "discard" in network_response:
             Meta.DISCARD_PILE = network_response["discard"]
         if "red" in network_response:
