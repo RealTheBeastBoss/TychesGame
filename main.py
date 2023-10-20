@@ -683,7 +683,7 @@ def draw_window():
                         Meta.TAKEN_FOUR = False
                         Meta.ROLLING_WITH_ADVANTAGE = False
                         Meta.BOARD_SQUARES[current_player.currentSquare].monsterAwake = False
-                        Meta.NETWORK.send(("SquareEvents", Meta.BOARD_SQUARES[current_player.currentSquare], [current_player.playerName + " killed the Monster"]))
+                        Meta.NETWORK.send(("SquareEvents", (current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]), [current_player.playerName + " killed the Monster"]))
                 elif not D12.enabled and not D12_2.enabled:
                     if Meta.ADDING_FOUR:
                         draw_text("Add a d4 to the Attack:", SMALL_FONT, BLACK, (1680, 240))
@@ -694,7 +694,7 @@ def draw_window():
                         if D4.check_click():
                             Meta.ADDING_FOUR = False
                             Meta.BOARD_SQUARES[current_player.currentSquare].monsterHealth -= D4.sideFacing
-                            Meta.NETWORK.send(("SquareEvents", Meta.BOARD_SQUARES[current_player.currentSquare],
+                            Meta.NETWORK.send(("SquareEvents", (current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]),
                                                [current_player.playerName + " hit the Monster for " + str(D4.sideFacing)]))
                     elif Meta.TAKING_FOUR and not Meta.TAKEN_FOUR:
                         draw_text("Take a d4 from the Attack:", SMALL_FONT, BLACK, (1680, 240))
@@ -705,7 +705,7 @@ def draw_window():
                         if D4.check_click():
                             Meta.TAKEN_FOUR = True
                             Meta.BOARD_SQUARES[current_player.currentSquare].monsterHealth += D4.sideFacing
-                            Meta.NETWORK.send(("SquareEvents", Meta.BOARD_SQUARES[current_player.currentSquare],
+                            Meta.NETWORK.send(("SquareEvents", (current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]),
                                                [current_player.playerName + " healed the Monster for " + str(D4.sideFacing)]))
                     else:
                         draw_text("You did not kill the Monster", SMALL_FONT, BLACK, (1680, 240))
@@ -725,14 +725,14 @@ def draw_window():
                         if D12.check_click():
                             D12_2.enabled = False
                             Meta.BOARD_SQUARES[current_player.currentSquare].monsterHealth -= D12.sideFacing
-                            Meta.NETWORK.send(("SquareEvents", Meta.BOARD_SQUARES[current_player.currentSquare],
+                            Meta.NETWORK.send(("SquareEvents", (current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]),
                                                [current_player.playerName + " hit the Monster for " + str(D12.sideFacing)]))
                     else:
                         D12.check_click()
                         D12_2.check_click()
                         if not D12.enabled and not D12_2.enabled:
                             Meta.BOARD_SQUARES[current_player.currentSquare].monsterHealth -= max(D12.sideFacing, D12_2.sideFacing)
-                            Meta.NETWORK.send(("SquareEvents", Meta.BOARD_SQUARES[current_player.currentSquare],
+                            Meta.NETWORK.send(("SquareEvents", (current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]),
                                                [current_player.playerName + " hit the Monster for " + str(max(D12.sideFacing, D12_2.sideFacing))]))
                 draw_dice_sets()
         elif Meta.TURN_STAGE == TurnStage.ROLL_DICE:  # Rolling the Movement Dice
@@ -1306,7 +1306,7 @@ def draw_window():
                             continue_button = Button("Fight!", 1680, 600, 60)
                             if continue_button.check_click():
                                 current_square.monsterAwake = True
-                                Meta.NETWORK.send(("SquareEvents", current_square, [current_player.playerName + " woke a Monster"]))
+                                Meta.NETWORK.send(("SquareEvents", (current_player.currentSquare, current_square), [current_player.playerName + " woke a Monster"]))
                                 D12.enabled = True
                                 D12_2.enabled = True
                                 Meta.TOP_DICE = [D12]
