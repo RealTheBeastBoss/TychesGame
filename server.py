@@ -36,7 +36,8 @@ def threaded_client(conn, ip):
             else:  # Update Players, Update Card Piles, Update Board Squares, Card Actions
                 if data == "?":  # Check if Game is Starting
                     if Server.added_players == Server.player_count:
-                        data = Server.players  # Sends the Player List
+                        data = [Server.players, Server.red_cards, Server.blue_cards]  # Sends the Players and Card Piles
+                        print(Server.client_addresses)
                     else:
                         data = False
                 elif data == "!":  # Check for Updates
@@ -124,8 +125,8 @@ def threaded_client(conn, ip):
                     Server.players_to_update.remove(ip)
                     for square in data[2]:
                         Server.board_squares[square[0]] = square[1]
-                        Server.board_to_update = Server.client_addresses
-                        Server.board_to_update.remove(ip)
+                    Server.board_to_update = Server.client_addresses
+                    Server.board_to_update.remove(ip)
                     Server.event_to_send = [data[3], Server.client_addresses]
                     Server.event_to_send[1].remove(ip)
                     data = False
@@ -162,7 +163,6 @@ def start_server(count, server, game_board, red_cards, blue_cards):
     Server.board_squares = game_board
     Server.red_cards = red_cards
     Server.blue_cards = blue_cards
-    Server.card_piles_to_update = count
     sock.listen(Server.player_count)
     print("Waiting for Connection, Server Started at " + server)
     while True:

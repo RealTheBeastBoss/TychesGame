@@ -109,9 +109,11 @@ def draw_window():
         else:
             network_response = Meta.NETWORK.send("?")
             if network_response is not False:
-                Meta.PLAYERS = network_response
+                Meta.PLAYERS = network_response[0]
                 for x in range(len(Meta.PLAYERS)):
                     Meta.BOARD_SQUARES[0].players.append(Meta.PLAYERS[x])
+                Meta.RED_DRAW_DECK = network_response[1]
+                Meta.BLUE_DRAW_DECK = network_response[2]
                 Meta.CURRENT_STATE = ScreenState.PLAYING_LOCAL_GAME
     elif Meta.CURRENT_STATE == ScreenState.NEW_MENU:  # New Game Menu
         WINDOW.fill(GREEN)
