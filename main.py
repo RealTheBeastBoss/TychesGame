@@ -452,9 +452,13 @@ def draw_window():
                         Meta.NETWORK.send(("PlayersRedEvents", Meta.PLAYERS, Meta.RED_DRAW_DECK, event_data))
                         Meta.CHOOSE_PLAYERS = None
                     elif Meta.CHOOSE_PLAYERS == "Red Three":
+                        event_data = []
                         for x in range(len(Meta.PLAYERS)):
                             if Meta.PLAYERS[x] != player and Meta.PLAYERS[x] != current_player:
-                                Meta.PLAYERS[x].blueDeck.append(Meta.BLUE_DRAW_DECK.pop())
+                                blue_card = Meta.BLUE_DRAW_DECK.pop()
+                                Meta.PLAYERS[x].blueDeck.append(blue_card)
+                                event_data.append(Meta.PLAYERS[x].playerName + " drew the " + blue_card.displayName)
+                        Meta.NETWORK.send(("PlayersBlueEvents", Meta.PLAYERS, Meta.BLUE_DRAW_DECK, event_data))
                         Meta.CHOOSE_PLAYERS = None
                     elif Meta.CHOOSE_PLAYERS == "Blue Five":
                         Meta.CHOOSE_PLAYERS = None
@@ -462,6 +466,7 @@ def draw_window():
                     elif Meta.CHOOSE_PLAYERS == "Red Five":
                         Meta.CHOOSE_PLAYERS = None
                         player.setPlayerRoll = current_player
+                        Meta.NETWORK.send(("PlayerEvents", player, [player.playerName + " will set a dice roll for " + current_player.playerName]))
                 Meta.BUTTONS_ENABLED = False
             elif Meta.CHOOSE_DICE is not None:
                 Meta.HOVER_BOXES.clear()
@@ -481,21 +486,27 @@ def draw_window():
                 draw_dice(six_d6, CARD_TO_POSITION[5], 2)
                 if one_d6.check_click(False):
                     Meta.CHOOSE_DICE.setNextRoll = 1
+                    Meta.NETWORK.send(("PlayerEvents", Meta.CHOOSE_DICE, [current_player.playerName + " set " + Meta.CHOOSE_DICE.playerName + " to Roll a One"]))
                     Meta.CHOOSE_DICE = None
                 if two_d6.check_click(False):
                     Meta.CHOOSE_DICE.setNextRoll = 2
+                    Meta.NETWORK.send(("PlayerEvents", Meta.CHOOSE_DICE, [current_player.playerName + " set " + Meta.CHOOSE_DICE.playerName + " to Roll a Two"]))
                     Meta.CHOOSE_DICE = None
                 if three_d6.check_click(False):
                     Meta.CHOOSE_DICE.setNextRoll = 3
+                    Meta.NETWORK.send(("PlayerEvents", Meta.CHOOSE_DICE, [current_player.playerName + " set " + Meta.CHOOSE_DICE.playerName + " to Roll a Three"]))
                     Meta.CHOOSE_DICE = None
                 if four_d6.check_click(False):
                     Meta.CHOOSE_DICE.setNextRoll = 4
+                    Meta.NETWORK.send(("PlayerEvents", Meta.CHOOSE_DICE, [current_player.playerName + " set " + Meta.CHOOSE_DICE.playerName + " to Roll a Four"]))
                     Meta.CHOOSE_DICE = None
                 if five_d6.check_click(False):
                     Meta.CHOOSE_DICE.setNextRoll = 5
+                    Meta.NETWORK.send(("PlayerEvents", Meta.CHOOSE_DICE, [current_player.playerName + " set " + Meta.CHOOSE_DICE.playerName + " to Roll a Five"]))
                     Meta.CHOOSE_DICE = None
                 if six_d6.check_click(False):
                     Meta.CHOOSE_DICE.setNextRoll = 6
+                    Meta.NETWORK.send(("PlayerEvents", Meta.CHOOSE_DICE, [current_player.playerName + " set " + Meta.CHOOSE_DICE.playerName + " to Roll a Six"]))
                     Meta.CHOOSE_DICE = None
                 Meta.BUTTONS_ENABLED = False
             elif Meta.CHOOSE_SQUARE is not None:
@@ -536,20 +547,370 @@ def draw_window():
                     if Meta.CHOOSE_SQUARE == "Blue Nine" or Meta.CHOOSE_SQUARE == "Red Nine":
                         if not square_clicked.hasBarrier:
                             square_clicked.hasBarrier = True
+                            Meta.NETWORK.send(("SquareEvents", (Meta.BOARD_SQUARES.index(square_clicked), square_clicked), [current_player.playerName +
+                                               " placed a Magic Barrier"]))
                             Meta.CHOOSE_SQUARE = None
                 Meta.BUTTONS_ENABLED = False
         if Meta.TURN_STAGE == TurnStage.START_TURN:
             if not is_your_turn:
                 draw_text("Waiting for your Turn", SMALL_FONT, BLACK, (1680, 240))
                 for event in range(len(Meta.EVENT_LIST)):
-                    draw_text(Meta.EVENT_LIST[event], SMALL_FONT, BLACK, (10, 10 + (20 * event)))
+                    draw_text(Meta.EVENT_LIST[event], TINY_FONT, BLACK, (10, 10 + (20 * event)), False)
             else:
                 if current_player.missNextTurn:
                     draw_text("You don't get to take this turn", SMALL_FONT, BLACK, (1680, 240))
                     continue_button = Button("Continue", 1680, 600, 60)
                     if continue_button.check_click():
                         current_player.missNextTurn = False
+                        Meta.NETWORK.send(("PlayerEvents", current_player, [current_player.playerName + " Missed their Turn"]))
                         end_turn()
+                else:
+                    if current_player.setPlayerRoll is not None:
+                        draw_text("Set " + current_player.setPlayerRoll.playerName + "'s", SMALL_FONT, BLACK,
+                                  (1680, 230))
+                        draw_text("Next Dice Roll", SMALL_FONT, BLACK, (1680, 260))
+                        continue_button = Button("Continue", 1680, 600, 60)
+                        if continue_button.check_click():
+                            Meta.CHOOSE_DICE = current_player.setPlayerRoll
+                            current_player.setPlayerRoll = None
+                            Meta.NETWORK.send(("Player", current_player))
+                    else:
+                        if Meta.FORCED_CARD is None:
+                            for card in current_player.redDeck:
+                                if card.cardValue == CardValue.THREE:
+                                    Meta.FORCED_CARD = CardValue.THREE
+                                    break
+                                if card.cardValue == CardValue.FIVE:
+                                    Meta.FORCED_CARD = CardValue.FIVE
+                                    break
+                                if card.cardValue == CardValue.NINE:
+                                    Meta.FORCED_CARD = CardValue.NINE
+                                    break
+                        if Meta.FORCED_CARD == CardValue.THREE:
+                            draw_text("Use your Red Three Card!", SMALL_FONT, BLACK, (1680, 240))
+                        elif Meta.FORCED_CARD == CardValue.FIVE:
+                            draw_text("Use your Red Five Card!", SMALL_FONT, BLACK, (1680, 240))
+                        elif Meta.FORCED_CARD == CardValue.NINE:
+                            draw_text("Use your Red Nine Card!", SMALL_FONT, BLACK, (1680, 240))
+                        elif Meta.BOARD_SQUARES[current_player.currentSquare].monsterHealth > 0:
+                            D20.enabled = True
+                            D20_2.enabled = True
+                            D20_3.enabled = True
+                            Meta.SUCCEEDED_DEFENCE = None
+                            Meta.TURN_STAGE = TurnStage.MONSTER_ATTACK
+                        else:  # Roll Dice
+                            Meta.TOP_DICE = [D6]
+                            Meta.MIDDLE_DICE = [D6_2, D8, D8_2, D10, D10_2]
+                            Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                            draw_dice_sets()
+                            D6.enabled = True
+                            D6_2.enabled = True
+                            Meta.TURN_STAGE = TurnStage.ROLL_DICE
+        elif Meta.TURN_STAGE == TurnStage.MONSTER_ATTACK:  # Monster Attacks
+            if Meta.SUCCEEDED_DEFENCE is None: draw_text("Defend against the Monster!", SMALL_FONT, BLACK, (1680, 240))
+            if Meta.FORCED_CARD is None and not Meta.ROLLING_WITH_DISADVANTAGE:
+                for card in current_player.redDeck:
+                    if card.cardValue == CardValue.TWO:
+                        Meta.FORCED_CARD = CardValue.TWO
+            if Meta.FORCED_CARD is None and Meta.SUCCEEDED_DEFENCE:
+                for card in current_player.redDeck:
+                    if card.cardValue == CardValue.EIGHT:
+                        Meta.FORCED_CARD = CardValue.EIGHT
+            if Meta.FORCED_CARD == CardValue.TWO:
+                draw_text("Use your Red Two Card!", SMALL_FONT, BLACK, (1680, 240))
+            elif Meta.FORCED_CARD == CardValue.EIGHT:
+                draw_text("Use your Red Eight Card!", SMALL_FONT, BLACK, (1680, 240))
+            else:
+                if D20_3.enabled:
+                    D20_3.sideFacing = random.randrange(1, 21)
+                    D20_3.enabled = False
+                draw_dice(D20_3, (1680, 330), 2)
+                if Meta.ROLLING_WITH_ADVANTAGE:
+                    Meta.TOP_DICE = [D20, D20_2]
+                    Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2]
+                    Meta.BOTTOM_DICE = [D10, D10_2, D12, D12_2, D4]
+                    D20.check_click()
+                    D20_2.check_click()
+                    if not D20.enabled and not D20_2.enabled and Meta.SUCCEEDED_DEFENCE is None:
+                        Meta.SUCCEEDED_DEFENCE = max(D20.sideFacing, D20_2.sideFacing) >= D20_3.sideFacing
+                        if not Meta.SUCCEEDED_DEFENCE:
+                            for card in current_player.blueDeck:
+                                if card.cardValue == CardValue.EIGHT:
+                                    Meta.CARD_TO_REMOVE = (current_player.blueDeck, card)
+                                    Meta.DISCARD_PILE.append(card)
+                                    Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, [current_player.playerName + " used the " + card.displayName]))
+                                    Meta.SHIELD_ACTIVE = True
+                                    break
+                elif Meta.ROLLING_WITH_DISADVANTAGE:
+                    Meta.TOP_DICE = [D20, D20_2]
+                    Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2]
+                    Meta.BOTTOM_DICE = [D10, D10_2, D12, D12_2, D4]
+                    D20.check_click()
+                    D20_2.check_click()
+                    if not D20.enabled and not D20_2.enabled and Meta.SUCCEEDED_DEFENCE is None:
+                        Meta.SUCCEEDED_DEFENCE = min(D20.sideFacing, D20_2.sideFacing) >= D20_3.sideFacing
+                        if not Meta.SUCCEEDED_DEFENCE:
+                            for card in current_player.blueDeck:
+                                if card.cardValue == CardValue.EIGHT:
+                                    Meta.CARD_TO_REMOVE = (current_player.blueDeck, card)
+                                    Meta.DISCARD_PILE.append(card)
+                                    Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, [current_player.playerName + " used the " + card.displayName]))
+                                    Meta.SHIELD_ACTIVE = True
+                                    break
+                else:
+                    Meta.TOP_DICE = [D20]
+                    Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10]
+                    Meta.BOTTOM_DICE = [D10_2, D12, D12_2, D20_2, D4]
+                    if D20.check_click():
+                        Meta.SUCCEEDED_DEFENCE = D20.sideFacing >= D20_3.sideFacing
+                        if not Meta.SUCCEEDED_DEFENCE:
+                            for card in current_player.blueDeck:
+                                if card.cardValue == CardValue.EIGHT:
+                                    Meta.CARD_TO_REMOVE = (current_player.blueDeck, card)
+                                    Meta.DISCARD_PILE.append(card)
+                                    Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, [current_player.playerName + " used the " + card.displayName]))
+                                    Meta.SHIELD_ACTIVE = True
+                                    break
+                draw_dice_sets(500)
+                if Meta.SUCCEEDED_DEFENCE is not None:
+                    if not Meta.SUCCEEDED_DEFENCE:  # Player Loses
+                        if Meta.SHIELD_ACTIVE:
+                            draw_text("Your Shield saved you", SMALL_FONT, BLACK, (1680, 230))
+                            draw_text("You survived the encounter", SMALL_FONT, BLACK, (1680, 260))
+                            continue_button = Button("Continue", 1680, 600, 60)
+                            if continue_button.check_click():
+                                Meta.ROLLING_WITH_ADVANTAGE = False
+                                Meta.ROLLING_WITH_DISADVANTAGE = False
+                                Meta.TOP_DICE = [D12]
+                                Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10]
+                                Meta.BOTTOM_DICE = [D10_2, D12_2, D20, D20_2, D4]
+                                Meta.TURN_STAGE = TurnStage.ATTACK_MONSTER
+                                D12.enabled = True
+                                D12_2.enabled = True
+                                Meta.SHIELD_ACTIVE = False
+                        else:
+                            draw_text("You Failed your Defence Roll", SMALL_FONT, BLACK, (1680, 200))
+                            draw_text("The Monster will knock you", SMALL_FONT, BLACK, (1680, 230))
+                            draw_text("back 4 spaces", SMALL_FONT, BLACK, (1680, 260))
+                            continue_button = Button("Continue", 1680, 600, 60)
+                            if continue_button.check_click():
+                                Meta.ROLLING_WITH_ADVANTAGE = False
+                                Meta.ROLLING_WITH_DISADVANTAGE = False
+                                updated_squares = []
+                                Meta.BOARD_SQUARES[current_player.currentSquare].players.remove(current_player)
+                                updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
+                                current_player.currentSquare -= 4
+                                Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+                                updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
+                                Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " Failed their Defence"]))
+                                Meta.TURN_STAGE = TurnStage.START_TURN
+                    else:
+                        draw_text("You defended yourself", SMALL_FONT, BLACK, (1680, 240))
+                        continue_button = Button("Continue", 1680, 600, 60)
+                        if continue_button.check_click():
+                            Meta.ROLLING_WITH_ADVANTAGE = False
+                            Meta.ROLLING_WITH_DISADVANTAGE = False
+                            Meta.TOP_DICE = [D12]
+                            Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10]
+                            Meta.BOTTOM_DICE = [D10_2, D12_2, D20, D20_2, D4]
+                            Meta.TURN_STAGE = TurnStage.ATTACK_MONSTER
+                            D12.enabled = True
+                            D12_2.enabled = True
+        elif Meta.TURN_STAGE == TurnStage.ATTACK_MONSTER:  # Attacking a Monster
+            if Meta.FORCED_CARD is None and not Meta.TAKING_FOUR and not Meta.TAKEN_FOUR:
+                for card in current_player.redDeck:
+                    if card.cardValue == CardValue.FOUR:
+                        Meta.FORCED_CARD = CardValue.FOUR
+            if Meta.FORCED_CARD == CardValue.FOUR:
+                draw_text("Use your Red Four!", SMALL_FONT, BLACK, (1680, 240))
+            else:
+                if Meta.BOARD_SQUARES[current_player.currentSquare].monsterHealth <= 0:
+                    draw_text("Congratulations!", SMALL_FONT, BLACK, (1680, 200))
+                    draw_text("You have killed the Monster!", SMALL_FONT, BLACK, (1680, 230))
+                    draw_text("You can roll movement now", SMALL_FONT, BLACK, (1680, 260))
+                    continue_button = Button("Continue", 1680, 600, 60)
+                    if continue_button.check_click():
+                        Meta.TURN_STAGE = TurnStage.START_TURN
+                        Meta.ADDING_FOUR = False
+                        Meta.TAKING_FOUR = False
+                        Meta.TAKEN_FOUR = False
+                        Meta.ROLLING_WITH_ADVANTAGE = False
+                        Meta.BOARD_SQUARES[current_player.currentSquare].monsterAwake = False
+                        Meta.NETWORK.send(("SquareEvents", Meta.BOARD_SQUARES[current_player.currentSquare], [current_player.playerName + " killed the Monster"]))
+                elif not D12.enabled and not D12_2.enabled:
+                    if Meta.ADDING_FOUR:
+                        draw_text("Add a d4 to the Attack:", SMALL_FONT, BLACK, (1680, 240))
+                        Meta.TOP_DICE = [D4]
+                        Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10]
+                        Meta.BOTTOM_DICE = [D10_2, D12, D12_2, D20, D20_2]
+                        draw_dice_sets()
+                        if D4.check_click():
+                            Meta.ADDING_FOUR = False
+                            Meta.BOARD_SQUARES[current_player.currentSquare].monsterHealth -= D4.sideFacing
+                            Meta.NETWORK.send(("SquareEvents", Meta.BOARD_SQUARES[current_player.currentSquare],
+                                               [current_player.playerName + " hit the Monster for " + str(D4.sideFacing)]))
+                    elif Meta.TAKING_FOUR and not Meta.TAKEN_FOUR:
+                        draw_text("Take a d4 from the Attack:", SMALL_FONT, BLACK, (1680, 240))
+                        Meta.TOP_DICE = [D4]
+                        Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10]
+                        Meta.BOTTOM_DICE = [D10_2, D12, D12_2, D20, D20_2]
+                        draw_dice_sets()
+                        if D4.check_click():
+                            Meta.TAKEN_FOUR = True
+                            Meta.BOARD_SQUARES[current_player.currentSquare].monsterHealth += D4.sideFacing
+                            Meta.NETWORK.send(("SquareEvents", Meta.BOARD_SQUARES[current_player.currentSquare],
+                                               [current_player.playerName + " healed the Monster for " + str(D4.sideFacing)]))
+                    else:
+                        draw_text("You did not kill the Monster", SMALL_FONT, BLACK, (1680, 240))
+                        end_turn_button = Button("End Turn", 1680, 600, 60)
+                        if end_turn_button.check_click():
+                            end_turn()
+                            Meta.TAKEN_FOUR = False
+                            Meta.TAKING_FOUR = False
+                            Meta.ROLLING_WITH_ADVANTAGE = False
+                else:
+                    draw_text("Attack the Monster:", SMALL_FONT, BLACK, (1680, 240))
+                    if Meta.ROLLING_WITH_ADVANTAGE:
+                        Meta.TOP_DICE = [D12, D12_2]
+                        Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2]
+                        Meta.BOTTOM_DICE = [D10, D10_2, D20, D20_2, D4]
+                    if not Meta.ROLLING_WITH_ADVANTAGE:
+                        if D12.check_click():
+                            D12_2.enabled = False
+                            Meta.BOARD_SQUARES[current_player.currentSquare].monsterHealth -= D12.sideFacing
+                            Meta.NETWORK.send(("SquareEvents", Meta.BOARD_SQUARES[current_player.currentSquare],
+                                               [current_player.playerName + " hit the Monster for " + str(D12.sideFacing)]))
+                    else:
+                        D12.check_click()
+                        D12_2.check_click()
+                        if not D12.enabled and not D12_2.enabled:
+                            Meta.BOARD_SQUARES[current_player.currentSquare].monsterHealth -= max(D12.sideFacing, D12_2.sideFacing)
+                            Meta.NETWORK.send(("SquareEvents", Meta.BOARD_SQUARES[current_player.currentSquare],
+                                               [current_player.playerName + " hit the Monster for " + str(max(D12.sideFacing, D12_2.sideFacing))]))
+                draw_dice_sets()
+        elif Meta.TURN_STAGE == TurnStage.ROLL_DICE:  # Rolling the Movement Dice
+            if Meta.FORCED_CARD is None and not Meta.ROLLING_WITH_DISADVANTAGE:
+                for card in current_player.redDeck:
+                    if card.cardValue == CardValue.TWO:
+                        Meta.FORCED_CARD = CardValue.TWO
+            if Meta.FORCED_CARD is None and not Meta.ROLLING_WITH_FOUR:
+                for card in current_player.redDeck:
+                    if card.cardValue == CardValue.JACK:
+                        Meta.FORCED_CARD = CardValue.JACK
+            if Meta.FORCED_CARD == CardValue.TWO:
+                draw_text("Use your Red Two Card!", SMALL_FONT, BLACK, (1680, 240))
+            elif Meta.FORCED_CARD == CardValue.JACK:
+                draw_text("Use your Red Jack Card!", SMALL_FONT, BLACK, (1680, 240))
+            else:
+                if Meta.ROLLING_WITH_FOUR:
+                    Meta.TOP_DICE = [D4]
+                    Meta.MIDDLE_DICE = [D6, D6_2, D8, D8_2, D10]
+                    Meta.BOTTOM_DICE = [D10_2, D12, D12_2, D20, D20_2]
+                    draw_text("Roll d4 to move:", SMALL_FONT, BLACK, (1680, 240))
+                    draw_dice_sets()
+                    if D4.check_click():
+                        Meta.ROLLING_WITH_FOUR = False
+                        Meta.SQUARES_TO_MOVE = D4.sideFacing
+                        Meta.TURN_STAGE = TurnStage.MOVEMENT
+                elif Meta.ROLLING_WITH_ADVANTAGE and Meta.DICE_ROLLED == 2:
+                    draw_text("Pick a dice to use:", SMALL_FONT, BLACK, (1680, 240))
+                    draw_dice_sets()
+                    if D6.check_click(False):
+                        Meta.ROLLING_WITH_ADVANTAGE = False
+                        Meta.DICE_ROLLED = 0
+                        Meta.SQUARES_TO_MOVE = D6.sideFacing
+                        Meta.TURN_STAGE = TurnStage.MOVEMENT
+                        Meta.TOP_DICE = [D6]
+                        Meta.MIDDLE_DICE = [D6_2, D8, D8_2, D10, D10_2]
+                        Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                    if D6_2.check_click(False):
+                        Meta.ROLLING_WITH_ADVANTAGE = False
+                        Meta.DICE_ROLLED = 0
+                        Meta.SQUARES_TO_MOVE = D6_2.sideFacing
+                        Meta.TURN_STAGE = TurnStage.MOVEMENT
+                        Meta.TOP_DICE = [D6_2]
+                        Meta.MIDDLE_DICE = [D6, D8, D8_2, D10, D10_2]
+                        Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                else:
+                    draw_text("Roll d6 to move:", SMALL_FONT, BLACK, (1680, 240))
+                    if not Meta.ROLLING_WITH_ADVANTAGE and not Meta.ROLLING_DOUBLE and not Meta.ROLLING_WITH_DISADVANTAGE:
+                        draw_dice_sets()
+                        if D6.check_click():
+                            Meta.TURN_STAGE = TurnStage.MOVEMENT
+                            Meta.SQUARES_TO_MOVE = D6.sideFacing
+                    elif Meta.ROLLING_WITH_ADVANTAGE:
+                        Meta.TOP_DICE = [D6, D6_2]
+                        Meta.MIDDLE_DICE = [D8, D8_2, D10, D10_2]
+                        Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                        draw_dice_sets()
+                        if D6.check_click():
+                            Meta.DICE_ROLLED += 1
+                        if D6_2.check_click():
+                            Meta.DICE_ROLLED += 1
+                        if Meta.DICE_ROLLED == 2:
+                            D6.enabled = True
+                            D6_2.enabled = True
+                    elif Meta.ROLLING_WITH_DISADVANTAGE:
+                        Meta.TOP_DICE = [D6, D6_2]
+                        Meta.MIDDLE_DICE = [D8, D8_2, D10, D10_2]
+                        Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                        draw_dice_sets()
+                        D6.check_click()
+                        D6_2.check_click()
+                        if not D6.enabled and not D6_2.enabled:
+                            Meta.SQUARES_TO_MOVE = min(D6.sideFacing, D6_2.sideFacing)
+                            if D6.sideFacing > D6_2.sideFacing:
+                                Meta.TOP_DICE = [D6_2]
+                                Meta.MIDDLE_DICE = [D6, D8, D8_2, D10, D10_2]
+                                Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                            else:
+                                Meta.TOP_DICE = [D6]
+                                Meta.MIDDLE_DICE = [D6_2, D8, D8_2, D10, D10_2]
+                                Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                            Meta.TURN_STAGE = TurnStage.MOVEMENT
+                            Meta.ROLLING_WITH_DISADVANTAGE = False
+                    elif Meta.ROLLING_DOUBLE:
+                        Meta.TOP_DICE = [D6, D6_2]
+                        Meta.MIDDLE_DICE = [D8, D8_2, D10, D10_2]
+                        Meta.BOTTOM_DICE = [D12, D12_2, D20, D20_2, D4]
+                        draw_dice_sets()
+                        D6.check_click()
+                        D6_2.check_click()
+                        if not D6.enabled and not D6_2.enabled:
+                            Meta.SQUARES_TO_MOVE = D6.sideFacing + D6_2.sideFacing
+                            Meta.TURN_STAGE = TurnStage.MOVEMENT
+                            Meta.ROLLING_DOUBLE = False
+        elif Meta.TURN_STAGE == TurnStage.MOVEMENT:  # Moving the Current Player
+            draw_dice_sets()
+            for x in range(Meta.SQUARES_TO_MOVE):
+                if Meta.BOARD_SQUARES[current_player.currentSquare + x].hasBarrier and x != 0:
+                    has_ten = False
+                    for card in current_player.blueDeck:
+                        if card.cardValue == CardValue.TEN:
+                            Meta.CARD_TO_REMOVE = (current_player.blueDeck, card)
+                            Meta.DISCARD_PILE.append(card)
+                            Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, [current_player.playerName + " used the " + card.displayName]))
+                            has_ten = True
+                            break
+                    if not has_ten:
+                        Meta.SQUARES_TO_MOVE = x
+                        Meta.BOARD_SQUARES[current_player.currentSquare + x].hasBarrier = False
+                        break
+                elif Meta.BOARD_SQUARES[current_player.currentSquare + x].monsterAwake:
+                    Meta.SQUARES_TO_MOVE = x
+                    break
+            Meta.BOARD_SQUARES[current_player.currentSquare].players.remove(current_player)
+            updated_squares = [(current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare])]
+            current_player.currentSquare = min(99, current_player.currentSquare + Meta.SQUARES_TO_MOVE)
+            Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
+            updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
+            Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved " + str(Meta.SQUARES_TO_MOVE)]))
+            Meta.TURN_STAGE = TurnStage.SQUARE_ACTION
+            Meta.CAN_PROGRESS = False
+            if Meta.BOARD_SQUARES[current_player.currentSquare].symbol == GO_BACK or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == DOWN_KEY or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == BACK_8 or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == BACK_10:
+                Meta.FORCED_MOVEMENT = True
+            elif Meta.BOARD_SQUARES[current_player.currentSquare].symbol == REDO or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == UP_KEY or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_8 or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == ROLL_10:
+                Meta.BONUS_MOVEMENT = True
         check_hover_boxes()
     elif Meta.CURRENT_STATE == ScreenState.PLAYING_GAME:
         WINDOW.fill(WHITE)
@@ -1627,7 +1988,7 @@ def draw_dice_sets(top_height = 330):
 
 def end_turn():
     if Meta.IS_MULTIPLAYER:
-        Meta.NETWORK.send("End Turn")
+        Meta.CURRENT_PLAYER = Meta.NETWORK.send("End Turn")
     else:
         if Meta.CURRENT_PLAYER == Meta.PLAYER_COUNT - 1:
             Meta.CURRENT_PLAYER = 0
@@ -2038,6 +2399,7 @@ def main():  # Game Loop
         pygame.display.update()
         if Meta.CARD_TO_REMOVE is not None:
             Meta.CARD_TO_REMOVE[0].remove(Meta.CARD_TO_REMOVE[1])
+            Meta.NETWORK.send(("Player", Meta.PLAYERS[Meta.CURRENT_PLAYER]))
             Meta.CARD_TO_REMOVE = None
 
 
