@@ -333,7 +333,7 @@ def draw_window():
         if not is_your_turn:
             draw_text("Waiting for your Turn", SMALL_FONT, BLACK, (1680, 240))
             for event in range(len(Meta.EVENT_LIST)):
-                draw_text(Meta.EVENT_LIST[event], TINY_FONT, BLACK, (10, 10 + (20 * event)), False)
+                draw_text(Meta.EVENT_LIST[event][0], TINY_FONT, Meta.EVENT_LIST[event][1], (10, 10 + (20 * event)), False)
         else:
             draw_game_image(BLUE_CARD_SYMBOL, (360, 250), 3, True, PASTEL_GREEN, (170, 75),
                             "Blue Draw Pile", "", "Current Size: " + str(len(Meta.BLUE_DRAW_DECK)))
@@ -437,7 +437,7 @@ def draw_window():
                             if Meta.PLAYERS[x] != player and Meta.PLAYERS[x] != current_player:
                                 red_card = Meta.RED_DRAW_DECK.pop()
                                 Meta.PLAYERS[x].redDeck.append(red_card)
-                                event_data.append(Meta.PLAYERS[x].playerName + " drew the " + red_card.displayName)
+                                event_data.append((Meta.PLAYERS[x].playerName + " drew the " + red_card.displayName, Meta.PLAYERS[x].playerColour))
                         Meta.NETWORK.send(("PlayersRedEvents", Meta.PLAYERS, Meta.RED_DRAW_DECK, event_data))
                         Meta.CHOOSE_PLAYERS = None
                     elif Meta.CHOOSE_PLAYERS == "Red Three":
@@ -446,7 +446,7 @@ def draw_window():
                             if Meta.PLAYERS[x] != player and Meta.PLAYERS[x] != current_player:
                                 blue_card = Meta.BLUE_DRAW_DECK.pop()
                                 Meta.PLAYERS[x].blueDeck.append(blue_card)
-                                event_data.append(Meta.PLAYERS[x].playerName + " drew the " + blue_card.displayName)
+                                event_data.append((Meta.PLAYERS[x].playerName + " drew the " + blue_card.displayName, Meta.PLAYERS[x].playerColour))
                         Meta.NETWORK.send(("PlayersBlueEvents", Meta.PLAYERS, Meta.BLUE_DRAW_DECK, event_data))
                         Meta.CHOOSE_PLAYERS = None
                     elif Meta.CHOOSE_PLAYERS == "Blue Five":
@@ -455,7 +455,7 @@ def draw_window():
                     elif Meta.CHOOSE_PLAYERS == "Red Five":
                         Meta.CHOOSE_PLAYERS = None
                         player.setPlayerRoll = current_player
-                        Meta.NETWORK.send(("PlayerEvents", player, [player.playerName + " will set a dice roll for " + current_player.playerName]))
+                        Meta.NETWORK.send(("PlayerEvents", player, [(player.playerName + " will set a dice roll for " + current_player.playerName, player.playerColour)]))
                 Meta.BUTTONS_ENABLED = False
             elif Meta.CHOOSE_DICE is not None:
                 Meta.HOVER_BOXES.clear()
@@ -475,27 +475,27 @@ def draw_window():
                 draw_dice(six_d6, CARD_TO_POSITION[5], 2)
                 if one_d6.check_click(False):
                     Meta.CHOOSE_DICE.setNextRoll = 1
-                    Meta.NETWORK.send(("PlayerEvents", Meta.CHOOSE_DICE, [current_player.playerName + " set " + Meta.CHOOSE_DICE.playerName + " to Roll a One"]))
+                    Meta.NETWORK.send(("PlayerEvents", Meta.CHOOSE_DICE, [(current_player.playerName + " set " + Meta.CHOOSE_DICE.playerName + " to Roll a One", current_player.playerColour)]))
                     Meta.CHOOSE_DICE = None
                 if two_d6.check_click(False):
                     Meta.CHOOSE_DICE.setNextRoll = 2
-                    Meta.NETWORK.send(("PlayerEvents", Meta.CHOOSE_DICE, [current_player.playerName + " set " + Meta.CHOOSE_DICE.playerName + " to Roll a Two"]))
+                    Meta.NETWORK.send(("PlayerEvents", Meta.CHOOSE_DICE, [(current_player.playerName + " set " + Meta.CHOOSE_DICE.playerName + " to Roll a Two", current_player.playerColour)]))
                     Meta.CHOOSE_DICE = None
                 if three_d6.check_click(False):
                     Meta.CHOOSE_DICE.setNextRoll = 3
-                    Meta.NETWORK.send(("PlayerEvents", Meta.CHOOSE_DICE, [current_player.playerName + " set " + Meta.CHOOSE_DICE.playerName + " to Roll a Three"]))
+                    Meta.NETWORK.send(("PlayerEvents", Meta.CHOOSE_DICE, [(current_player.playerName + " set " + Meta.CHOOSE_DICE.playerName + " to Roll a Three", current_player.playerColour)]))
                     Meta.CHOOSE_DICE = None
                 if four_d6.check_click(False):
                     Meta.CHOOSE_DICE.setNextRoll = 4
-                    Meta.NETWORK.send(("PlayerEvents", Meta.CHOOSE_DICE, [current_player.playerName + " set " + Meta.CHOOSE_DICE.playerName + " to Roll a Four"]))
+                    Meta.NETWORK.send(("PlayerEvents", Meta.CHOOSE_DICE, [(current_player.playerName + " set " + Meta.CHOOSE_DICE.playerName + " to Roll a Four", current_player.playerColour)]))
                     Meta.CHOOSE_DICE = None
                 if five_d6.check_click(False):
                     Meta.CHOOSE_DICE.setNextRoll = 5
-                    Meta.NETWORK.send(("PlayerEvents", Meta.CHOOSE_DICE, [current_player.playerName + " set " + Meta.CHOOSE_DICE.playerName + " to Roll a Five"]))
+                    Meta.NETWORK.send(("PlayerEvents", Meta.CHOOSE_DICE, [(current_player.playerName + " set " + Meta.CHOOSE_DICE.playerName + " to Roll a Five", current_player.playerColour)]))
                     Meta.CHOOSE_DICE = None
                 if six_d6.check_click(False):
                     Meta.CHOOSE_DICE.setNextRoll = 6
-                    Meta.NETWORK.send(("PlayerEvents", Meta.CHOOSE_DICE, [current_player.playerName + " set " + Meta.CHOOSE_DICE.playerName + " to Roll a Six"]))
+                    Meta.NETWORK.send(("PlayerEvents", Meta.CHOOSE_DICE, [(current_player.playerName + " set " + Meta.CHOOSE_DICE.playerName + " to Roll a Six", current_player.playerColour)]))
                     Meta.CHOOSE_DICE = None
                 Meta.BUTTONS_ENABLED = False
             elif Meta.CHOOSE_SQUARE is not None:
@@ -508,13 +508,13 @@ def draw_window():
                     if Meta.CHOOSE_SQUARE == "Blue Nine":
                         if not square_clicked.hasBarrier:
                             square_clicked.hasBarrier = True
-                            Meta.NETWORK.send(("SquareEvents", (Meta.BOARD_SQUARES.index(square_clicked), square_clicked), [current_player.playerName +
-                                               " placed a Magic Barrier"]))
+                            Meta.NETWORK.send(("SquareEvents", (Meta.BOARD_SQUARES.index(square_clicked), square_clicked), [(current_player.playerName +
+                                               " placed a Magic Barrier", current_player.playerColour)]))
                             Meta.CHOOSE_SQUARE = None
                     else:
                         if not square_clicked.hasBarrier:
-                            Meta.NETWORK.send(("SquareVote", Meta.BOARD_SQUARES.index(square_clicked), [Meta.PLAYERS[Meta.PLAYER_NUMBER].playerName +
-                                               " voted for Square " + str(Meta.BOARD_SQUARES.index(square_clicked))]))
+                            Meta.NETWORK.send(("SquareVote", Meta.BOARD_SQUARES.index(square_clicked), [(Meta.PLAYERS[Meta.PLAYER_NUMBER].playerName +
+                                               " voted for Square " + str(Meta.BOARD_SQUARES.index(square_clicked)), Meta.PLAYERS[Meta.PLAYER_NUMBER.playerColour])]))
                             Meta.CHOOSE_SQUARE = None
                 Meta.BUTTONS_ENABLED = False
             elif Meta.TURN_STAGE == TurnStage.START_TURN:
@@ -523,7 +523,7 @@ def draw_window():
                     continue_button = Button("Continue", 1680, 600, 60)
                     if continue_button.check_click():
                         current_player.missNextTurn = False
-                        Meta.NETWORK.send(("PlayerEvents", current_player, [current_player.playerName + " Missed their Turn"]))
+                        Meta.NETWORK.send(("PlayerEvents", current_player, [(current_player.playerName + " Missed their Last Turn", current_player.playerColour)]))
                         end_turn()
                 else:
                     if current_player.setPlayerRoll is not None:
@@ -599,7 +599,7 @@ def draw_window():
                                     if card.cardValue == CardValue.EIGHT:
                                         Meta.CARD_TO_REMOVE = (current_player.blueDeck, card)
                                         Meta.DISCARD_PILE.append(card)
-                                        Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, [current_player.playerName + " used the " + card.displayName]))
+                                        Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, [(current_player.playerName + " used the " + card.displayName, current_player.playerColour)]))
                                         Meta.SHIELD_ACTIVE = True
                                         break
                     elif Meta.ROLLING_WITH_DISADVANTAGE:
@@ -615,7 +615,7 @@ def draw_window():
                                     if card.cardValue == CardValue.EIGHT:
                                         Meta.CARD_TO_REMOVE = (current_player.blueDeck, card)
                                         Meta.DISCARD_PILE.append(card)
-                                        Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, [current_player.playerName + " used the " + card.displayName]))
+                                        Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, [(current_player.playerName + " used the " + card.displayName, current_player.playerColour)]))
                                         Meta.SHIELD_ACTIVE = True
                                         break
                     else:
@@ -629,7 +629,7 @@ def draw_window():
                                     if card.cardValue == CardValue.EIGHT:
                                         Meta.CARD_TO_REMOVE = (current_player.blueDeck, card)
                                         Meta.DISCARD_PILE.append(card)
-                                        Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, [current_player.playerName + " used the " + card.displayName]))
+                                        Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, [(current_player.playerName + " used the " + card.displayName, current_player.playerColour)]))
                                         Meta.SHIELD_ACTIVE = True
                                         break
                     draw_dice_sets(500)
@@ -673,7 +673,7 @@ def draw_window():
                                     current_player.currentSquare -= 4
                                     Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
                                     updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
-                                    Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " Failed their Defence"]))
+                                    Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [(current_player.playerName + " Failed their Defence", current_player.playerColour)]))
                                     Meta.TURN_STAGE = TurnStage.START_TURN
                         else:
                             draw_text("You defended yourself", SMALL_FONT, BLACK, (1680, 240))
@@ -707,7 +707,7 @@ def draw_window():
                             Meta.TAKEN_FOUR = False
                             Meta.ROLLING_WITH_ADVANTAGE = False
                             Meta.BOARD_SQUARES[current_player.currentSquare].monsterAwake = False
-                            Meta.NETWORK.send(("SquareEvents", (current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]), [current_player.playerName + " killed the Monster"]))
+                            Meta.NETWORK.send(("SquareEvents", (current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]), [(current_player.playerName + " killed the Monster", current_player.playerColour)]))
                     elif not D12.enabled and not D12_2.enabled:
                         if Meta.ADDING_FOUR:
                             draw_text("Add a d4 to the Attack:", SMALL_FONT, BLACK, (1680, 240))
@@ -719,7 +719,7 @@ def draw_window():
                                 Meta.ADDING_FOUR = False
                                 Meta.BOARD_SQUARES[current_player.currentSquare].monsterHealth -= D4.sideFacing
                                 Meta.NETWORK.send(("SquareEvents", (current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]),
-                                                   [current_player.playerName + " hit the Monster for " + str(D4.sideFacing)]))
+                                                   [(current_player.playerName + " hit the Monster for " + str(D4.sideFacing), current_player.playerColour)]))
                         elif Meta.TAKING_FOUR and not Meta.TAKEN_FOUR:
                             draw_text("Take a d4 from the Attack:", SMALL_FONT, BLACK, (1680, 240))
                             Meta.TOP_DICE = [D4]
@@ -730,7 +730,7 @@ def draw_window():
                                 Meta.TAKEN_FOUR = True
                                 Meta.BOARD_SQUARES[current_player.currentSquare].monsterHealth += D4.sideFacing
                                 Meta.NETWORK.send(("SquareEvents", (current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]),
-                                                   [current_player.playerName + " healed the Monster for " + str(D4.sideFacing)]))
+                                                   [(current_player.playerName + " healed the Monster for " + str(D4.sideFacing), current_player.playerColour)]))
                         else:
                             draw_text("You did not kill the Monster", SMALL_FONT, BLACK, (1680, 240))
                             end_turn_button = Button("End Turn", 1680, 600, 60)
@@ -750,14 +750,14 @@ def draw_window():
                                 D12_2.enabled = False
                                 Meta.BOARD_SQUARES[current_player.currentSquare].monsterHealth -= D12.sideFacing
                                 Meta.NETWORK.send(("SquareEvents", (current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]),
-                                                   [current_player.playerName + " hit the Monster for " + str(D12.sideFacing)]))
+                                                   [(current_player.playerName + " hit the Monster for " + str(D12.sideFacing), current_player.playerColour)]))
                         else:
                             D12.check_click()
                             D12_2.check_click()
                             if not D12.enabled and not D12_2.enabled:
                                 Meta.BOARD_SQUARES[current_player.currentSquare].monsterHealth -= max(D12.sideFacing, D12_2.sideFacing)
                                 Meta.NETWORK.send(("SquareEvents", (current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]),
-                                                   [current_player.playerName + " hit the Monster for " + str(max(D12.sideFacing, D12_2.sideFacing))]))
+                                                   [(current_player.playerName + " hit the Monster for " + str(max(D12.sideFacing, D12_2.sideFacing)), current_player.playerColour)]))
                     draw_dice_sets()
             elif Meta.TURN_STAGE == TurnStage.ROLL_DICE:  # Rolling the Movement Dice
                 if Meta.FORCED_CARD is None and not Meta.ROLLING_WITH_DISADVANTAGE:
@@ -860,7 +860,7 @@ def draw_window():
                             if card.cardValue == CardValue.TEN:
                                 Meta.CARD_TO_REMOVE = (current_player.blueDeck, card)
                                 Meta.DISCARD_PILE.append(card)
-                                Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, [current_player.playerName + " used the " + card.displayName]))
+                                Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, [(current_player.playerName + " used the " + card.displayName, current_player.playerColour)]))
                                 has_ten = True
                                 break
                         if not has_ten:
@@ -885,7 +885,7 @@ def draw_window():
                 current_player.currentSquare = min(99, current_player.currentSquare + Meta.SQUARES_TO_MOVE)
                 Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
                 updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
-                Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved " + str(Meta.SQUARES_TO_MOVE)]))
+                Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [(current_player.playerName + " moved " + str(Meta.SQUARES_TO_MOVE), current_player.playerColour)]))
                 Meta.TURN_STAGE = TurnStage.SQUARE_ACTION
                 Meta.CAN_PROGRESS = False
                 if Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "GoBack" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "DownKey" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "Back8" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "Back10":
@@ -1107,7 +1107,7 @@ def draw_window():
                                             current_player.currentSquare -= D10_2.sideFacing
                                         Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
                                         updated_squares.append((current_player.current_square, Meta.BOARD_SQUARES[current_player.currentSquare]))
-                                        Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved backward"]))
+                                        Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [(current_player.playerName + " moved backward", current_player.playerColour)]))
                                         if Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "GoBack" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "DownKey" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "Back8" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "Back10":
                                             Meta.FORCED_MOVEMENT = True
                                             D10.enabled = True
@@ -1143,7 +1143,7 @@ def draw_window():
                                             current_player.currentSquare -= D10_2.sideFacing
                                         Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
                                         updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
-                                        Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved backward"]))
+                                        Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [(current_player.playerName + " moved backward", current_player.playerColour)]))
                                         if Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "GoBack" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "DownKey" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "Back8" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "Back10":
                                             Meta.FORCED_MOVEMENT = True
                                             D10.enabled = True
@@ -1171,7 +1171,7 @@ def draw_window():
                                         current_player.currentSquare -= D10.sideFacing
                                         Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
                                         updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
-                                        Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved backward"]))
+                                        Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [(current_player.playerName + " moved backward", current_player.playerColour)]))
                                         if Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "GoBack" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "DownKey" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "Back8" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "Back10":
                                             Meta.FORCED_MOVEMENT = True
                                             D10.enabled = True
@@ -1221,7 +1221,7 @@ def draw_window():
                                             current_player.currentSquare -= D8_2.sideFacing
                                         Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
                                         updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
-                                        Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved backward"]))
+                                        Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [(current_player.playerName + " moved backward", current_player.playerColour)]))
                                         if Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "GoBack" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "DownKey" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "Back8" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "Back10":
                                             Meta.FORCED_MOVEMENT = True
                                             D10.enabled = True
@@ -1257,7 +1257,7 @@ def draw_window():
                                             current_player.currentSquare -= D8_2.sideFacing
                                         Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
                                         updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
-                                        Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved backward"]))
+                                        Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [(current_player.playerName + " moved backward", current_player.playerColour)]))
                                         if Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "GoBack" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "DownKey" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "Back8" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "Back10":
                                             Meta.FORCED_MOVEMENT = True
                                             D10.enabled = True
@@ -1285,7 +1285,7 @@ def draw_window():
                                         current_player.currentSquare -= D8.sideFacing
                                         Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
                                         updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
-                                        Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved backward"]))
+                                        Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [(current_player.playerName + " moved backward", current_player.playerColour)]))
                                         if Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "GoBack" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "DownKey" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "Back8" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "Back10":
                                             Meta.FORCED_MOVEMENT = True
                                             D10.enabled = True
@@ -1314,7 +1314,7 @@ def draw_window():
                                 current_player.currentSquare = current_square.keyLocation
                                 Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
                                 updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
-                                Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved down"]))
+                                Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [(current_player.playerName + " moved down", current_player.playerColour)]))
                     elif current_square.symbol == "GoBack":
                         if not Meta.FORCED_MOVEMENT:
                             draw_text("You beat fate this time", SMALL_FONT, BLACK, (1680, 240))
@@ -1331,7 +1331,7 @@ def draw_window():
                                 current_player.currentSquare -= Meta.SQUARES_TO_MOVE
                                 Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
                                 updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
-                                Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved back from whence they came"]))
+                                Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [(current_player.playerName + " moved back from whence they came", current_player.playerColour)]))
                                 if Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "GoBack" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "DownKey" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "Back8" or Meta.BOARD_SQUARES[current_player.currentSquare].symbol == "Back10":
                                     Meta.FORCED_MOVEMENT = True
                                     D10.enabled = True
@@ -1367,7 +1367,7 @@ def draw_window():
                                     current_player.currentSquare = current_square.keyLocation
                                     Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
                                     updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
-                                    Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [current_player.playerName + " moved up"]))
+                                    Meta.NETWORK.send(("PlayerSquaresEvents", current_player, updated_squares, [(current_player.playerName + " moved up", current_player.playerColour)]))
                     elif current_square.symbol == "Redo":
                         if Meta.FORCED_CARD is None and Meta.BONUS_MOVEMENT:
                             for card in current_player.redDeck:
@@ -1400,7 +1400,7 @@ def draw_window():
                                 continue_button = Button("Fight!", 1680, 600, 60)
                                 if continue_button.check_click():
                                     current_square.monsterAwake = True
-                                    Meta.NETWORK.send(("SquareEvents", (current_player.currentSquare, current_square), [current_player.playerName + " woke a Monster"]))
+                                    Meta.NETWORK.send(("SquareEvents", (current_player.currentSquare, current_square), [(current_player.playerName + " woke a Monster", current_player.playerColour)]))
                                     D12.enabled = True
                                     D12_2.enabled = True
                                     Meta.TOP_DICE = [D12]
@@ -1411,7 +1411,7 @@ def draw_window():
                                 draw_text("You join a Monster fight!", SMALL_FONT, BLACK, (1680, 240))
                                 continue_button = Button("Fight!", 1680, 600, 60)
                                 if continue_button.check_click():
-                                    Meta.NETWORK.send(("Events", [current_player.playerName + " joined a Monster Fight"]))
+                                    Meta.NETWORK.send(("Events", [(current_player.playerName + " joined a Monster Fight", current_player.playerColour)]))
                                     D12.enabled = True
                                     D12_2.enabled = True
                                     Meta.TOP_DICE = [D12]
@@ -2686,8 +2686,8 @@ def check_get_card(card_colour):
             card = Meta.BLUE_DRAW_DECK.pop()
             Meta.PLAYERS[Meta.CURRENT_PLAYER].blueDeck.append(card)
             if Meta.IS_MULTIPLAYER:
-                Meta.NETWORK.send(("PlayerBlueEvents", Meta.PLAYERS[Meta.CURRENT_PLAYER], Meta.BLUE_DRAW_DECK, [Meta.PLAYERS[Meta.CURRENT_PLAYER].playerName +
-                                   " drew the " + card.displayName]))
+                Meta.NETWORK.send(("PlayerBlueEvents", Meta.PLAYERS[Meta.CURRENT_PLAYER], Meta.BLUE_DRAW_DECK, [(Meta.PLAYERS[Meta.CURRENT_PLAYER].playerName +
+                                   " drew the " + card.displayName, Meta.PLAYERS[Meta.CURRENT_PLAYER].playerColour)]))
             Meta.DISPLAYING_CARD = True
             return True
     else:
@@ -2695,8 +2695,8 @@ def check_get_card(card_colour):
             card = Meta.RED_DRAW_DECK.pop()
             Meta.PLAYERS[Meta.CURRENT_PLAYER].redDeck.append(card)
             if Meta.IS_MULTIPLAYER:
-                Meta.NETWORK.send(("PlayerRedEvents", Meta.PLAYERS[Meta.CURRENT_PLAYER], Meta.RED_DRAW_DECK, [Meta.PLAYERS[Meta.CURRENT_PLAYER].playerName +
-                                   " drew the " + card.displayName]))
+                Meta.NETWORK.send(("PlayerRedEvents", Meta.PLAYERS[Meta.CURRENT_PLAYER], Meta.RED_DRAW_DECK, [(Meta.PLAYERS[Meta.CURRENT_PLAYER].playerName +
+                                   " drew the " + card.displayName, Meta.PLAYERS[Meta.CURRENT_PLAYER].playerColour)]))
             Meta.DISPLAYING_CARD = True
             return True
     return False
@@ -2783,7 +2783,7 @@ def check_card_usable(card):
 
 def perform_card_action(card):
     current_player = Meta.PLAYERS[Meta.CURRENT_PLAYER]
-    event_data = [current_player.playerName + " Used the " + card.displayName]
+    event_data = [(current_player.playerName + " Used the " + card.displayName, current_player.playerColour)]
     if card.cardType == CardType.BLUE:
         match card.cardValue:
             case CardValue.ACE:  # Swaps with the last non-Joker and non-Ace card in the Discard Pile
@@ -2795,7 +2795,7 @@ def perform_card_action(card):
                         else:
                             current_player.redDeck.append(new_card)
                         if Meta.IS_MULTIPLAYER:
-                            event_data.append(current_player.playerName + " got the " + new_card.displayName)
+                            event_data.append((current_player.playerName + " got the " + new_card.displayName, current_player.playerColour))
                         break
             case CardValue.TWO:  # Rolls dice with advantage
                 Meta.ROLLING_WITH_ADVANTAGE = True
@@ -2810,7 +2810,7 @@ def perform_card_action(card):
                             player_cards.append((player, new_card))
                     if Meta.IS_MULTIPLAYER:
                         for player_card in player_cards:
-                            event_data.append(player_card[0].playerName + " got the " + player_card[1].displayName)
+                            event_data.append((player_card[0].playerName + " got the " + player_card[1].displayName, player_card[0].playerColour))
                         Meta.NETWORK.send(("PlayersRed", Meta.PLAYERS, Meta.RED_DRAW_DECK))
             case CardValue.FOUR:
                 Meta.ADDING_FOUR = True
@@ -2858,7 +2858,7 @@ def perform_card_action(card):
                             player_cards.append((player, new_card))
                     if Meta.IS_MULTIPLAYER:
                         for player_card in player_cards:
-                            event_data.append(player_card[0].playerName + " got the " + player_card[1].displayName)
+                            event_data.append((player_card[0].playerName + " got the " + player_card[1].displayName, player_card[0].playerColour))
                         Meta.NETWORK.send(("PlayersBlue", Meta.PLAYERS, Meta.BLUE_DRAW_DECK))
             case CardValue.FOUR:
                 Meta.FORCED_CARD = None
