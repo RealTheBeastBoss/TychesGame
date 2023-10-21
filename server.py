@@ -211,7 +211,6 @@ def threaded_client(conn, ip):
                         mode = statistics.mode(Server.square_votes)
                         Server.board_squares[mode].hasBarrier = True
                         Server.board_to_update = Server.client_addresses.copy()
-                        Server.board_to_update.remove(ip)
                         Server.square_votes.clear()
                     Server.event_to_send = [data[2], Server.client_addresses.copy()]
                     Server.event_to_send[1].remove(ip)
