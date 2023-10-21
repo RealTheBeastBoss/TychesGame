@@ -476,6 +476,7 @@ class Meta:  # Changeable Global Variables
     HAS_SERVER = False
     PLAYER_NUMBER = 69
     EVENT_LIST = []
+    SQUARE_VOTE = False
     # Regular Variables
     DEBUG_INFO = []
     PLAYER_COUNT = None

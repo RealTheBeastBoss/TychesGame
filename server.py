@@ -2,6 +2,7 @@ import socket
 from _thread import *
 import pickle
 from player import Player
+import statistics
 
 port = 5555
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -24,6 +25,8 @@ class Server:
     red_cards = []
     blue_cards = []
     event_to_send = []
+    square_vote_to_send = []
+    square_votes = []
 
 
 def threaded_client(conn, ip):
@@ -63,6 +66,9 @@ def threaded_client(conn, ip):
                         if ip in Server.event_to_send[1]:
                             data["events"] = Server.event_to_send[0]
                             Server.event_to_send[1].remove(ip)
+                    if ip in Server.square_vote_to_send:
+                        data["square_vote"] = 1
+                        Server.square_vote_to_send.remove(ip)
                 elif data == "End Turn":  # Ends the Player's Turn
                     print("From " + ip[0] + ", Received End Turn")
                     if Server.current_player == Server.player_count - 1:
@@ -72,12 +78,11 @@ def threaded_client(conn, ip):
                     Server.current_player_to_update = Server.client_addresses.copy()
                     Server.current_player_to_update.remove(ip)
                     data = Server.current_player
-                elif data[0] == "Discard":
-                    print("From " + ip[0] + ", Received: " + str(data))
-                    Server.discard_pile = data[1]
-                    Server.discards_to_update = Server.client_addresses.copy()
-                    Server.discards_to_update.remove(ip)
-                    data = False
+                elif data == "StartSquareVote":
+                    print("From " + ip[0] + ", Received Start of a Square Vote")
+                    Server.square_vote_to_send = Server.client_addresses.copy()
+                    Server.square_vote_to_send.remove(ip)
+                    data = True
                 elif data[0] == "PlayersRedEvents":
                     print("From " + ip[0] + ", Received: " + str(data))
                     Server.players = data[1]
@@ -126,7 +131,7 @@ def threaded_client(conn, ip):
                     Server.event_to_send = [data[3], Server.client_addresses.copy()]
                     Server.event_to_send[1].remove(ip)
                     data = False
-                elif data[0] == "PlayersBlueEvents":
+                elif data[0] == "PlayersBlue":
                     print("From " + ip[0] + ", Received: " + str(data))
                     Server.players = data[1]
                     Server.players_to_update = Server.client_addresses.copy()
@@ -137,7 +142,7 @@ def threaded_client(conn, ip):
                     Server.event_to_send = [data[3], Server.client_addresses.copy()]
                     Server.event_to_send[1].remove(ip)
                     data = False
-                elif data[0] == "PlayersRedEvents":
+                elif data[0] == "PlayersRed":
                     print("From " + ip[0] + ", Received: " + str(data))
                     Server.players = data[1]
                     Server.players_to_update = Server.client_addresses.copy()
@@ -201,6 +206,18 @@ def threaded_client(conn, ip):
                 elif data[0] == "Events":
                     print("From " + ip[0] + ", Received: " + str(data))
                     Server.event_to_send = [data[1], Server.client_addresses.copy()]
+                    Server.event_to_send[1].remove(ip)
+                    data = False
+                elif data[0] == "SquareVote":
+                    print("From " + ip[0] + ", Received: " + str(data))
+                    Server.square_votes.append(data[1])
+                    if len(Server.square_votes) == Server.player_count - 1:
+                        mode = statistics.mode(Server.square_votes)
+                        Server.board_squares[mode].hasBarrier = True
+                        Server.board_to_update = Server.client_addresses.copy()
+                        Server.board_to_update.remove(ip)
+                        Server.square_votes.clear()
+                    Server.event_to_send = [data[2], Server.client_addresses.copy()]
                     Server.event_to_send[1].remove(ip)
                     data = False
                 elif data[0] == "Name":  # Creates a Player

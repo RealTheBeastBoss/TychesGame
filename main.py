@@ -315,7 +315,7 @@ def draw_window():
     elif Meta.CURRENT_STATE == ScreenState.PLAYING_LOCAL_GAME:
         WINDOW.fill(WHITE)
         Meta.BUTTONS_ENABLED = True
-        if Meta.SHOW_HAND is None and Meta.CHOOSE_DICE is None and Meta.CHOOSE_PLAYERS is None and Meta.CHOOSE_SQUARE is None:
+        if Meta.SHOW_HAND is None and Meta.CHOOSE_DICE is None and Meta.CHOOSE_PLAYERS is None and Meta.CHOOSE_SQUARE is None and not Meta.SQUARE_VOTE:
             quit_button = Button("Quit", 360, 450, 60)
             if quit_button.check_click():
                 pygame.quit()
@@ -334,10 +334,11 @@ def draw_window():
             draw_text("Waiting for your Turn", SMALL_FONT, BLACK, (1680, 240))
             for event in range(len(Meta.EVENT_LIST)):
                 draw_text(Meta.EVENT_LIST[event], TINY_FONT, BLACK, (10, 10 + (20 * event)), False)
-        draw_game_image(BLUE_CARD_SYMBOL, (360, 250), 3, True, PASTEL_GREEN, (170, 75),
-                        "Blue Draw Pile", "", "Current Size: " + str(len(Meta.BLUE_DRAW_DECK)))
-        draw_game_image(RED_CARD_SYMBOL, (360, 650), 3, True, PASTEL_GREEN, (170, 75),
-                        "Red Draw Pile", "", "Current Size: " + str(len(Meta.RED_DRAW_DECK)))
+        else:
+            draw_game_image(BLUE_CARD_SYMBOL, (360, 250), 3, True, PASTEL_GREEN, (170, 75),
+                            "Blue Draw Pile", "", "Current Size: " + str(len(Meta.BLUE_DRAW_DECK)))
+            draw_game_image(RED_CARD_SYMBOL, (360, 650), 3, True, PASTEL_GREEN, (170, 75),
+                            "Red Draw Pile", "", "Current Size: " + str(len(Meta.RED_DRAW_DECK)))
         if is_your_turn:
             if len(current_player.blueDeck) != 0:
                 turned_blue_deck_image = pygame.transform.rotate(BLUE_CARD_SYMBOL[0], -90)
@@ -377,7 +378,12 @@ def draw_window():
                             Meta.DISPLAYING_CARD = False
         draw_squares()
         if is_your_turn:
-            if Meta.SHOW_HAND == CardType.BLUE:
+            if Meta.SQUARE_VOTE:
+                Meta.HOVER_BOXES.clear()
+                WINDOW.fill(PASTEL_GREEN)
+                draw_text("Waiting for the Square Vote to Conclude", MEDIUM_FONT, ORANGE, (960, 69))
+                Meta.BUTTONS_ENABLED = False
+            elif Meta.SHOW_HAND == CardType.BLUE:
                 Meta.HOVER_BOXES.clear()
                 WINDOW.fill(PASTEL_GREEN)
                 draw_text(current_player.playerName + "'s Blue Card Hand", MEDIUM_FONT, ORANGE, (960, 69))
@@ -497,11 +503,16 @@ def draw_window():
                 draw_squares()
                 square_clicked = check_squares_clicked()
                 if square_clicked is not None and Meta.BOARD_SQUARES.index(square_clicked) != 99 and Meta.BOARD_SQUARES.index(square_clicked) != 0:
-                    if Meta.CHOOSE_SQUARE == "Blue Nine" or Meta.CHOOSE_SQUARE == "Red Nine":
+                    if Meta.CHOOSE_SQUARE == "Blue Nine":
                         if not square_clicked.hasBarrier:
                             square_clicked.hasBarrier = True
                             Meta.NETWORK.send(("SquareEvents", (Meta.BOARD_SQUARES.index(square_clicked), square_clicked), [current_player.playerName +
                                                " placed a Magic Barrier"]))
+                            Meta.CHOOSE_SQUARE = None
+                    else:
+                        if not square_clicked.hasBarrier:
+                            Meta.NETWORK.send(("SquareVote", Meta.BOARD_SQUARES.index(square_clicked), [Meta.PLAYERS[Meta.PLAYER_NUMBER].playerName +
+                                               " voted for Square " + str(Meta.BOARD_SQUARES.index(square_clicked))]))
                             Meta.CHOOSE_SQUARE = None
                 Meta.BUTTONS_ENABLED = False
             elif Meta.TURN_STAGE == TurnStage.START_TURN:
@@ -2510,6 +2521,8 @@ def check_server_updates():
     if network_response:
         if "curr_player" in network_response:
             Meta.CURRENT_PLAYER = network_response["curr_player"]
+            if Meta.CURRENT_PLAYER == Meta.PLAYER_NUMBER:
+                Meta.EVENT_LIST.clear()
         if "players" in network_response:
             Meta.PLAYERS = network_response["players"]
         if "board" in network_response:
@@ -2523,6 +2536,8 @@ def check_server_updates():
         if "events" in network_response:
             for event in network_response["events"]:
                 Meta.EVENT_LIST.append(event)
+        if "square_vote" in network_response:
+            Meta.CHOOSE_SQUARE = "Red Nine"
 
 
 def draw_dice_sets(top_height = 330):
@@ -2748,6 +2763,7 @@ def check_card_usable(card):
 
 def perform_card_action(card):
     current_player = Meta.PLAYERS[Meta.CURRENT_PLAYER]
+    event_data = [current_player.playerName + " Used the " + card.displayName]
     if card.cardType == CardType.BLUE:
         match card.cardValue:
             case CardValue.ACE:  # Swaps with the last non-Joker and non-Ace card in the Discard Pile
@@ -2759,8 +2775,7 @@ def perform_card_action(card):
                         else:
                             current_player.redDeck.append(new_card)
                         if Meta.IS_MULTIPLAYER:
-                            Meta.NETWORK.send(("PlayerEvents", current_player, [current_player.playerName + " Used the " + card.displayName,
-                                                                                                          current_player.playerName + " got the " + new_card.displayName]))
+                            event_data.append([current_player.playerName + " got the " + new_card.displayName])
                         break
             case CardValue.TWO:  # Rolls dice with advantage
                 Meta.ROLLING_WITH_ADVANTAGE = True
@@ -2774,10 +2789,9 @@ def perform_card_action(card):
                             player.redDeck.append(new_card)
                             player_cards.append((player, new_card))
                     if Meta.IS_MULTIPLAYER:
-                        event_data = [current_player.playerName + " Used the " + card.displayName]
                         for player_card in player_cards:
                             event_data.append(player_card[0].playerName + " got the " + player_card[1].displayName)
-                        Meta.NETWORK.send(("PlayersRedEvents", Meta.PLAYERS, Meta.RED_DRAW_DECK, event_data))
+                        Meta.NETWORK.send(("PlayersRed", Meta.PLAYERS, Meta.RED_DRAW_DECK))
             case CardValue.FOUR:
                 Meta.ADDING_FOUR = True
                 D4.enabled = True
@@ -2803,7 +2817,7 @@ def perform_card_action(card):
                 print("Card Used: " + card.displayName)
             case CardValue.JOKER:
                 print("Card Used: " + card.displayName)
-        Meta.CARD_TO_REMOVE = (Meta.PLAYERS[Meta.CURRENT_PLAYER].blueDeck, card)
+        Meta.CARD_TO_REMOVE = (current_player.blueDeck, card)
     else:
         match card.cardValue:
             case CardValue.ACE:
@@ -2823,10 +2837,9 @@ def perform_card_action(card):
                             player.blueDeck.append(new_card)
                             player_cards.append((player, new_card))
                     if Meta.IS_MULTIPLAYER:
-                        event_data = [current_player.playerName + " Used the " + card.displayName]
                         for player_card in player_cards:
                             event_data.append(player_card[0].playerName + " got the " + player_card[1].displayName)
-                        Meta.NETWORK.send(("PlayersBlueEvents", Meta.PLAYERS, Meta.BLUE_DRAW_DECK, event_data))
+                        Meta.NETWORK.send(("PlayersBlue", Meta.PLAYERS, Meta.BLUE_DRAW_DECK))
             case CardValue.FOUR:
                 Meta.FORCED_CARD = None
                 Meta.TAKING_FOUR = True
@@ -2844,7 +2857,10 @@ def perform_card_action(card):
                 Meta.SUCCEEDED_DEFENCE = False
             case CardValue.NINE:
                 Meta.FORCED_CARD = None
-                Meta.CHOOSE_SQUARE = "Red Nine"
+                if Meta.IS_MULTIPLAYER:
+                    Meta.SQUARE_VOTE = Meta.NETWORK.send("StartSquareVote")
+                else:
+                    Meta.CHOOSE_SQUARE = "Red Nine"
             case CardValue.TEN:
                 print("Card Used: " + card.displayName)
             case CardValue.JACK:
@@ -2859,9 +2875,9 @@ def perform_card_action(card):
                     Meta.CARDS_TO_DRAW.remove(CardType.BLUE)
             case CardValue.JOKER:
                 print("Card Used: " + card.displayName)
-        Meta.CARD_TO_REMOVE = (Meta.PLAYERS[Meta.CURRENT_PLAYER].redDeck, card)
+        Meta.CARD_TO_REMOVE = (current_player.redDeck, card)
     Meta.DISCARD_PILE.append(card)
-    Meta.NETWORK.send(("Discard", Meta.DISCARD_PILE))
+    Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, event_data))
     Meta.SHOW_HAND = None
     Meta.CARD_HANDS_ACTIVE = True
 
