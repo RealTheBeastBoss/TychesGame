@@ -514,7 +514,7 @@ def draw_window():
                     else:
                         if not square_clicked.hasBarrier:
                             Meta.NETWORK.send(("SquareVote", Meta.BOARD_SQUARES.index(square_clicked), [(Meta.PLAYERS[Meta.PLAYER_NUMBER].playerName +
-                                               " voted for Square " + str(Meta.BOARD_SQUARES.index(square_clicked)), Meta.PLAYERS[Meta.PLAYER_NUMBER.playerColour])]))
+                                               " voted for Square " + str(Meta.BOARD_SQUARES.index(square_clicked)), Meta.PLAYERS[Meta.PLAYER_NUMBER].playerColour)]))
                             Meta.CHOOSE_SQUARE = None
                 Meta.BUTTONS_ENABLED = False
             elif Meta.TURN_STAGE == TurnStage.START_TURN:
