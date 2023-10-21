@@ -2775,7 +2775,7 @@ def perform_card_action(card):
                         else:
                             current_player.redDeck.append(new_card)
                         if Meta.IS_MULTIPLAYER:
-                            event_data.append([current_player.playerName + " got the " + new_card.displayName])
+                            event_data.append(current_player.playerName + " got the " + new_card.displayName)
                         break
             case CardValue.TWO:  # Rolls dice with advantage
                 Meta.ROLLING_WITH_ADVANTAGE = True
