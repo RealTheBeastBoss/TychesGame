@@ -658,7 +658,17 @@ def draw_window():
                                     Meta.ROLLING_WITH_ADVANTAGE = False
                                     Meta.ROLLING_WITH_DISADVANTAGE = False
                                     updated_squares = []
-                                    Meta.BOARD_SQUARES[current_player.currentSquare].players.remove(current_player)
+                                    player_to_remove = None
+                                    print("Debug: Current Player: " + current_player.playerName)
+                                    for player in Meta.BOARD_SQUARES[current_player.currentSquare].players:
+                                        print("Debug: Player in Square " + str(current_player.currentSquare) + ": " + player.playerName)
+                                        if player.playerNumber == current_player.playerNumber:
+                                            player_to_remove = player
+                                    if player_to_remove is None:
+                                        print("No Player to Remove")
+                                    else:
+                                        print("Player to Remove: " + player_to_remove.playerName)
+                                    Meta.BOARD_SQUARES[current_player.currentSquare].players.remove(player_to_remove)
                                     updated_squares.append((current_player.currentSquare, Meta.BOARD_SQUARES[current_player.currentSquare]))
                                     current_player.currentSquare -= 4
                                     Meta.BOARD_SQUARES[current_player.currentSquare].players.append(current_player)
