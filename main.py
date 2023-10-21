@@ -377,6 +377,8 @@ def draw_window():
                             Meta.CARDS_TO_DRAW.pop(0)
                             Meta.DISPLAYING_CARD = False
         draw_squares()
+        if Meta.CHOOSE_SQUARE == "Red Nine":
+            is_your_turn = True
         if is_your_turn:
             if Meta.SQUARE_VOTE:
                 Meta.HOVER_BOXES.clear()
@@ -2527,6 +2529,8 @@ def check_server_updates():
             Meta.PLAYERS = network_response["players"]
         if "board" in network_response:
             Meta.BOARD_SQUARES = network_response["board"]
+            if Meta.SQUARE_VOTE:
+                Meta.SQUARE_VOTE = False
         if "discard" in network_response:
             Meta.DISCARD_PILE = network_response["discard"]
         if "red" in network_response:

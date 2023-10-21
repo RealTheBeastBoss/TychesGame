@@ -139,8 +139,6 @@ def threaded_client(conn, ip):
                     Server.blue_cards = data[2]
                     Server.blue_cards_to_update = Server.client_addresses.copy()
                     Server.blue_cards_to_update.remove(ip)
-                    Server.event_to_send = [data[3], Server.client_addresses.copy()]
-                    Server.event_to_send[1].remove(ip)
                     data = False
                 elif data[0] == "PlayersRed":
                     print("From " + ip[0] + ", Received: " + str(data))
@@ -150,8 +148,6 @@ def threaded_client(conn, ip):
                     Server.red_cards = data[2]
                     Server.red_cards_to_update = Server.client_addresses.copy()
                     Server.red_cards_to_update.remove(ip)
-                    Server.event_to_send = [data[3], Server.client_addresses.copy()]
-                    Server.event_to_send[1].remove(ip)
                     data = False
                 elif data[0] == "PlayerEvents":
                     print("From " + ip[0] + ", Received: " + str(data))

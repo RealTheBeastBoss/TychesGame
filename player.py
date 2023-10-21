@@ -5,7 +5,7 @@ class Player:
     def __init__(self, player_number, given_name):
         self.playerName = given_name
         self.blueDeck = []
-        self.redDeck = []
+        self.redDeck = [RED_NINE_OF_DIAMONDS]
         self.currentSquare = 0
         self.missNextTurn = False
         self.setNextRoll = None
