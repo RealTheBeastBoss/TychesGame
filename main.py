@@ -318,6 +318,7 @@ def draw_window():
         if Meta.SHOW_HAND is None and Meta.CHOOSE_DICE is None and Meta.CHOOSE_PLAYERS is None and Meta.CHOOSE_SQUARE is None and not Meta.SQUARE_VOTE:
             quit_button = Button("Quit", 360, 450, 60)
             if quit_button.check_click():
+                Meta.NETWORK.send("quit")
                 pygame.quit()
         check_server_updates()
         current_player = Meta.PLAYERS[Meta.CURRENT_PLAYER]
@@ -2558,6 +2559,8 @@ def check_server_updates():
                 Meta.EVENT_LIST.append(event)
         if "square_vote" in network_response:
             Meta.CHOOSE_SQUARE = "Red Nine"
+        if "quit" in network_response:
+            pygame.quit()
 
 
 def draw_dice_sets(top_height = 330):

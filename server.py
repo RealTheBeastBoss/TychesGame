@@ -27,6 +27,7 @@ class Server:
     event_to_send = []
     square_vote_to_send = []
     square_votes = []
+    games_to_quit = []
 
 
 def threaded_client(conn, ip):
@@ -69,6 +70,9 @@ def threaded_client(conn, ip):
                     if ip in Server.square_vote_to_send:
                         data["square_vote"] = 1
                         Server.square_vote_to_send.remove(ip)
+                    if ip in Server.games_to_quit:
+                        data["quit"] = 1
+                        Server.games_to_quit.remove(ip)
                 elif data == "End Turn":  # Ends the Player's Turn
                     print("From " + ip[0] + ", Received End Turn")
                     if Server.current_player == Server.player_count - 1:
@@ -83,6 +87,11 @@ def threaded_client(conn, ip):
                     Server.square_vote_to_send = Server.client_addresses.copy()
                     Server.square_vote_to_send.remove(ip)
                     data = True
+                elif data == "quit":
+                    print("From " + ip[0] + ", Received Quit Game")
+                    Server.games_to_quit = Server.client_addresses.copy()
+                    Server.games_to_quit.remove(ip)
+                    data = False
                 elif data[0] == "PlayersRedEvents":
                     print("From " + ip[0] + ", Received: " + str(data))
                     Server.players = data[1]
