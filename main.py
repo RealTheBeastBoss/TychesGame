@@ -6,7 +6,7 @@ from meta import *
 from button import Button
 from player import Player
 from dice import Dice
-from server import start_server, check_server
+from server import start_server, check_server, close_server
 from network import Network
 
 
@@ -63,6 +63,8 @@ def draw_window():
         back_button = Button("Back", 960, 690, 60)
         if back_button.check_click():
             Meta.CURRENT_STATE = ScreenState.START
+            Meta.HAS_SERVER = False
+            close_server()
     elif Meta.CURRENT_STATE == ScreenState.CREATE_SERVER:  # Sets Player Count for the Server
         WINDOW.fill(GREEN)
         draw_text("How many players?", BIG_FONT, ORANGE, (960, 100))
@@ -554,7 +556,13 @@ def draw_window():
                                     Meta.FORCED_CARD = CardValue.THREE
                                     break
                                 if card.cardValue == CardValue.FIVE:
-                                    Meta.FORCED_CARD = CardValue.FIVE
+                                    can_force = False
+                                    for player in Meta.PLAYERS:
+                                        if player.playerNumber != Meta.PLAYER_NUMBER and player.setPlayerRoll is None:
+                                            can_force = True
+                                            break
+                                    if can_force:
+                                        Meta.FORCED_CARD = CardValue.FIVE
                                     break
                                 if card.cardValue == CardValue.NINE:
                                     Meta.FORCED_CARD = CardValue.NINE
@@ -1704,7 +1712,16 @@ def draw_window():
                                 Meta.FORCED_CARD = CardValue.THREE
                                 break
                             if card.cardValue == CardValue.FIVE:
-                                Meta.FORCED_CARD = CardValue.FIVE
+                                can_force = False
+                                for player in Meta.PLAYERS:
+                                    if Meta.IS_MULTIPLAYER:
+                                        if player.playerNumber != Meta.PLAYER_NUMBER and player.setNextRoll is None:
+                                            can_force =  True
+                                    else:
+                                        if player.playerNumber != Meta.CURRENT_PLAYER and player.setNextRoll is None:
+                                            can_force = True
+                                if can_force:
+                                    Meta.FORCED_CARD = CardValue.FIVE
                                 break
                             if card.cardValue == CardValue.NINE:
                                 Meta.FORCED_CARD = CardValue.NINE
@@ -2791,8 +2808,15 @@ def check_card_usable(card):
             case CardValue.FOUR:  # True anytime you are about to roll for damage
                 if Meta.TURN_STAGE == TurnStage.ATTACK_MONSTER and D12.enabled and D12_2.enabled and not Meta.TAKING_FOUR:
                     return True
-            case CardValue.FIVE:  # Always True
-                return True
+            case CardValue.FIVE:  # True if there is another player that hasn't got their next dice set
+                for player in Meta.PLAYERS:
+                    if Meta.IS_MULTIPLAYER:
+                        if player.playerNumber != Meta.PLAYER_NUMBER and player.setNextRoll is None:
+                            return True
+                    else:
+                        if player != Meta.PLAYERS[Meta.CURRENT_PLAYER] and player.setNextRoll is None:
+                            return True
+                return False
             case CardValue.SIX:  # True when about to force movement
                 return Meta.FORCED_MOVEMENT
             case CardValue.SEVEN:
@@ -2964,7 +2988,8 @@ def perform_card_action(card):
                 print("Card Used: " + card.displayName)
         Meta.CARD_TO_REMOVE = (current_player.redDeck, card)
     Meta.DISCARD_PILE.append(card)
-    Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, event_data))
+    if Meta.IS_MULTIPLAYER:
+        Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, event_data))
     Meta.SHOW_HAND = None
     Meta.CARD_HANDS_ACTIVE = True
 

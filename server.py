@@ -5,10 +5,10 @@ from player import Player
 import statistics
 
 port = 5555
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
 class Server:
+    sock = None
     client_addresses = []
     added_players = 0
     player_count = 0
@@ -247,8 +247,9 @@ def threaded_client(conn, ip):
 
 
 def check_server(server):
+    Server.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        sock.bind((server, port))
+        Server.sock.bind((server, port))
         return True
     except socket.error:
         return False
@@ -259,10 +260,14 @@ def start_server(count, server, game_board, red_cards, blue_cards):
     Server.board_squares = game_board
     Server.red_cards = red_cards
     Server.blue_cards = blue_cards
-    sock.listen(Server.player_count)
+    Server.sock.listen(Server.player_count)
     print("Waiting for Connection, Server Started at " + server)
     while True:
-        connect, addr = sock.accept()
+        connect, addr = Server.sock.accept()
         print(addr[0] + " has Connected")
         Server.client_addresses.append(addr)
         start_new_thread(threaded_client, (connect, addr))
+
+
+def close_server():
+    Server.sock.close()
