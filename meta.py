@@ -12,12 +12,13 @@ class ScreenState(Enum):
     GAME_INTRO_TWO = 5
     BLUE_CARD_GUIDE = 6
     RED_CARD_GUIDE = 7
-    BOARD_SYMBOLS_GUIDE = 8
-    PLAYING_GAME = 9
-    JOIN_LOCAL_GAME = 10
-    NAME_LOCAL_PLAYER = 11
-    CREATE_SERVER = 12
-    PLAYING_LOCAL_GAME = 13
+    BOARD_SYMBOLS_GUIDE_ONE = 8
+    BOARD_SYMBOLS_GUIDE_TWO = 9
+    PLAYING_GAME = 10
+    JOIN_LOCAL_GAME = 11
+    NAME_LOCAL_PLAYER = 12
+    CREATE_SERVER = 13
+    PLAYING_LOCAL_GAME = 14
 
 
 class TurnStage(Enum):
@@ -128,6 +129,7 @@ BACK_8 = pygame.image.load(os.path.join("Assets", "Symbols", "back_8.png"))
 ROLL_8 = pygame.image.load(os.path.join("Assets", "Symbols", "roll_8.png"))
 BACK_10 = pygame.image.load(os.path.join("Assets", "Symbols", "back_10.png"))
 ROLL_10 = pygame.image.load(os.path.join("Assets", "Symbols", "roll_10.png"))
+NICE_HAND = pygame.image.load(os.path.join("Assets", "Symbols", "nice_hand.png"))
 ID_TO_SYMBOLS = {
     "OneBlue": ONE_BLUE,
     "OneRed": ONE_RED,
@@ -143,7 +145,8 @@ ID_TO_SYMBOLS = {
     "Back8": BACK_8,
     "Roll8": ROLL_8,
     "Back10": BACK_10,
-    "Roll10": ROLL_10
+    "Roll10": ROLL_10,
+    "NiceHand": NICE_HAND
 }
 
 # Game Cards
@@ -584,7 +587,7 @@ class Meta:  # Changeable Global Variables
                      Square(None, (534, 396)), Square(None, (628, 396)), Square(None, (722, 396)),
                      Square(None, (816, 396)), Square(None, (910, 396)), Square(None, (1009, 396)),
                      Square(None, (1103, 396)), Square(None, (1197, 396)), Square(None, (1291, 396)),
-                     Square(None, (1385, 396)), Square(None, (1385, 302)), Square(None, (1291, 302)),
+                     Square("NiceHand", (1385, 396)), Square(None, (1385, 302)), Square(None, (1291, 302)),
                      Square(None, (1197, 302)), Square(None, (1103, 302)), Square(None, (1009, 302)),
                      Square(None, (910, 302)), Square(None, (816, 302)), Square(None, (722, 302)),
                      Square(None, (628, 302)), Square(None, (534, 302)), Square(None, (534, 208)),

@@ -41,6 +41,9 @@ def draw_window():
         if local_multiplayer_button.check_click():
             Meta.IS_MULTIPLAYER = True
             Meta.CURRENT_STATE = ScreenState.JOIN_LOCAL_GAME
+        rules_button = Button("Game Rules", 1200, 540, 60)
+        if rules_button.check_click():
+            Meta.CURRENT_STATE = ScreenState.GAME_INTRO_ONE
     elif Meta.CURRENT_STATE == ScreenState.JOIN_LOCAL_GAME:  # Join/Create a Local Game
         WINDOW.fill(GREEN)
         if Meta.HAS_SERVER:
@@ -57,16 +60,13 @@ def draw_window():
         if create_server_button.check_click():
             Meta.CURRENT_STATE = ScreenState.CREATE_SERVER
             Meta.CAN_TEXT_INPUT = False
-        quit_button = Button("Quit", 960, 690, 60)
-        if quit_button.check_click():
-            pygame.quit()
+        back_button = Button("Back", 960, 690, 60)
+        if back_button.check_click():
+            Meta.CURRENT_STATE = ScreenState.START
     elif Meta.CURRENT_STATE == ScreenState.CREATE_SERVER:  # Sets Player Count for the Server
         WINDOW.fill(GREEN)
         draw_text("How many players?", BIG_FONT, ORANGE, (960, 100))
-        quit_button = Button("Quit", 1060, 600, 60)
-        if quit_button.check_click():
-            pygame.quit()
-        back_button = Button("Back", 860, 600, 60)
+        back_button = Button("Back", 960, 600, 60)
         if back_button.check_click():
             Meta.CURRENT_STATE = ScreenState.JOIN_LOCAL_GAME
         two_player_button = Button("Two Players", 820, 300, 60, BLUE, ORANGE, SMALL_FONT, 220)
@@ -95,9 +95,6 @@ def draw_window():
                 Meta.CURRENT_STATE = ScreenState.JOIN_LOCAL_GAME
     elif Meta.CURRENT_STATE == ScreenState.NAME_LOCAL_PLAYER:  # Names the Player in a Local Game
         WINDOW.fill(GREEN)
-        quit_button = Button("Quit", 960, 600, 60)
-        if quit_button.check_click():
-            pygame.quit()
         draw_text("Enter your Player Name", MEDIUM_FONT, ORANGE, (960, 69))
         draw_text_input()
         if Meta.PLAYER_NUMBER == 69:
@@ -120,10 +117,7 @@ def draw_window():
     elif Meta.CURRENT_STATE == ScreenState.NEW_MENU:  # New Game Menu
         WINDOW.fill(GREEN)
         draw_text("How many players?", BIG_FONT, ORANGE, (960, 100))
-        quit_button = Button("Quit", 1060, 600, 60)
-        if quit_button.check_click():
-            pygame.quit()
-        back_button = Button("Back", 860, 600, 60)
+        back_button = Button("Back", 960, 600, 60)
         if back_button.check_click():
             Meta.CURRENT_STATE = ScreenState.START
         two_player_button = Button("Two Players", 820, 300, 60, BLUE, ORANGE, SMALL_FONT, 220)
@@ -143,13 +137,12 @@ def draw_window():
             Meta.CURRENT_STATE = ScreenState.PLAYER_NAMING
     elif Meta.CURRENT_STATE == ScreenState.PLAYER_NAMING:  # Player Naming Menu
         WINDOW.fill(GREEN)
-        quit_button = Button("Quit", 960, 600, 60)
-        if quit_button.check_click():
-            pygame.quit()
-        elif Meta.CURRENT_PLAYER == Meta.PLAYER_COUNT:
-            Meta.CURRENT_STATE = ScreenState.GAME_INTRO_ONE
+        if Meta.CURRENT_PLAYER == Meta.PLAYER_COUNT:
             Meta.CURRENT_PLAYER = 0
             random.shuffle(Meta.PLAYERS)
+            Meta.CURRENT_STATE = ScreenState.PLAYING_GAME
+            for x in range(len(Meta.PLAYERS)):
+                Meta.BOARD_SQUARES[0].players.append(Meta.PLAYERS[x])
         else:
             match Meta.CURRENT_PLAYER:  # Draw Screen Title
                 case 0:
@@ -170,12 +163,12 @@ def draw_window():
                 Meta.TEXT_CONFIRMED = False
     elif Meta.CURRENT_STATE == ScreenState.GAME_INTRO_ONE:
         WINDOW.fill((30, 100, 150))
-        quit_button = Button("Quit", 200, 600, 60)
-        if quit_button.check_click():
-            pygame.quit()
         draw_text("Welcome to Tyche's Game", BIG_FONT, ORANGE, (960, 69))
         page_background = pygame.Rect((460, 150), (1000, 850))
         pygame.draw.rect(WINDOW, PASTEL_GREEN, page_background, 0, 5)
+        back_button = Button("Back", 520, 760, 60, WHITE, BLACK)
+        if back_button.check_click():
+            Meta.CURRENT_STATE = ScreenState.START
         draw_text("Scenario", MEDIUM_FONT, ORANGE, (960, 190))
         draw_text("Tyche, the Goddess of Chance, has had enough of humanity", SMALL_FONT, BLACK, (960, 250))
         draw_text("blaming Luck for their own errors, so she has decided to", SMALL_FONT, BLACK, (960, 290))
@@ -190,12 +183,12 @@ def draw_window():
             Meta.CURRENT_STATE = ScreenState.GAME_INTRO_TWO
     elif Meta.CURRENT_STATE == ScreenState.GAME_INTRO_TWO:
         WINDOW.fill((30, 100, 150))
-        quit_button = Button("Quit", 200, 600, 60)
-        if quit_button.check_click():
-            pygame.quit()
         draw_text("Welcome to Tyche's Game", BIG_FONT, ORANGE, (960, 69))
         page_background = pygame.Rect((460, 150), (1000, 850))
         pygame.draw.rect(WINDOW, PASTEL_GREEN, page_background, 0, 5)
+        back_button = Button("Back", 1400, 760, 60, WHITE, BLACK)
+        if back_button.check_click():
+            Meta.CURRENT_STATE = ScreenState.START
         draw_text("Understanding the Game", MEDIUM_FONT, ORANGE, (960, 190))
         draw_text("Tyche's game is visually similar to Snakes & Ladders with", SMALL_FONT, BLACK, (960, 250))
         draw_text("the fact that you need to ascend the board to win. However,", SMALL_FONT, BLACK, (960, 290))
@@ -209,7 +202,6 @@ def draw_window():
         blue_guide_button = Button("Blue Card Guide", 800, 690, 60, WHITE, BLACK, SMALL_FONT)
         red_guide_button = Button("Red Card Guide", 1120, 690, 60, WHITE, BLACK, SMALL_FONT)
         board_guide_button = Button("Board Symbols Guide", 950, 790, 60, WHITE, BLACK, SMALL_FONT)
-        play_game_button = Button("Play Game", 1360, 760, 60, WHITE, BLACK, SMALL_FONT)
         if back_button.check_click() or Meta.LEFT_ARROW_DOWN:
             Meta.CURRENT_STATE = ScreenState.GAME_INTRO_ONE
         elif blue_guide_button.check_click():
@@ -217,19 +209,12 @@ def draw_window():
         elif red_guide_button.check_click():
             Meta.CURRENT_STATE = ScreenState.RED_CARD_GUIDE
         elif board_guide_button.check_click():
-            Meta.CURRENT_STATE = ScreenState.BOARD_SYMBOLS_GUIDE
-        elif play_game_button.check_click():
-            Meta.CURRENT_STATE = ScreenState.PLAYING_GAME
-            for x in range(len(Meta.PLAYERS)):
-                Meta.BOARD_SQUARES[0].players.append(Meta.PLAYERS[x])
+            Meta.CURRENT_STATE = ScreenState.BOARD_SYMBOLS_GUIDE_ONE
     elif Meta.CURRENT_STATE == ScreenState.BLUE_CARD_GUIDE:
         WINDOW.fill(PASTEL_GREEN)
         draw_text("Blue Card Guide", MEDIUM_FONT, ORANGE, (960, 69))
-        quit_button = Button("Quit", 1280, 950, 60)
-        back_button = Button("Back", 640, 950, 60)
-        if quit_button.check_click():
-            pygame.quit()
-        elif back_button.check_click():
+        back_button = Button("Back", 960, 950, 60)
+        if back_button.check_click():
             Meta.CURRENT_STATE = ScreenState.GAME_INTRO_TWO
         draw_card(BLUE_ACE_OF_HEARTS, (320, 270), 2)
         draw_card(BLUE_TWO_OF_HEARTS, (640, 270), 2)
@@ -250,11 +235,8 @@ def draw_window():
     elif Meta.CURRENT_STATE == ScreenState.RED_CARD_GUIDE:
         WINDOW.fill(PASTEL_GREEN)
         draw_text("Red Card Guide", MEDIUM_FONT, ORANGE, (960, 69))
-        quit_button = Button("Quit", 1280, 950, 60)
-        back_button = Button("Back", 640, 950, 60)
-        if quit_button.check_click():
-            pygame.quit()
-        elif back_button.check_click():
+        back_button = Button("Back", 960, 950, 60)
+        if back_button.check_click():
             Meta.CURRENT_STATE = ScreenState.GAME_INTRO_TWO
         draw_card(RED_ACE_OF_HEARTS, (320, 270), 2)
         draw_card(RED_TWO_OF_HEARTS, (640, 270), 2)
@@ -272,14 +254,11 @@ def draw_window():
         draw_card(RED_RED_JOKER, (1280, 810), 2)
         draw_card(RED_BLACK_JOKER, (1600, 810), 2)
         check_hover_boxes()
-    elif Meta.CURRENT_STATE == ScreenState.BOARD_SYMBOLS_GUIDE:
+    elif Meta.CURRENT_STATE == ScreenState.BOARD_SYMBOLS_GUIDE_ONE:
         WINDOW.fill(PASTEL_GREEN)
         draw_text("Board Symbols Guide", MEDIUM_FONT, ORANGE, (960, 69))
-        quit_button = Button("Quit", 1280, 950, 60)
-        back_button = Button("Back", 640, 950, 60)
-        if quit_button.check_click():
-            pygame.quit()
-        elif back_button.check_click():
+        back_button = Button("Back", 960, 950, 60)
+        if back_button.check_click():
             Meta.CURRENT_STATE = ScreenState.GAME_INTRO_TWO
         draw_game_image(BLUE_CARD_SYMBOL, (320, 270), 2, True, WHITE, (330, 80),
                         "Blue Card", "", "Draw 1 from the Blue Draw Deck")
@@ -311,6 +290,21 @@ def draw_window():
                         "Back 10", "", "Roll d10 to move Backwards")
         draw_game_image((ROLL_10, (89, 89)), (1600, 810), 2, True, WHITE, (270, 80),
                         "Roll 10", "", "Roll d10 to move Forwards")
+        next_button = Button(">", 1750, 540, 60, BLUE, ORANGE, MEDIUM_FONT)
+        if next_button.check_click() or Meta.RIGHT_ARROW_DOWN:
+            Meta.CURRENT_STATE = ScreenState.BOARD_SYMBOLS_GUIDE_TWO
+        check_hover_boxes()
+    elif Meta.CURRENT_STATE == ScreenState.BOARD_SYMBOLS_GUIDE_TWO:
+        WINDOW.fill(PASTEL_GREEN)
+        draw_text("Board Symbols Guide", MEDIUM_FONT, ORANGE, (960, 69))
+        back_button = Button("Back", 960, 950, 60)
+        if back_button.check_click():
+            Meta.CURRENT_STATE = ScreenState.GAME_INTRO_TWO
+        draw_game_image((NICE_HAND, (89, 89)), (320, 270), 2, True, WHITE, (330, 100),
+                        "Nice Hand", "", "Exchange Red and Blue Cards", "with another Player")
+        previous_button = Button("<", 300, 540, 60, BLUE, ORANGE, MEDIUM_FONT)
+        if previous_button.check_click() or Meta.LEFT_ARROW_DOWN:
+            Meta.CURRENT_STATE = ScreenState.BOARD_SYMBOLS_GUIDE_ONE
         check_hover_boxes()
     elif Meta.CURRENT_STATE == ScreenState.PLAYING_LOCAL_GAME:
         WINDOW.fill(WHITE)
@@ -457,6 +451,23 @@ def draw_window():
                         Meta.CHOOSE_PLAYERS = None
                         player.setPlayerRoll = current_player
                         Meta.NETWORK.send(("PlayerEvents", player, [(player.playerName + " will set a dice roll for " + current_player.playerName, player.playerColour)]))
+                    elif Meta.CHOOSE_PLAYERS == "NiceHand":
+                        event_data = []
+                        for card in current_player.redDeck:  # Give the Other Player the Red Cards
+                            event_data.append((
+                                              current_player.playerName + " gave " + player.playerName + " the " + card.displayName,
+                                              current_player.playerColour))
+                            player.redDeck.append(card)
+                        for card in player.blueDeck:  # Give the Current Player the Blue Cards
+                            event_data.append((
+                                              player.playerName + " gave " + current_player.playerName + " the " + card.displayName,
+                                              player.playerColour))
+                            current_player.blueDeck.append(card)
+                        current_player.redDeck.clear()
+                        player.blueDeck.clear()
+                        Meta.NETWORK.send(("PlayersEvents", Meta.PLAYERS, event_data))
+                        Meta.TURN_STAGE = TurnStage.END_TURN
+                        Meta.CHOOSE_PLAYERS = None
                 Meta.BUTTONS_ENABLED = False
             elif Meta.CHOOSE_DICE is not None:
                 Meta.HOVER_BOXES.clear()
@@ -1421,6 +1432,32 @@ def draw_window():
                                     Meta.TURN_STAGE = TurnStage.ATTACK_MONSTER
                         else:
                             Meta.CAN_PROGRESS = True
+                    elif current_square.symbol == "NiceHand":
+                        if Meta.PLAYER_COUNT == 2:
+                            draw_text("You will now get the", SMALL_FONT, BLACK, (1680, 200))
+                            draw_text("other Player's Blue Cards", SMALL_FONT, BLACK, (1680, 230))
+                            draw_text("and give them your Red Ones", SMALL_FONT, BLACK, (1680, 260))
+                            continue_button = Button("Continue", 1680, 600, 60)
+                            if continue_button.check_click():
+                                event_data = []
+                                other_player = Meta.PLAYERS[1 if Meta.PLAYER_NUMBER == 0 else 0]
+                                for card in current_player.redDeck:  # Give the Other Player the Red Cards
+                                    event_data.append((current_player.playerName + " gave " + other_player.playerName + " the " + card.displayName, current_player.playerColour))
+                                    other_player.redDeck.append(card)
+                                for card in other_player.blueDeck:  # Give the Current Player the Blue Cards
+                                    event_data.append((other_player.playerName + " gave " + current_player.playerName + " the " + card.displayName, other_player.playerColour))
+                                    current_player.blueDeck.append(card)
+                                current_player.redDeck.clear()
+                                other_player.blueDeck.clear()
+                                Meta.NETWORK.send(("PlayersEvents", Meta.PLAYERS, event_data))
+                                Meta.TURN_STAGE = TurnStage.END_TURN
+                        else:
+                            draw_text("You will now get another", SMALL_FONT, BLACK, (1680, 200))
+                            draw_text("Player's Blue Cards", SMALL_FONT, BLACK, (1680, 230))
+                            draw_text("and give them your Red Ones", SMALL_FONT, BLACK, (1680, 260))
+                            continue_button = Button("Choose Player", 1680, 600, 60)
+                            if continue_button.check_click():
+                                Meta.CHOOSE_PLAYERS = "NiceHand"
                     elif current_square.symbol is None:
                         Meta.CAN_PROGRESS = True
                     if Meta.CAN_PROGRESS:
@@ -1479,10 +1516,6 @@ def draw_window():
                     end_turn()
             elif Meta.TURN_STAGE == TurnStage.GAME_WON:
                 draw_text(current_player.playerName + " has Won!!", SMALL_FONT, BLACK, (1680, 240))
-            if Meta.SHOW_HAND is None and Meta.CHOOSE_DICE is None and Meta.CHOOSE_PLAYERS is None and Meta.CHOOSE_SQUARE is None:
-                quit_button = Button("Quit", 360, 450, 60)
-                if quit_button.check_click():
-                    pygame.quit()
             check_hover_boxes()
     elif Meta.CURRENT_STATE == ScreenState.PLAYING_GAME:
         WINDOW.fill(WHITE)
@@ -1588,6 +1621,15 @@ def draw_window():
                 elif Meta.CHOOSE_PLAYERS == "Red Five":
                     Meta.CHOOSE_PLAYERS = None
                     player.setPlayerRoll = current_player
+                elif Meta.CHOOSE_PLAYERS == "NiceHand":
+                    for card in current_player.redDeck:  # Give the Other Player the Red Cards
+                        player.redDeck.append(card)
+                    for card in player.blueDeck:  # Give the Current Player the Blue Cards
+                        current_player.blueDeck.append(card)
+                    current_player.redDeck.clear()
+                    player.blueDeck.clear()
+                    Meta.TURN_STAGE = TurnStage.END_TURN
+                    Meta.CHOOSE_PLAYERS = None
             Meta.BUTTONS_ENABLED = False
         elif Meta.CHOOSE_DICE is not None:
             Meta.HOVER_BOXES.clear()
@@ -2470,6 +2512,28 @@ def draw_window():
                                 Meta.TURN_STAGE = TurnStage.ATTACK_MONSTER
                     else:
                         Meta.CAN_PROGRESS = True
+                elif current_square.symbol == "NiceHand":
+                    if Meta.PLAYER_COUNT == 2:
+                        draw_text("You will now get the", SMALL_FONT, BLACK, (1680, 200))
+                        draw_text("other Player's Blue Cards", SMALL_FONT, BLACK, (1680, 230))
+                        draw_text("and give them your Red Ones", SMALL_FONT, BLACK, (1680, 260))
+                        continue_button = Button("Continue", 1680, 600, 60)
+                        if continue_button.check_click():
+                            other_player = Meta.PLAYERS[1 if Meta.PLAYER_NUMBER == 0 else 0]
+                            for card in current_player.redDeck:  # Give the Other Player the Red Cards
+                                other_player.redDeck.append(card)
+                            for card in other_player.blueDeck:  # Give the Current Player the Blue Cards
+                                current_player.blueDeck.append(card)
+                            current_player.redDeck.clear()
+                            other_player.blueDeck.clear()
+                            Meta.TURN_STAGE = TurnStage.END_TURN
+                    else:
+                        draw_text("You will now get another", SMALL_FONT, BLACK, (1680, 200))
+                        draw_text("Player's Blue Cards", SMALL_FONT, BLACK, (1680, 230))
+                        draw_text("and give them your Red Ones", SMALL_FONT, BLACK, (1680, 260))
+                        continue_button = Button("Choose Player", 1680, 600, 60)
+                        if continue_button.check_click():
+                            Meta.CHOOSE_PLAYERS = "NiceHand"
                 elif current_square.symbol is None:
                     Meta.CAN_PROGRESS = True
                 if Meta.CAN_PROGRESS:

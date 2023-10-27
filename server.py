@@ -168,6 +168,14 @@ def threaded_client(conn, ip):
                     Server.event_to_send = [data[2], Server.client_addresses.copy()]
                     Server.event_to_send[1].remove(ip)
                     data = False
+                elif data[0] == "PlayersEvents":
+                    print("From " + ip[0] + ", Received: " + str(data))
+                    Server.players = data[1]
+                    Server.players_to_update = Server.client_addresses.copy()
+                    Server.players_to_update.remove(ip)
+                    Server.event_to_send = [data[2], Server.client_addresses.copy()]
+                    Server.event_to_send[1].remove(ip)
+                    data = False
                 elif data[0] == "SquareEvents":
                     print("From " + ip[0] + ", Received: " + str(data))
                     square = data[1][1]
