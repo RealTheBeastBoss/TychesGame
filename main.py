@@ -3050,7 +3050,7 @@ def perform_card_action(card):
                 print("Card Used: " + card.displayName)
             case CardValue.JOKER:
                 print("Card Used: " + card.displayName)
-        Meta.CARD_TO_REMOVE = (current_player.blueDeck, card)
+        Meta.CARD_TO_REMOVE = (current_player.blueDeck, card, True)
     else:
         match card.cardValue:
             case CardValue.ACE:
@@ -3108,7 +3108,7 @@ def perform_card_action(card):
                     Meta.CARDS_TO_DRAW.remove(CardType.BLUE)
             case CardValue.JOKER:
                 print("Card Used: " + card.displayName)
-        Meta.CARD_TO_REMOVE = (current_player.redDeck, card)
+        Meta.CARD_TO_REMOVE = (current_player.redDeck, card, True)
     Meta.DISCARD_PILE.append(card)
     if Meta.IS_MULTIPLAYER:
         Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, event_data))
