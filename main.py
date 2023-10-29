@@ -304,6 +304,8 @@ def draw_window():
             Meta.CURRENT_STATE = ScreenState.GAME_INTRO_TWO
         draw_game_image((NICE_HAND, (89, 89)), (320, 270), 2, True, WHITE, (330, 100),
                         "Nice Hand", "", "Exchange Red and Blue Cards", "with another Player")
+        draw_game_image((GRAVITY_WELL, (89, 89)), (640, 270), 2, True, WHITE, (330, 100),
+                        "Gravity Well", "", "Attempts to pull", "Players towards you")
         previous_button = Button("<", 300, 540, 60, BLUE, ORANGE, MEDIUM_FONT)
         if previous_button.check_click() or Meta.LEFT_ARROW_DOWN:
             Meta.CURRENT_STATE = ScreenState.BOARD_SYMBOLS_GUIDE_ONE
@@ -617,7 +619,7 @@ def draw_window():
                             if not Meta.SUCCEEDED_DEFENCE:
                                 for card in current_player.blueDeck:
                                     if card.cardValue == CardValue.EIGHT:
-                                        Meta.CARD_TO_REMOVE = (current_player.blueDeck, card)
+                                        Meta.CARD_TO_REMOVE = (current_player.blueDeck, card, True)
                                         Meta.DISCARD_PILE.append(card)
                                         Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, [(current_player.playerName + " used the " + card.displayName, current_player.playerColour)]))
                                         Meta.SHIELD_ACTIVE = True
@@ -633,7 +635,7 @@ def draw_window():
                             if not Meta.SUCCEEDED_DEFENCE:
                                 for card in current_player.blueDeck:
                                     if card.cardValue == CardValue.EIGHT:
-                                        Meta.CARD_TO_REMOVE = (current_player.blueDeck, card)
+                                        Meta.CARD_TO_REMOVE = (current_player.blueDeck, card, True)
                                         Meta.DISCARD_PILE.append(card)
                                         Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, [(current_player.playerName + " used the " + card.displayName, current_player.playerColour)]))
                                         Meta.SHIELD_ACTIVE = True
@@ -647,7 +649,7 @@ def draw_window():
                             if not Meta.SUCCEEDED_DEFENCE:
                                 for card in current_player.blueDeck:
                                     if card.cardValue == CardValue.EIGHT:
-                                        Meta.CARD_TO_REMOVE = (current_player.blueDeck, card)
+                                        Meta.CARD_TO_REMOVE = (current_player.blueDeck, card, True)
                                         Meta.DISCARD_PILE.append(card)
                                         Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, [(current_player.playerName + " used the " + card.displayName, current_player.playerColour)]))
                                         Meta.SHIELD_ACTIVE = True
@@ -878,7 +880,7 @@ def draw_window():
                         has_ten = False
                         for card in current_player.blueDeck:
                             if card.cardValue == CardValue.TEN:
-                                Meta.CARD_TO_REMOVE = (current_player.blueDeck, card)
+                                Meta.CARD_TO_REMOVE = (current_player.blueDeck, card, True)
                                 Meta.DISCARD_PILE.append(card)
                                 Meta.NETWORK.send(("DiscardEvents", Meta.DISCARD_PILE, [(current_player.playerName + " used the " + card.displayName, current_player.playerColour)]))
                                 has_ten = True
@@ -1466,6 +1468,116 @@ def draw_window():
                             continue_button = Button("Choose Player", 1680, 600, 60)
                             if continue_button.check_click():
                                 Meta.CHOOSE_PLAYERS = "NiceHand"
+                    elif current_square.symbol == "GravityWell":
+                        draw_text("The other Players will now", SMALL_FONT, BLACK, (1680, 200))
+                        draw_text("be pulled toward you", SMALL_FONT, BLACK, (1680, 230))
+                        draw_text("unless they can't be moved", SMALL_FONT, BLACK, (1680, 260))
+                        continue_button = Button("Continue", 1680, 600, 60)
+                        if continue_button.check_click():
+                            event_data = []
+                            updated_squares = []
+                            discard_pile_changed = False
+                            for player in Meta.PLAYERS:
+                                if player.currentSquare != current_player.currentSquare and check_can_move(player):
+                                    if player.currentSquare > current_player.currentSquare:  # Pull Player Back
+                                        # Remove Player from Previous Square:
+                                        player_to_remove = None
+                                        print("Debug: Player: " + player.playerName)
+                                        for square_player in Meta.BOARD_SQUARES[player.currentSquare].players:
+                                            print("Debug: Player in Square " + str(player.currentSquare) + ": " + square_player.playerName)
+                                            if square_player.playerNumber == player.playerNumber:
+                                                player_to_remove = square_player
+                                        if player_to_remove is None:
+                                            print("No Player to Remove")
+                                        else:
+                                            print("Player to Remove: " + player_to_remove.playerName)
+                                        Meta.BOARD_SQUARES[player.currentSquare].players.remove(player_to_remove)
+                                        # Add Previous Square to Updated Squares:
+                                        square_index = 69
+                                        for i in range(len(updated_squares)):
+                                            if updated_squares[i][1].center == Meta.BOARD_SQUARES[player.currentSquare].center:
+                                                square_index = i
+                                                break
+                                        if square_index != 69:
+                                            updated_squares[square_index] = (player.currentSquare, Meta.BOARD_SQUARES[player.currentSquare])
+                                        else:
+                                            updated_squares.append((player.currentSquare, Meta.BOARD_SQUARES[player.currentSquare]))
+                                        player.currentSquare -= 5  # Move the Player Back
+                                        event_data.append((player.playerName + " was pulled towards " + current_player.playerName, player.playerColour))
+                                        Meta.BOARD_SQUARES[player.currentSquare].players.append(player)  # Adds the Player to the New Square
+                                        # Add New Square to Updated Squares:
+                                        square_index = 69
+                                        for i in range(len(updated_squares)):
+                                            if updated_squares[i][1].center == Meta.BOARD_SQUARES[player.currentSquare].center:
+                                                square_index = i
+                                                break
+                                        if square_index != 69:
+                                            updated_squares[square_index] = (player.currentSquare, Meta.BOARD_SQUARES[player.currentSquare])
+                                        else:
+                                            updated_squares.append((player.currentSquare, Meta.BOARD_SQUARES[player.currentSquare]))
+                                    else:  # Pull Player Forward
+                                        # Remove the Player from Previous Square:
+                                        player_to_remove = None
+                                        print("Debug: Player: " + player.playerName)
+                                        for square_player in Meta.BOARD_SQUARES[player.currentSquare].players:
+                                            print("Debug: Player in Square " + str(
+                                                player.currentSquare) + ": " + square_player.playerName)
+                                            if square_player.playerNumber == player.playerNumber:
+                                                player_to_remove = square_player
+                                        if player_to_remove is None:
+                                            print("No Player to Remove")
+                                        else:
+                                            print("Player to Remove: " + player_to_remove.playerName)
+                                        Meta.BOARD_SQUARES[player.currentSquare].players.remove(player_to_remove)
+                                        # Add Previous Square to Updated Squares:
+                                        square_index = 69
+                                        for i in range(len(updated_squares)):
+                                            if updated_squares[i][1].center == Meta.BOARD_SQUARES[
+                                                player.currentSquare].center:
+                                                square_index = i
+                                                break
+                                        if square_index != 69:
+                                            updated_squares[square_index] = (
+                                            player.currentSquare, Meta.BOARD_SQUARES[player.currentSquare])
+                                        else:
+                                            updated_squares.append(
+                                                (player.currentSquare, Meta.BOARD_SQUARES[player.currentSquare]))
+                                        # Move the Player Forward:
+                                        squares_to_move = 5
+                                        for x in range(1, 5):
+                                            if Meta.BOARD_SQUARES[player.currentSquare + x].hasBarrier:
+                                                has_ten = False
+                                                for card in player.blueDeck:
+                                                    if card.cardValue == CardValue.TEN:
+                                                        Meta.CARD_TO_REMOVE = (player.blueDeck, card, False)
+                                                        Meta.DISCARD_PILE.append(card)
+                                                        event_data.append((player.playerName + " used their " + card.displayName, player.playerColour))
+                                                        discard_pile_changed = True
+                                                        has_ten = True
+                                                        break
+                                                if not has_ten:
+                                                    squares_to_move = x
+                                                    Meta.BOARD_SQUARES[player.currentSquare + x].hasBarrier = False
+                                                    break
+                                            elif Meta.BOARD_SQUARES[player.currentSquare + x].monsterAwake:
+                                                squares_to_move = x
+                                                break
+                                        player.currentSquare += squares_to_move
+                                        # Deals with the New Square:
+                                        Meta.BOARD_SQUARES[player.currentSquare].players.append(player)
+                                        square_index = 69
+                                        for i in range(len(updated_squares)):
+                                            if updated_squares[i][1].center == Meta.BOARD_SQUARES[player.currentSquare].center:
+                                                square_index = i
+                                                break
+                                        if square_index != 69:
+                                            updated_squares[square_index] = (player.currentSquare, Meta.BOARD_SQUARES[player.currentSquare])
+                                        else:
+                                            updated_squares.append((player.currentSquare, Meta.BOARD_SQUARES[player.currentSquare]))
+                            if discard_pile_changed:
+                                Meta.NETWORK.send(("PlayersSquaresDiscardEvents", Meta.PLAYERS, updated_squares, Meta.DISCARD_PILE, event_data))
+                            else:
+                                Meta.NETWORK.send(("PlayersSquaresEvents", Meta.PLAYERS, updated_squares, event_data))
                     elif current_square.symbol is None:
                         Meta.CAN_PROGRESS = True
                     if Meta.CAN_PROGRESS:
@@ -2676,11 +2788,11 @@ def draw_squares():
         if square.symbol is not None:
             if square.symbol == "Monster":
                 if square.monsterHealth > 0:
-                    draw_game_image((ID_TO_SYMBOLS[square.symbol], (89, 89)), square.center, 1)
+                    draw_game_image((ID_TO_SYMBOLS[square.symbol], (89, 89)), (square.center[0] + 1, square.center[1] + 1), 1)
                     draw_text(str(square.monsterHealth) + "hp", TINY_FONT, BLUE,
                               (square.center[0] - 10, square.center[1] + 20), False)
             else:
-                draw_game_image((ID_TO_SYMBOLS[square.symbol], (89, 89)), square.center, 1)
+                draw_game_image((ID_TO_SYMBOLS[square.symbol], (89, 89)), (square.center[0] + 1, square.center[1] + 1), 1)
         if square.hasBarrier:
             if Meta.BOARD_SQUARES[x + 1].center[0] > square.center[0]:
                 barrier_rect = pygame.Rect((square.center[0] + 34, square.center[1] - 39), (5, 79))
@@ -2699,6 +2811,16 @@ def draw_squares():
             player_image = PLAYER_TO_PIECE[square.players[i].playerNumber]
             WINDOW.blit(player_image, ((square.center[0] + PLAYER_TO_POSITION[i][0]) - 14,
                                        (square.center[1] + PLAYER_TO_POSITION[i][1]) - 14))
+
+
+def check_can_move(player):
+    if Meta.BOARD_SQUARES[player.currentSquare].symbol == "GravityWell":
+        return False
+    if Meta.BOARD_SQUARES[player.currentSquare].symbol == "Monster" and Meta.BOARD_SQUARES[player.currentSquare].monsterHealth > 0:
+        return False
+    if player.missNextTurn:
+        return False
+    return True
 
 
 def draw_text(text, font, colour, location, center = True):  # Draws text centered on a location
@@ -3123,7 +3245,8 @@ def main():  # Game Loop
         if Meta.CARD_TO_REMOVE is not None:
             Meta.CARD_TO_REMOVE[0].remove(Meta.CARD_TO_REMOVE[1])
             if Meta.IS_MULTIPLAYER:
-                Meta.NETWORK.send(("Player", Meta.PLAYERS[Meta.CURRENT_PLAYER]))
+                if Meta.CARD_TO_REMOVE[2]:
+                    Meta.NETWORK.send(("Player", Meta.PLAYERS[Meta.CURRENT_PLAYER]))
             Meta.CARD_TO_REMOVE = None
 
 

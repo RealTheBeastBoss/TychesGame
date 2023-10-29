@@ -130,6 +130,7 @@ ROLL_8 = pygame.image.load(os.path.join("Assets", "Symbols", "roll_8.png"))
 BACK_10 = pygame.image.load(os.path.join("Assets", "Symbols", "back_10.png"))
 ROLL_10 = pygame.image.load(os.path.join("Assets", "Symbols", "roll_10.png"))
 NICE_HAND = pygame.image.load(os.path.join("Assets", "Symbols", "nice_hand.png"))
+GRAVITY_WELL = pygame.image.load(os.path.join("Assets", "Symbols", "gravity_well.png"))
 ID_TO_SYMBOLS = {
     "OneBlue": ONE_BLUE,
     "OneRed": ONE_RED,
@@ -146,7 +147,8 @@ ID_TO_SYMBOLS = {
     "Roll8": ROLL_8,
     "Back10": BACK_10,
     "Roll10": ROLL_10,
-    "NiceHand": NICE_HAND
+    "NiceHand": NICE_HAND,
+    "GravityWell": GRAVITY_WELL
 }
 
 # Game Cards
@@ -574,7 +576,7 @@ class Meta:  # Changeable Global Variables
                      Square("DownKey", (910, 777), False, 0, 15), Square("UpKey", (1009, 777), False, 0, 34),
                      Square(None, (1103, 777)),
                      Square("Back8", (1197, 777)), Square("Roll8", (1291, 777)), Square(None, (1385, 777)),
-                     Square(None, (1385, 683)), Square(None, (1291, 683)), Square(None, (1197, 683)),
+                     Square("GravityWell", (1385, 683)), Square(None, (1291, 683)), Square(None, (1197, 683)),
                      Square(None, (1103, 683)), Square(None, (1009, 683)), Square(None, (910, 683)),
                      Square(None, (816, 683)), Square(None, (722, 683)), Square("Back10", (628, 683)),
                      Square("Roll10", (534, 683)), Square(None, (534, 589)), Square(None, (628, 589)),

@@ -10,6 +10,7 @@ class Player:
         self.missNextTurn = False
         self.setNextRoll = None
         self.setPlayerRoll = None
+        self.wasPulledOrPushed = False
         self.playerNumber = player_number
         if player_number == 0:
             self.playerColour = BLUE

@@ -208,6 +208,33 @@ def threaded_client(conn, ip):
                     Server.event_to_send = [data[3], Server.client_addresses.copy()]
                     Server.event_to_send[1].remove(ip)
                     data = False
+                elif data[0] == "PlayersSquaresEvents":
+                    print("From " + ip[0] + ", Received: " + str(data))
+                    Server.players = data[1]
+                    Server.players_to_update = Server.client_addresses.copy()
+                    Server.players_to_update.remove(ip)
+                    for square in data[2]:
+                        Server.board_squares[square[0]] = square[1]
+                    Server.board_to_update = Server.client_addresses.copy()
+                    Server.board_to_update.remove(ip)
+                    Server.event_to_send = [data[3], Server.client_addresses.copy()]
+                    Server.event_to_send[1].remove(ip)
+                    data = False
+                elif data[0] == "PlayersSquaresDiscardEvents":
+                    print("From " + ip[0] + ", Received: " + str(data))
+                    Server.players = data[1]
+                    Server.players_to_update = Server.client_addresses.copy()
+                    Server.players_to_update.remove(ip)
+                    for square in data[2]:
+                        Server.board_squares[square[0]] = square[1]
+                    Server.board_to_update = Server.client_addresses.copy()
+                    Server.board_to_update.remove(ip)
+                    Server.discard_pile = data[3]
+                    Server.discards_to_update = Server.client_addresses.copy()
+                    Server.discards_to_update.remove(ip)
+                    Server.event_to_send = [data[4], Server.client_addresses.copy()]
+                    Server.event_to_send[1].remove(ip)
+                    data = False
                 elif data[0] == "DiscardEvents":
                     print("From " + ip[0] + ", Received: " + str(data))
                     Server.discard_pile = data[1]
