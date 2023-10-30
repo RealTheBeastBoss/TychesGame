@@ -1,4 +1,4 @@
-from meta import *
+from game import *
 import random
 
 
@@ -12,15 +12,15 @@ class Dice:
 
     def check_click(self, roll_dice = True):
         mouse_pos = pygame.mouse.get_pos()
-        if Meta.LEFT_MOUSE_RELEASED and self.currentRect.collidepoint(mouse_pos) and self.enabled:
+        if Game.LEFT_MOUSE_RELEASED and self.currentRect.collidepoint(mouse_pos) and self.enabled:
             self.enabled = False
             if roll_dice:
-                if Meta.PLAYERS[Meta.CURRENT_PLAYER].setNextRoll is None or self.sides != 6:
+                if Game.PLAYERS[Game.CURRENT_PLAYER].setNextRoll is None or self.sides != 6:
                     self.sideFacing = random.randrange(1, self.sides + 1)
                 else:
-                    self.sideFacing = Meta.PLAYERS[Meta.CURRENT_PLAYER].setNextRoll
-                    Meta.PLAYERS[Meta.CURRENT_PLAYER].setNextRoll = None
-                    if Meta.IS_MULTIPLAYER:
-                        Meta.NETWORK.send(("Player", Meta.PLAYERS[Meta.CURRENT_PLAYER]))
+                    self.sideFacing = Game.PLAYERS[Game.CURRENT_PLAYER].setNextRoll
+                    Game.PLAYERS[Game.CURRENT_PLAYER].setNextRoll = None
+                    if Game.IS_MULTIPLAYER:
+                        Game.NETWORK.send(("Player", Game.PLAYERS[Game.CURRENT_PLAYER]))
             return True
         return False

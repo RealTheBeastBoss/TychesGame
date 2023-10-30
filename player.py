@@ -1,4 +1,4 @@
-from meta import *
+from game import *
 
 
 class Player:

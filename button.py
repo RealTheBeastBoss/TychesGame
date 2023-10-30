@@ -1,4 +1,4 @@
-from meta import *
+from game import *
 
 
 class Button:
@@ -41,8 +41,8 @@ class Button:
     def check_click(self):
         button_rect = pygame.rect.Rect((self.xPos - (self.width/2), self.yPos - (self.height/2)), (self.width, self.height))
         mouse_pos = pygame.mouse.get_pos()
-        if Meta.LEFT_MOUSE_RELEASED and button_rect.collidepoint(mouse_pos) and Meta.BUTTONS_ENABLED:
+        if Game.LEFT_MOUSE_RELEASED and button_rect.collidepoint(mouse_pos) and Game.BUTTONS_ENABLED:
             pygame.time.set_timer(BUTTON_COOLDOWN_EVENT, 100, 1)
-            Meta.BUTTONS_ENABLED = False
+            Game.BUTTONS_ENABLED = False
             return True
         return False
